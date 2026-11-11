@@ -88,7 +88,40 @@
     herplaatsen: { perUur: 3.05, maxPerJaar: 6000, jaren: 1 },
   };
 
-  const api = { PEILDATA, WIA, ZW, NO_RISK, LKV_2026 };
+  // Inkomstenbelasting box 1, onder de AOW-leeftijd (docs/research/15). Per kalenderjaar.
+  const BELASTING = {
+    2026: {
+      schijven: [{ tot: 38883, pct: 0.3575 }, { tot: 78426, pct: 0.3756 }, { tot: Infinity, pct: 0.495 }],
+      ahk: { max: 3115, afbouwVanaf: 29736, afbouwPct: 0.06398 },
+      // arbeidskorting: stukken [vanaf, basis, pct]; daarna afbouw
+      ak: { stukken: [[0, 0, 0.08324], [11965, 996, 0.31009], [25845, 5300, 0.0195]], max: 5685, afbouwVanaf: 45592, afbouwPct: 0.0651 },
+    },
+    // 2027: pas toevoegen na de cijferbijlage 2027 (Belastingplan nog in behandeling).
+  };
+
+  // Toeslagen 2026 (docs/research/16). Bedragen per jaar tenzij anders vermeld.
+  const TOESLAGEN = {
+    2026: {
+      zorg: { standaardpremie: 2119, drempel: 29736, pctAlleen: 0.01912, pctPartner: 0.04289, afbouw: 0.1373 },
+      huur: {
+        huurgrens: 932.93, kkg: 498.20, aftop12: 713.02, aftop3: 764.14, // per maand
+        basishuur1: 202.52, basishuurMeer: 200.71,                       // per maand
+        ijkpunt1: 23425, ijkpuntMeer: 31500, afbouw1: 0.27, afbouwMeer: 0.22,
+      },
+      minimumPerJaar: 24, // Awir art. 14: lager → geen toeslag
+    },
+  };
+  // Toeslagenwet: normen per dag excl. vakantiebijslag, per 1 jan / 1 jul (TW art. 2; Stcrt.)
+  const TW = {
+    dagenPerMaand: 21.75, vakantiebijslag: 0.08,
+    vrijlating: { basisPct: 0.05, bovenPct: 0.30, maxPct: 0.15 }, // van het minimumloon per dag, art. 7
+    normen: [
+      { vanaf: '2026-01-01', gehuwd: 105.49, alleen: 75.62, kostendeler: 49.03 },
+      { vanaf: '2026-07-01', gehuwd: 107.45, alleen: 76.75, kostendeler: 49.94 },
+    ],
+  };
+
+  const api = { PEILDATA, WIA, ZW, NO_RISK, LKV_2026, BELASTING, TOESLAGEN, TW };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.UwvRules = api;
 })(typeof window !== 'undefined' ? window : globalThis);

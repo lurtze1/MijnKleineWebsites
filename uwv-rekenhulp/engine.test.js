@@ -114,3 +114,23 @@ test('65%-check: meer uren dan maatman en 20%-ondergrens', () => {
   assert.equal(laag.ondergrens, true);
   assert.equal(laag.ao, null);
 });
+
+test('netto 2026 (doc 15): loon 1.600 + WGA 1.470', () => {
+  const n = E.netto({ loonMaand: 1600, uitkeringMaand: 1470 });
+  assert.equal(n.belastingJaar, 7270.31);
+  assert.equal(n.nettoMaandGemiddeld, 2464.14);
+  const beide = E.netto({ loonMaand: 1600, uitkeringMaand: 1470, lhkUwv: true });
+  assert.ok(beide.bijbetalenJaar > n.bijbetalenJaar + 2500, 'korting bij beide betalers → veel bijbetalen');
+});
+
+test('netto 2026 (doc 15): alleen WGA 1.060', () => {
+  assert.equal(E.netto({ uitkeringMaand: 1060, lhkUwv: true }).nettoMaandGemiddeld, 940.63);
+});
+
+test('toeslagen 2026 (doc 16): alleenstaande met VU 1.060,06, huur 750', () => {
+  assert.equal(E.toeslagenwet({ datum: D, uitkeringInclVb: 1060.06 }).bedrag, 687.78); // doc 16: 687,77 (afronding)
+  assert.equal(E.zorgtoeslag({ jaarinkomen: 21475 }), 129);
+  assert.equal(E.huurtoeslag({ kaleHuur: 750, personen: 1, rekeninkomen: 21475 }), 450);
+  assert.equal(E.toeslagenwet({ datum: D, leefsituatie: 'gehuwd', partnerNa1971: true, uitkeringInclVb: 1000 }).bedrag, 0);
+  assert.equal(E.zorgtoeslag({ jaarinkomen: 60000 }), 0);
+});

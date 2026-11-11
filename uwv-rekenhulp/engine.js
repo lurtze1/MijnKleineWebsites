@@ -182,8 +182,101 @@
       status,
     };
   }
+  // ---------- Netto (indicatie, onder de AOW-leeftijd) ----------
 
-  const api = { regelsOp, peildatumStatus, maxMaandloon, wiaMinimumloon, indexeer, wiaInkomen, klasse, uitkering, inkomensReeks, vijfenzestigCheck };
+  function belastingTabel(jaar) {
+    const jaren = Object.keys(R.BELASTING).map(Number).sort();
+    const j = jaren.filter((x) => x <= jaar).pop() ?? jaren[0];
+    return { jaar: j, ...R.BELASTING[j] };
+  }
+  function box1(inkomen, t) {
+    let rest = inkomen, vorige = 0, bel = 0;
+    for (const s of t.schijven) { const deel = Math.max(0, Math.min(rest, s.tot - vorige)); bel += deel * s.pct; rest -= deel; vorige = s.tot; }
+    return bel;
+  }
+  const ahk = (inkomen, t) => Math.max(0, t.ahk.max - Math.max(0, inkomen - t.ahk.afbouwVanaf) * t.ahk.afbouwPct);
+  function ak(arbeid, t) {
+    if (arbeid <= 0) return 0;
+    if (arbeid > t.ak.afbouwVanaf) return Math.max(0, t.ak.max - (arbeid - t.ak.afbouwVanaf) * t.ak.afbouwPct);
+    const [vanaf, basis, p] = t.ak.stukken.filter((s) => s[0] <= arbeid).pop();
+    return Math.min(t.ak.max, basis + (arbeid - vanaf) * p);
+  }
+  /** Verschuldigde belasting over een jaar: box 1 − algemene heffingskorting − arbeidskorting (alleen over loon). */
+  const belasting = (inkomen, arbeid, t) => Math.max(0, box1(inkomen, t) - ahk(inkomen, t) - ak(arbeid, t));
+
+  /**
+   * Netto per jaar en per maand voor loon + uitkering (bedragen per maand, incl. opgebouwd vakantiegeld).
+   * Inhouding: werkgever en UWV houden elk loonheffing in alsof jij alleen hun inkomen hebt;
+   * de loonheffingskorting (AHK, bij de werkgever ook arbeidskorting) alleen als je die daar laat toepassen.
+   * Het verschil met de echte jaarbelasting betaal je bij (of krijg je terug) via de aanslag.
+   */
+  function netto({ loonMaand = 0, uitkeringMaand = 0, lhkWerkgever = true, lhkUwv = false, jaar = 2026 }) {
+    const t = belastingTabel(jaar);
+    const loon = loonMaand * 12, uit = uitkeringMaand * 12, totaal = loon + uit;
+    const verschuldigd = belasting(totaal, loon, t);
+    const inhWerkgever = loon > 0 ? (lhkWerkgever ? belasting(loon, loon, t) : box1(loon, t)) : 0;
+    const inhUwv = uit > 0 ? (lhkUwv ? belasting(uit, 0, t) : box1(uit, t)) : 0;
+    return {
+      tabelJaar: t.jaar,
+      belastingJaar: rond(verschuldigd),
+      nettoMaandGemiddeld: rond((totaal - verschuldigd) / 12),
+      nettoLoonMaand: rond((loon - inhWerkgever) / 12),
+      nettoUitkeringMaand: rond((uit - inhUwv) / 12),
+      bijbetalenJaar: rond(verschuldigd - inhWerkgever - inhUwv), // negatief = terugkrijgen
+      ahk: rond(ahk(totaal, t)), ak: rond(ak(loon, t)),
+    };
+  }
+
+  // ---------- Toeslagen (indicatie) ----------
+
+  const toeslagTabel = (jaar) => R.TOESLAGEN[jaar] || R.TOESLAGEN[Math.max(...Object.keys(R.TOESLAGEN).map(Number))];
+
+  /** Toeslagenwet (UWV): aanvulling tot het sociaal minimum. Per maand, excl. 8% vakantiebijslag.
+   *  leefsituatie: 'alleen' | 'gehuwd' | 'kostendeler'. Bedragen per maand. Art. 8a-begrenzing niet meegenomen. */
+  function toeslagenwet({ datum, leefsituatie = 'alleen', partnerNa1971 = false, kindOnder12 = false,
+    uitkeringInclVb = 0, loonExclVb = 0, partnerInkomenExclVb = 0, vrijlating = true }) {
+    const T = R.TW, d = T.dagenPerMaand;
+    if (uitkeringInclVb <= 0) return { bedrag: 0, reden: 'Je hebt geen uitkering; de Toeslagenwet vult alleen een uitkering aan.' };
+    if (leefsituatie === 'gehuwd' && partnerNa1971 && !kindOnder12) {
+      return { bedrag: 0, reden: 'Geen toeslag: je partner is na 1971 geboren en er woont geen kind onder de 12 (TW art. 3).' };
+    }
+    let norm = T.normen[0];
+    for (const n of T.normen) if (n.vanaf <= datum) norm = n;
+    const wmlDag = regelsOp(datum).refMinMaandloon / d;
+    let arbeid = loonExclVb / d;
+    if (vrijlating && arbeid > 0) {
+      const v = T.vrijlating;
+      arbeid -= Math.min(arbeid, v.basisPct * wmlDag + v.bovenPct * Math.max(0, arbeid - v.basisPct * wmlDag), v.maxPct * wmlDag);
+    }
+    const partner = leefsituatie === 'gehuwd' ? partnerInkomenExclVb / d : 0;
+    const dag = Math.max(0, norm[leefsituatie] - (uitkeringInclVb / (1 + T.vakantiebijslag) / d + arbeid + partner));
+    return { bedrag: rond(dag * d), norm: rond(norm[leefsituatie] * d), reden: null };
+  }
+
+  function zorgtoeslag({ jaarinkomen, partner = false, vermogenTeHoog = false, jaar = 2026 }) {
+    if (vermogenTeHoog) return 0;
+    const z = toeslagTabel(jaar).zorg;
+    const sp = z.standaardpremie * (partner ? 2 : 1);
+    const norm = (partner ? z.pctPartner : z.pctAlleen) * z.drempel + z.afbouw * Math.max(0, jaarinkomen - z.drempel);
+    const perJaar = Math.round(Math.max(0, sp - norm));
+    return perJaar >= toeslagTabel(jaar).minimumPerJaar ? Math.floor(perJaar / 12) : 0;
+  }
+
+  /** Huurtoeslag per maand (regels per 2026: vaste basishuur, servicekosten tellen niet mee). */
+  function huurtoeslag({ kaleHuur, personen = 1, rekeninkomen, vermogenTeHoog = false, jaar = 2026 }) {
+    if (vermogenTeHoog || !kaleHuur) return 0;
+    const h = toeslagTabel(jaar).huur, meer = personen >= 2;
+    const rekenhuur = Math.min(kaleHuur, h.huurgrens);
+    const aftop = personen >= 3 ? h.aftop3 : h.aftop12;
+    const A = Math.max(0, Math.min(rekenhuur, h.kkg) - (meer ? h.basishuurMeer : h.basishuur1));
+    const B = Math.max(0, Math.min(rekenhuur, aftop) - h.kkg) * 0.65;
+    const C = Math.max(0, rekenhuur - aftop) * 0.40;
+    const korting = Math.max(0, rekeninkomen - (meer ? h.ijkpuntMeer : h.ijkpunt1)) * (meer ? h.afbouwMeer : h.afbouw1) / 12;
+    const ht = Math.max(0, A + B + C - korting);
+    return ht * 12 >= toeslagTabel(jaar).minimumPerJaar ? Math.floor(ht) : 0;
+  }
+
+  const api = { regelsOp, peildatumStatus, maxMaandloon, wiaMinimumloon, indexeer, wiaInkomen, klasse, uitkering, inkomensReeks, vijfenzestigCheck, netto, belastingTabel, toeslagenwet, zorgtoeslag, huurtoeslag };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.UwvEngine = api;
 })(typeof window !== 'undefined' ? window : globalThis);
