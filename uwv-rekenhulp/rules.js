@@ -18,28 +18,24 @@
       vanaf: '2025-01-01',
       maxDagloon: 290.67,          // [P] doc 02 §3
       refMinMaandloon: 2191.80,    // [S] doc 02 §7.3
-      minUurloon21: 14.06,         // [P] doc 02 §7
     },
     {
       vanaf: '2025-07-01',
       maxDagloon: 297.82,          // [S] doc 02 §3, klopt met +2,46%
       refMinMaandloon: 2245.80,    // [P*] doc 02 §7.3
-      minUurloon21: 14.40,
     },
     {
       vanaf: '2026-01-01',
       maxDagloon: 304.25,          // [P] doc 02 §3
       refMinMaandloon: 2294.40,    // [P*] doc 02 §7.3 (+2,16%, Stcrt. 2025, 43553)
-      minUurloon21: 14.71,
     },
     {
       vanaf: '2026-07-01',
       maxDagloon: 309.91,          // [P] uwv.nl, doc 13
       refMinMaandloon: 2337.00,    // [P] Stcrt. 2026, 16505 (+1,86%, Stcrt. 2026, 20221)
-      minUurloon21: 14.99,
     },
-    // 2027-01-01: minUurloon21 15,29 is bekend [P], maar refMinMaandloon en maxDagloon
-    // nog niet (stand 11-11-2026). Toevoegen zodra SZW de rekenregels publiceert.
+    // 2027-01-01: minimumuurloon 21+ wordt € 15,29 [P], maar refMinMaandloon en maxDagloon zijn
+    // nog niet bekend (stand 11-11-2026). Toevoegen zodra SZW de rekenregels publiceert.
   ];
 
   const WIA = {
@@ -66,15 +62,8 @@
     ],
 
     grensWga: 35,                    // AO < 35%: geen WGA (art. 5)
-    grensIva: 80,                    // AO ≥ 80% + duurzaam: IVA (art. 4)
     vijfenzestig: 0.65,              // meer dan 65% van maatman per uur verdienen → AO < 35%
     praktischOndergrens: 0.20,       // art. 9a lid 4 Schattingsbesluit: ≤ 20% → gewone beoordeling
-    ivaOnderzoekGrens: 0.20,         // art. 52 lid 2: 12 mnd > 20% maatman per maand → onderzoek IVA
-    uitloopNaFeitelijkWerk: 12,      // maanden, art. 56 lid 3
-    uitloopNaHerbeoordeling: 2,      // maanden, art. 56 lid 2
-    wijzigingVertraging: 2,          // kalendermaanden, art. 60 lid 2 / 61 lid 7
-    herlevingJaren: 5,               // art. 57
-    praktischBeoordelenTot: '2027-07-01', // [S/O] art. 9a vervalt bij KB; secundair: ~1-7-2027
   };
 
   const ZW = {

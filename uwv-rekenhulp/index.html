@@ -16,7 +16,6 @@
   --font:Verdana, Tahoma, "DejaVu Sans", Arial, sans-serif;
 }
 [data-dom="grens"]{--green:#e8916b;--green-dark:#a9532f;--green-bg:#ffe5d8;--green-line:#f2bfa6;--green-top:#fff3ed}
-[data-dom="uitkering"]{--green:#5b9bd5;--green-dark:#2f6ea8;--green-bg:#ddeefd;--green-line:#a9cdef;--green-top:#eef6fe}
 [data-dom="zw"]{--green:#5fb98c;--green-dark:#2a7550;--green-bg:#d8f2e5;--green-line:#a6dcc0;--green-top:#eefaf3}
 [data-dom="begrippen"]{--green:#9a80dd;--green-dark:#5f46a6;--green-bg:#ebe4fc;--green-line:#c9b9f2;--green-top:#f6f2fe}
 *{box-sizing:border-box}
@@ -28,7 +27,7 @@ body{background:var(--page);color:var(--ink);font:13px/1.55 var(--font);
 a,.lnk{color:var(--link);text-decoration:underline;cursor:pointer}
 a:hover,.lnk:hover{color:var(--hover)}
 
-.topbar{background:linear-gradient(#fafafa,#dedede);border:1px solid var(--grey-line);text-align:center;font-size:11px;padding:3px 8px;color:#888}
+.topbar{background:linear-gradient(#fafafa,#dedede);border:1px solid var(--grey-line);text-align:center;font-size:11px;padding:3px 8px;color:var(--muted)}
 .topbar span{color:var(--link)}
 
 .head{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:flex-start;justify-content:space-between;border-bottom:1px solid #e3e3e3;padding-bottom:6px}
@@ -42,19 +41,20 @@ a:hover,.lnk:hover{color:var(--hover)}
 .wordmark{font:bold 21px/1 var(--font);letter-spacing:-.5px;color:#333}
 .wordmark sup{font-size:11px;color:var(--green-dark);letter-spacing:0;margin-left:2px}
 .count{font-size:11px;color:var(--muted);margin-top:4px}
-.peil{font-size:11px;color:#333;text-align:right}
-.peil input{font:11px var(--font);border:1px solid #7f9db9;padding:1px 3px;width:9.5em}
+.peil{font-size:11px;color:#333;text-align:right;max-width:260px}
+.peil input{font:12px var(--font);border:1px solid #7f9db9;padding:1px 3px}
+.peil .bad{color:var(--bad-ink);font-weight:bold}
 
 .topics{display:flex;flex-wrap:wrap;gap:4px 22px;padding:4px 2px 0;width:100%}
 .topics button{position:relative;background:none;border:0;padding:2px 0 10px;font:bold 13px var(--font);color:var(--link);text-decoration:underline;cursor:pointer}
 .topics button:hover{color:var(--hover)}
-.topics button[aria-pressed="true"]{color:var(--green-dark);text-decoration:none}
-.topics button[aria-pressed="true"]::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);border:7px solid transparent;border-top-color:var(--green);border-bottom:0}
+.topics button[aria-selected="true"]{color:var(--green-dark);text-decoration:none}
+.topics button[aria-selected="true"]::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);border:7px solid transparent;border-top-color:var(--green);border-bottom:0}
 button:focus-visible,.lnk:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:2px dotted var(--link);outline-offset:2px}
 
 /* gekleurd invulvak */
 .sheet{background:linear-gradient(var(--green-top),var(--green-bg));border:1px solid var(--green-line);padding:12px 14px;display:grid;grid-template-columns:58px 1fr;gap:10px 14px;align-items:start}
-.badge-ic{width:54px;height:54px;border-radius:50%;border:2px solid var(--green);background:radial-gradient(circle at 40% 35%,#ffffff,var(--green-bg));display:grid;place-items:center;font:bold 20px var(--font);color:var(--green-dark)}
+.badge-ic{width:54px;height:54px;border-radius:50%;border:2px solid var(--green);background:radial-gradient(circle at 40% 35%,#ffffff,var(--green-bg));display:grid;place-items:center;font:bold 18px var(--font);color:var(--green-dark)}
 .sheet > *:not(.badge-ic){grid-column:2;min-width:0}
 .tag{justify-self:start;display:inline-flex;align-items:stretch;font:bold 9px/1 var(--font);text-transform:uppercase;letter-spacing:.8px;border:1px solid #222}
 .tag::before{content:"★★";background:#3a3a3a;color:#ffd84a;padding:3px 5px}
@@ -64,7 +64,7 @@ button:focus-visible,.lnk:focus-visible,summary:focus-visible,input:focus-visibl
 .form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px}
 .form .wide{grid-column:1/-1}
 .fld{display:flex;flex-direction:column;gap:3px;min-width:0}
-.fld > label,.fld > .lbl{font-size:12px;font-weight:bold;color:#333;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.lbl{font-size:12px;font-weight:bold;color:#333;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
 .field{display:flex;align-items:center;gap:6px;background:#fff;border:2px solid #3b7bd1;padding:0 6px;min-width:0}
 .field input{font:bold 14px var(--font);border:0;outline:0;background:transparent;color:#000;padding:3px 0;width:100%;min-width:0}
 .field span{color:var(--muted);font-size:12px;white-space:nowrap}
@@ -72,16 +72,13 @@ select{font:12px var(--font);color:#222;border:1px solid #7f9db9;background:line
 .chk{font-size:12px;display:flex;gap:6px;align-items:flex-start}
 .chk input{margin-top:2px}
 
-/* uitleg-bolletje */
+/* uitleg-bolletje: buiten het label, zodat het niet in de naam van het veld komt */
 details.tip{display:contents}
 details.tip summary{list-style:none;display:inline-grid;place-items:center;width:15px;height:15px;border-radius:50%;background:var(--green);color:#fff;font:bold 10px/1 var(--font);cursor:pointer;flex:none}
 details.tip summary::-webkit-details-marker{display:none}
 details.tip[open] summary{background:var(--green-dark)}
 .tiptext{font-weight:normal;font-size:11px;color:#333;background:#fffbe0;border:1px solid #e6d77a;padding:5px 7px;line-height:1.5;width:100%}
-
-.classic{font:bold 12px var(--font);color:#222;cursor:pointer;background:linear-gradient(#fdfdfd,#d2d2d2);border:1px solid #6f6f6f;border-radius:2px;padding:5px 12px;box-shadow:inset 0 1px 0 #fff}
-.classic:hover{background:linear-gradient(#ffffff,#e2e2e2)}
-.hint{font-size:11px;color:var(--muted)}
+.hint{font-size:11px;color:var(--muted);font-weight:normal}
 
 /* infobalk */
 .info{background:var(--grey-bg);border:1px solid #dedede;padding:8px 12px;display:flex;flex-direction:column;gap:8px;font-size:12px}
@@ -97,6 +94,7 @@ details.tip[open] summary{background:var(--green-dark)}
 .fb.warn{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
 .fb.warn::before{content:"!";background:var(--warn)}
 .fb span{font-weight:normal;color:var(--ink)}
+@media (max-width:560px){.fb{flex-wrap:wrap}}
 
 /* kopbalk-tabellen */
 .box{border:1px solid var(--grey-line)}
@@ -116,39 +114,35 @@ table.vt{border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nu
 table.vt th,table.vt td{border:1px solid var(--grey-line);padding:4px 10px;text-align:right}
 table.vt thead th{background:linear-gradient(#f2f2f2,#dadada);font-weight:bold;text-align:center}
 table.vt tbody th{text-align:left;color:#333;background:#f4f4f4;font-weight:normal}
-table.vt tbody tr:nth-child(odd) td{background:#fff}
 table.vt tbody tr:nth-child(even) td{background:#fafafa}
 table.vt td.ans{background:var(--green)!important;color:#fff;font-weight:bold}
 table.vt td.bad{background:var(--bad-bg)!important;color:var(--bad-ink);font-weight:bold}
 table.vt td.good{background:var(--ok-bg)!important;color:var(--ok-ink);font-weight:bold}
 
 /* meter */
-.meter{position:relative;height:34px;margin:22px 4px 26px;border:1px solid #9a9a9a;background:linear-gradient(90deg,var(--ok-bg) 0,var(--ok-bg) 65%,var(--bad-bg) 65%,var(--bad-bg) 100%)}
+.meter{position:relative;height:34px;margin:22px 4px 26px;border:1px solid #9a9a9a}
 .meter .zone{position:absolute;top:0;bottom:0;border-left:2px dashed var(--bad)}
-.meter .zone::after{content:"65%";position:absolute;top:-17px;left:-12px;font:bold 10px var(--font);color:var(--bad-ink)}
+.meter .zone span{position:absolute;top:-17px;left:-12px;font:bold 10px var(--font);color:var(--bad-ink)}
 .meter .mk{position:absolute;top:-3px;bottom:-3px;width:0;border-left:3px solid #222}
-.meter .mk span{position:absolute;top:37px;left:50%;transform:translateX(-50%);font:bold 10px var(--font);white-space:nowrap;background:#fff;padding:0 2px}
-.meter .mk.ghost{border-left:2px dotted #888}
-.meter .mk.ghost span{top:-17px;color:#777;font-weight:normal}
-.meter .tick{position:absolute;bottom:-15px;font:9px var(--font);color:#888;transform:translateX(-50%)}
+.meter .mk.ghost{border-left:2px dotted #777}
+.meter .lab{position:absolute;font:bold 10px var(--font);white-space:nowrap;background:#fff;padding:0 2px;transform:translateX(-50%)}
+.meter .lab.onder{top:37px}
+.meter .lab.boven{top:-17px;color:#555;font-weight:normal;background:transparent}
+.meter .tick{position:absolute;bottom:-15px;font:9px var(--font);color:var(--muted);transform:translateX(-50%)}
 
 .chart svg{width:100%;height:auto;display:block;background:#fff;border:1px solid #e3e3e3}
 .gl{stroke:#e6e6e6;stroke-width:1}
 .tl{fill:#555;font:10px var(--font)}
-.big{font:bold 22px var(--font);color:var(--green-dark)}
 .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .kpi{background:#fff;border:1px solid var(--green-line);padding:6px 8px;min-width:0}
 .kpi b{display:block;font-size:16px;color:#111;font-variant-numeric:tabular-nums}
 .kpi small{font-size:10px;color:var(--muted)}
 code{font:bold 12px var(--font);background:#fffbe0;border:1px solid #e6d77a;padding:0 4px}
-.src{font-size:10px;color:var(--muted)}
-.prose p{margin:0 0 8px}
-.prose h4{margin:10px 0 4px;font-size:12px;color:var(--green-dark)}
 dl.glos{margin:0}
 dl.glos dt{font-weight:bold;color:var(--green-dark);padding:6px 10px 0}
 dl.glos dd{margin:0;padding:2px 10px 6px;border-bottom:1px solid #eee}
 
-footer{font-size:11px;color:#888;text-align:center;border-top:1px solid #e3e3e3;padding-top:8px}
+footer{font-size:11px;color:var(--muted);text-align:center;border-top:1px solid #e3e3e3;padding-top:8px}
 @media (max-width:560px){
   .sheet{grid-template-columns:1fr}
   .badge-ic{display:none}
@@ -156,6 +150,7 @@ footer{font-size:11px;color:#888;text-align:center;border-top:1px solid #e3e3e3;
   .form{grid-template-columns:1fr}
   .kpis{grid-template-columns:1fr 1fr}
   .peil{text-align:left}
+  .field input,.peil input,select{font-size:16px} /* voorkomt inzoomen op iOS */
 }
 </style>
 
@@ -170,69 +165,75 @@ footer{font-size:11px;color:#888;text-align:center;border-top:1px solid #e3e3e3;
         <div class="count">vul je brief in · zie wat het betekent · deel de link</div>
       </div>
     </div>
-    <div class="peil"><label for="peildatum">Rekenen per datum:</label> <input id="peildatum" type="date"><br><span class="hint" id="peilinfo"></span></div>
-    <nav class="topics" id="topics" aria-label="Onderdeel">
-      <button data-t="grens" aria-pressed="true">De 65%-grens</button>
-      <button data-t="uitkering" aria-pressed="false">Uitkering per maand</button>
-      <button data-t="zw" aria-pressed="false">Ziektewet &amp; no-risk</button>
-      <button data-t="begrippen" aria-pressed="false">Begrippen</button>
+    <div class="peil"><label for="peildatum">Rekenen per datum:</label> <input id="peildatum" type="date"><br><span id="peilinfo" aria-live="polite"></span></div>
+    <nav class="topics" id="topics" role="tablist" aria-label="Onderdeel">
+      <button role="tab" data-t="grens">De 65%-grens</button>
+      <button role="tab" data-t="uitkering">Uitkering per maand</button>
+      <button role="tab" data-t="zw">Ziektewet &amp; no-risk</button>
+      <button role="tab" data-t="begrippen">Begrippen</button>
     </nav>
   </div>
 
   <!-- ===================== 65%-GRENS ===================== -->
-  <section data-tab="grens">
+  <section data-tab="grens" role="tabpanel">
     <div class="sheet">
       <div class="badge-ic" aria-hidden="true">65%</div>
       <span class="tag"><span>Raak ik mijn WGA kwijt?</span></span>
-      <p class="q">Verdien je met werk <b>meer dan 65%</b> van je maatmaninkomen, dan ben je voor UWV minder dan 35% arbeidsongeschikt. Je WGA stopt dan, na een uitloop van maximaal 1 jaar. Vul hieronder je getallen in.</p>
+      <p class="q">Verdien je met werk <b>meer dan 65%</b> van je maatmaninkomen, dan ben je voor UWV minder dan 35% arbeidsongeschikt. Je WGA stopt dan, na een uitloop van maximaal 1 jaar.</p>
       <div class="form">
         <div class="fld">
-          <label for="g_maatman">Maatmaninkomen per uur <details class="tip"><summary>?</summary><div class="tiptext">Wat je vóór je ziekte verdiende, omgerekend naar een uurloon. UWV noemt dit het "maatmaninkomen" en het staat in je WIA-beslissing of het rapport van de arbeidsdeskundige. Het is níet je WIA-maandloon. Na een herbeoordeling wordt het verhoogd met de cao-lonen; vul het meest recente bedrag in.</div></details></label>
-          <div class="field"><span>€</span><input id="g_maatman" inputmode="decimal" data-num><span>per uur</span></div>
+          <div class="lbl"><label for="g_maatman">Maatmaninkomen per uur</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Wat je vóór je ziekte verdiende, omgerekend naar een uurloon. Staat in je WIA-beslissing of het rapport van de arbeidsdeskundige. Het is níet je WIA-maandloon. Vul het bedrag uit je laatste brief in. UWV verhoogt het bij de toets met de cao-lonen; met het bedrag uit je brief komt je percentage dus iets te hoog uit (de veilige kant).</div></details></div>
+          <div class="field"><span>€</span><input id="g_maatman" inputmode="decimal"><span>per uur</span></div>
         </div>
         <div class="fld">
-          <label for="g_maatmanuren">Uren per week van je maatman <details class="tip"><summary>?</summary><div class="tiptext">Hoeveel uur per week je werkte vóór je ziek werd (de "maatgevende arbeid"). Staat in het arbeidskundig rapport.</div></details></label>
-          <div class="field"><input id="g_maatmanuren" inputmode="decimal" data-num><span>uur/week</span></div>
+          <div class="lbl"><label for="g_maatmanuren">Uren per week van je maatman</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Hoeveel uur per week je werkte vóór je ziek werd (de "maatgevende arbeid"). Staat in het arbeidskundig rapport.</div></details></div>
+          <div class="field"><input id="g_maatmanuren" inputmode="decimal"><span>uur/week</span></div>
         </div>
         <div class="fld">
-          <label for="g_uurloon">Je huidige bruto uurloon <details class="tip"><summary>?</summary><div class="tiptext">Bruto uurloon zoals op je loonstrook, <b>zonder</b> vakantiegeld. Heb je een maandsalaris? Deel het door (uren per week × 4,35).</div></details></label>
-          <div class="field"><span>€</span><input id="g_uurloon" inputmode="decimal" data-num><span>per uur</span></div>
+          <div class="lbl"><label for="g_uurloon">Je huidige bruto uurloon</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Bruto uurloon zoals op je loonstrook, <b>zonder</b> vakantiegeld. Krijg je vaste toeslagen zoals onregelmatigheidstoeslag (ORT), tel die erbij op: die tellen ook mee. Heb je een maandsalaris? Deel het door (uren per week × 4,35).</div></details></div>
+          <div class="field"><span>€</span><input id="g_uurloon" inputmode="decimal"><span>per uur</span></div>
         </div>
         <div class="fld">
-          <label for="g_uren">Uren per week die je nu écht werkt <details class="tip"><summary>?</summary><div class="tiptext">De uren die je werkelijk werkt en betaald krijgt, niet de uren die je volgens de arts mág werken. Daar rekent UWV mee (Beleidsregel uurloonschatting 2008, art. 3).</div></details></label>
-          <div class="field"><input id="g_uren" inputmode="decimal" data-num><span>uur/week</span></div>
+          <div class="lbl"><label for="g_uren">Uren per week die je nu écht werkt</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">De uren die je werkelijk werkt en betaald krijgt, niet de uren die je volgens de arts mág werken. Daar rekent UWV mee (Beleidsregel uurloonschatting 2008, art. 3).</div></details></div>
+          <div class="field"><input id="g_uren" inputmode="decimal"><span>uur/week</span></div>
         </div>
         <div class="fld">
-          <label for="g_vg">Vakantiegeld <details class="tip"><summary>?</summary><div class="tiptext">Meestal 8%. UWV telt opgebouwd vakantiegeld mee in je feitelijke loon (Schattingsbesluit art. 11a). Meetellen is ook de voorzichtige kant: je percentage komt dan hoger uit.</div></details></label>
-          <div class="field"><input id="g_vg" inputmode="decimal" data-num><span>%</span></div>
+          <div class="lbl"><label for="g_vg">Vakantiegeld</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Meestal 8%. UWV telt opgebouwd vakantiegeld mee in je feitelijke loon (Schattingsbesluit art. 11a).</div></details></div>
+          <div class="field"><input id="g_vg" inputmode="decimal"><span>%</span></div>
         </div>
         <div class="fld">
-          <label for="g_rvc">Resterende verdiencapaciteit per uur <span class="hint">(optioneel)</span> <details class="tip"><summary>?</summary><div class="tiptext">Wat UWV vindt dat je nog per uur kúnt verdienen (de "RVC"). Staat in je WIA-beslissing. Vul je dit in, dan waarschuwt de rekenhulp ook als je boven je RVC zit: dan kan UWV je percentage verlagen, ook als je onder de 65% blijft.</div></details></label>
-          <div class="field"><span>€</span><input id="g_rvc" inputmode="decimal" data-num><span>per uur</span></div>
+          <div class="lbl"><label for="g_ejo">13e maand / eindejaars / IKB</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Een vaste 13e maand, eindejaarsuitkering of IKB-budget telt ook mee zoals het wordt opgebouwd (Schattingsbesluit art. 11a). Een 13e maand is 8,33%. Geen? Vul 0 in.</div></details></div>
+          <div class="field"><input id="g_ejo" inputmode="decimal"><span>%</span></div>
+        </div>
+        <div class="fld wide">
+          <div class="lbl"><label for="g_rvc">Resterende verdiencapaciteit per uur</label><span class="hint">(optioneel)</span><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Wat UWV vindt dat je nog per uur kúnt verdienen (RVC). Staat in je WIA-beslissing. Vul je het in, dan waarschuwt de rekenhulp ook als je boven je RVC zit: dan kan UWV je percentage verlagen, ook als je onder de 65% blijft.</div></details></div>
+          <div class="field"><span>€</span><input id="g_rvc" inputmode="decimal"><span>per uur</span></div>
         </div>
       </div>
     </div>
 
     <div class="info">
-      <div class="fb" id="g_fb"></div>
+      <div class="fb" id="g_fb" aria-live="polite"></div>
       <div class="actions">
         <button class="lnk" type="button" data-copy>Kopieer link met deze getallen</button>
+        <button class="lnk" type="button" data-voorbeeld>Voorbeeld invullen</button>
         <button class="lnk" type="button" data-reset>Wis alles</button>
       </div>
     </div>
 
-    <div class="box" id="g_res">
-      <h3>Waar sta je?</h3>
-      <div class="in">
-        <div class="meter" id="g_meter" role="img"></div>
-        <div class="kpis" id="g_kpis"></div>
+    <div id="g_res">
+      <div class="box">
+        <h3>Waar sta je?</h3>
+        <div class="in">
+          <div class="meter" id="g_meter" role="img"></div>
+          <div class="kpis" id="g_kpis"></div>
+        </div>
+        <div class="scroll"><table class="vt" id="g_table"></table></div>
       </div>
-      <div class="scroll"><table class="vt" id="g_table"></table></div>
-    </div>
-
-    <div class="box uitleg">
-      <h3>Zo rekent UWV dit uit</h3>
-      <ol id="g_steps"></ol>
+      <div class="box uitleg">
+        <h3>Zo rekent UWV dit uit</h3>
+        <ol id="g_steps"></ol>
+      </div>
     </div>
 
     <div class="box uitleg">
@@ -242,14 +243,14 @@ footer{font-size:11px;color:#888;text-align:center;border-top:1px solid #e3e3e3;
   </section>
 
   <!-- ===================== UITKERING ===================== -->
-  <section data-tab="uitkering" hidden>
+  <section data-tab="uitkering" role="tabpanel" hidden>
     <div class="sheet">
       <div class="badge-ic" aria-hidden="true">€</div>
       <span class="tag"><span>Wat krijg ik deze maand?</span></span>
       <p class="q">Je WIA-uitkering hangt af van je fase, je WIA-maandloon en wat je per kalendermaand verdient. Vul je UWV-brief en je loonstrook in.</p>
       <div class="form">
         <div class="fld wide">
-          <label for="u_fase">In welke fase zit je? <details class="tip"><summary>?</summary><div class="tiptext"><b>LGU</b> (loongerelateerde uitkering): de eerste fase van de WGA, 3 tot 24 maanden, afhankelijk van je arbeidsverleden. <b>Fase 2</b>: daarna krijg je per maand óf een loonaanvulling (LAU) óf een vervolguitkering (VU). <b>IVA</b>: je bent volledig en duurzaam arbeidsongeschikt. Staat in je brief.</div></details></label>
+          <div class="lbl"><label for="u_fase">In welke fase zit je?</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext"><b>LGU</b> (loongerelateerde uitkering): de eerste fase van de WGA, 3 tot 24 maanden, afhankelijk van je arbeidsverleden. <b>Daarna</b> krijg je per maand óf een loonaanvulling (LAU) óf een vervolguitkering (VU). <b>IVA</b>: je bent volledig en duurzaam arbeidsongeschikt. Staat in je brief.</div></details></div>
           <select id="u_fase">
             <option value="LGU">WGA – loongerelateerde uitkering (LGU)</option>
             <option value="FASE2">WGA – na de LGU (loonaanvulling of vervolguitkering)</option>
@@ -257,33 +258,37 @@ footer{font-size:11px;color:#888;text-align:center;border-top:1px solid #e3e3e3;
           </select>
         </div>
         <div class="fld">
-          <label for="u_maandloon">WIA-maandloon uit je brief <details class="tip"><summary>?</summary><div class="tiptext">Het gemiddelde loon uit het jaar vóór je eerste ziektedag, <b>inclusief</b> vakantiegeld, maximaal € 6.740,54 (per 1-7-2026). Het is geen salaris, maar de basis voor je uitkering. UWV verhoogt het elk half jaar met het minimumloon; de rekenhulp doet dat ook (vul hieronder de datum van het bedrag in). Staat het als dagloon in je brief? Vermenigvuldig met 21,75.</div></details></label>
-          <div class="field"><span>€</span><input id="u_maandloon" inputmode="decimal" data-num><span>per maand</span></div>
+          <div class="lbl"><label for="u_maandloon">WIA-maandloon uit je brief</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Het gemiddelde loon uit het jaar vóór je eerste ziektedag, <b>inclusief</b> vakantiegeld, met een maximum (<span data-max></span>). Het is geen salaris, maar de basis voor je uitkering. Staat het als dagloon in je brief? Vermenigvuldig met 21,75.</div></details></div>
+          <div class="field"><span>€</span><input id="u_maandloon" inputmode="decimal"><span>per maand</span></div>
         </div>
         <div class="fld">
-          <label for="u_maandloondatum">Datum van dat bedrag <details class="tip"><summary>?</summary><div class="tiptext">De datum waarop het bedrag in je brief gold. De rekenhulp verhoogt het daarna mee met het minimumloon op elke 1 januari en 1 juli (WIA art. 14). Laat leeg om niet te indexeren.</div></details></label>
+          <div class="lbl"><label for="u_maandloondatum">Datum van dat bedrag</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">De datum waarop het bedrag in je brief gold. UWV verhoogt je WIA-maandloon op elke 1 januari en 1 juli met het minimumloon (WIA art. 14); de rekenhulp doet dat ook. Laat leeg om niet te verhogen.</div></details></div>
           <div class="field"><input id="u_maandloondatum" type="date"></div>
         </div>
-        <div class="fld" data-show="FASE2">
-          <label for="u_ao">Arbeidsongeschiktheidspercentage <details class="tip"><summary>?</summary><div class="tiptext">Staat in je WIA-beslissing. Bepaalt de klasse en daarmee de hoogte van de vervolguitkering (28% tot 70% van het minimumloon).</div></details></label>
-          <div class="field"><input id="u_ao" inputmode="decimal" data-num><span>%</span></div>
+        <div class="fld wide">
+          <div class="lbl"><label for="u_dagloonongemax">Dagloon zonder maximum</label><span class="hint">(alleen als je brief dat noemt)</span><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Verdiende je vroeger meer dan het maximum, dan noemt je brief soms ook je dagloon zónder maximum. UWV trekt je inkomen dan naar verhouding minder af (WIA art. 52 en 61). Weet je het niet, laat het leeg.</div></details></div>
+          <div class="field"><span>€</span><input id="u_dagloonongemax" inputmode="decimal"><span>per dag</span></div>
         </div>
         <div class="fld" data-show="FASE2">
-          <label for="u_rvc">Resterende verdiencapaciteit per maand <details class="tip"><summary>?</summary><div class="tiptext">Wat UWV vindt dat je nog per maand kúnt verdienen (RVC). Staat in je brief. Wordt <b>niet</b> geïndexeerd (CRvB 2022:2652): vul het bedrag uit je laatste brief in. De helft hiervan is je <b>inkomenseis</b>.</div></details></label>
-          <div class="field"><span>€</span><input id="u_rvc" inputmode="decimal" data-num><span>per maand</span></div>
+          <div class="lbl"><label for="u_ao">Arbeidsongeschiktheidspercentage</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Staat in je WIA-beslissing. Bepaalt de klasse en daarmee de hoogte van de vervolguitkering (28% tot 70% van het minimumloon).</div></details></div>
+          <div class="field"><input id="u_ao" inputmode="decimal"><span>%</span></div>
+        </div>
+        <div class="fld" data-show="FASE2">
+          <div class="lbl"><label for="u_rvc">Resterende verdiencapaciteit per maand</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Wat UWV vindt dat je nog per maand kúnt verdienen (RVC). Staat in je brief. Wordt <b>niet</b> verhoogd (CRvB 2022:2652): vul het bedrag uit je laatste brief in. De helft hiervan is je <b>inkomenseis</b>.</div></details></div>
+          <div class="field"><span>€</span><input id="u_rvc" inputmode="decimal"><span>per maand</span></div>
         </div>
         <div class="fld wide" data-show="FASE2">
-          <label class="chk"><input type="checkbox" id="u_geeneis"> <span>Mijn brief zegt dat er geen inkomenseis geldt <details class="tip"><summary>?</summary><div class="tiptext">Dat is zo als je met werk hoogstens 20% van je maatmaninkomen kunt verdienen (meestal bij 80–100% arbeidsongeschikt). Dan krijg je altijd de loonaanvulling.</div></details></span></label>
+          <label class="chk"><input type="checkbox" id="u_geeneis"> <span>Mijn brief zegt dat er geen inkomenseis geldt (meestal bij 80–100% arbeidsongeschikt)</span></label>
         </div>
         <div class="fld wide" data-show="LGU">
           <label class="chk"><input type="checkbox" id="u_lgu12"> <span>Ik zit in de eerste 2 maanden van de LGU (75% in plaats van 70%)</span></label>
         </div>
         <div class="fld">
-          <label for="u_salaris">Je bruto salaris <details class="tip"><summary>?</summary><div class="tiptext">Bruto, zoals op je loonstrook, <b>zonder</b> vakantiegeld. Kies hiernaast per maand, per 4 weken of per uur.</div></details></label>
-          <div class="field"><span>€</span><input id="u_salaris" inputmode="decimal" data-num></div>
+          <div class="lbl"><label for="u_salaris">Je bruto salaris</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Bruto, zoals op je loonstrook, <b>zonder</b> vakantiegeld. Kies hiernaast per maand, per 4 weken of per uur.</div></details></div>
+          <div class="field"><span>€</span><input id="u_salaris" inputmode="decimal"></div>
         </div>
         <div class="fld">
-          <label for="u_periode">Per</label>
+          <div class="lbl"><label for="u_periode">Per</label></div>
           <select id="u_periode">
             <option value="maand">maand</option>
             <option value="4weken">4 weken</option>
@@ -291,20 +296,20 @@ footer{font-size:11px;color:#888;text-align:center;border-top:1px solid #e3e3e3;
           </select>
         </div>
         <div class="fld" data-show-periode="uur">
-          <label for="u_uren">Uren per week</label>
-          <div class="field"><input id="u_uren" inputmode="decimal" data-num><span>uur/week</span></div>
+          <div class="lbl"><label for="u_uren">Uren per week</label></div>
+          <div class="field"><input id="u_uren" inputmode="decimal"><span>uur/week</span></div>
         </div>
         <div class="fld">
-          <label for="u_vg">Vakantiegeld <details class="tip"><summary>?</summary><div class="tiptext">UWV telt elke maand het <b>opgebouwde</b> vakantiegeld mee als inkomen, en niet de uitbetaling in mei (Algemeen inkomensbesluit art. 4:1 lid 8). Daardoor is er in mei geen piek.</div></details></label>
-          <div class="field"><input id="u_vg" inputmode="decimal" data-num><span>%</span></div>
+          <div class="lbl"><label for="u_vg">Vakantiegeld</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">UWV telt elke maand het <b>opgebouwde</b> vakantiegeld mee als inkomen, en niet de uitbetaling in mei (Algemeen inkomensbesluit art. 4:1 lid 8). Daardoor is er in mei geen piek.</div></details></div>
+          <div class="field"><input id="u_vg" inputmode="decimal"><span>%</span></div>
         </div>
         <div class="fld">
-          <label for="u_ejo">13e maand / eindejaars, als opbouw <details class="tip"><summary>?</summary><div class="tiptext">Wordt je 13e maand of eindejaarsuitkering elke maand opgebouwd en staat het recht vast? Dan telt UWV elke maand het opgebouwde deel mee (bijv. 8,33%). Hangt het af van een voorwaarde of winst? Vul dan 0 in en zet het bij "bonus".</div></details></label>
-          <div class="field"><input id="u_ejo" inputmode="decimal" data-num><span>%</span></div>
+          <div class="lbl"><label for="u_ejo">13e maand / eindejaars, als opbouw</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Wordt je 13e maand of eindejaarsuitkering elke maand opgebouwd en staat het recht vast? Dan telt UWV elke maand het opgebouwde deel mee (bijv. 8,33%). Hangt het af van een voorwaarde of winst? Vul dan 0 in en zet het bij "bonus".</div></details></div>
+          <div class="field"><input id="u_ejo" inputmode="decimal"><span>%</span></div>
         </div>
         <div class="fld">
-          <label for="u_bonus">Eenmalige bonus deze maand <details class="tip"><summary>?</summary><div class="tiptext">Een bonus telt volledig mee in de maand waarin je hem krijgt. Dat kan je die maand over een grens tillen.</div></details></label>
-          <div class="field"><span>€</span><input id="u_bonus" inputmode="decimal" data-num></div>
+          <div class="lbl"><label for="u_bonus">Eenmalige bonus deze maand</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Een bonus telt volledig mee in de maand waarin je hem krijgt. Dat kan je die maand over een grens tillen.</div></details></div>
+          <div class="field"><span>€</span><input id="u_bonus" inputmode="decimal"></div>
         </div>
         <div class="fld wide">
           <label class="chk"><input type="checkbox" id="u_allin"> <span>All-in loon: vakantiegeld wordt elke maand al uitbetaald (zit in het salaris hierboven)</span></label>
@@ -313,65 +318,48 @@ footer{font-size:11px;color:#888;text-align:center;border-top:1px solid #e3e3e3;
     </div>
 
     <div class="info">
-      <div class="fb" id="u_fb"></div>
+      <div class="fb" id="u_fb" aria-live="polite"></div>
       <div class="actions">
         <button class="lnk" type="button" data-copy>Kopieer link met deze getallen</button>
+        <button class="lnk" type="button" data-voorbeeld>Voorbeeld invullen</button>
         <button class="lnk" type="button" data-reset>Wis alles</button>
       </div>
     </div>
 
-    <div class="box">
-      <h3>Deze maand (bruto)</h3>
-      <div class="in"><div class="kpis" id="u_kpis"></div></div>
-      <div class="scroll"><table class="vt" id="u_table"></table></div>
-    </div>
-
-    <div class="box chart">
-      <h3>Wat levert meer verdienen op?</h3>
-      <div class="in" id="u_chart"></div>
-    </div>
-
-    <div class="box uitleg">
-      <h3>Waarom dit bedrag?</h3>
-      <ul id="u_steps"></ul>
+    <div id="u_res">
+      <div class="box">
+        <h3>Deze maand (bruto)</h3>
+        <div class="in"><div class="kpis" id="u_kpis"></div></div>
+        <div class="scroll"><table class="vt" id="u_table"></table></div>
+      </div>
+      <div class="box chart">
+        <h3>Wat levert meer verdienen op?</h3>
+        <div class="in" id="u_chart"></div>
+      </div>
+      <div class="box uitleg">
+        <h3>Waarom dit bedrag?</h3>
+        <ul id="u_steps"></ul>
+      </div>
     </div>
   </section>
 
   <!-- ===================== ZIEKTEWET & NO-RISK ===================== -->
-  <section data-tab="zw" hidden>
+  <section data-tab="zw" role="tabpanel" hidden>
     <div class="sheet">
       <div class="badge-ic" aria-hidden="true">ZW</div>
       <span class="tag"><span>Ziektewet · no-riskpolis · doelgroepregister</span></span>
       <p class="q">Werk je met een WIA-uitkering en word je ziek? Dan betaalt UWV via de <b>no-riskpolis</b> (een deel van) je loon, zodat je werkgever geen risico loopt. Zo zit dat in elkaar.</p>
     </div>
-    <div class="box uitleg">
-      <h3>No-riskpolis (Ziektewet art. 29b)</h3>
-      <ul id="zw_norisk"></ul>
-    </div>
-    <div class="box uitleg">
-      <h3>Doelgroepregister</h3>
-      <ul id="zw_dgr"></ul>
-    </div>
-    <div class="box">
-      <h3>Wat je werkgever krijgt (loonkostenvoordeel 2026)</h3>
-      <div class="scroll"><table class="vt" id="zw_lkv"></table></div>
-    </div>
-    <div class="box uitleg">
-      <h3>Ziektewet zonder werkgever ("vangnet")</h3>
-      <ul id="zw_zw"></ul>
-    </div>
+    <div class="box uitleg"><h3>No-riskpolis (Ziektewet art. 29b)</h3><ul id="zw_norisk"></ul></div>
+    <div class="box uitleg"><h3>Doelgroepregister</h3><ul id="zw_dgr"></ul></div>
+    <div class="box"><h3>Wat je werkgever krijgt (loonkostenvoordeel 2026)</h3><div class="scroll"><table class="vt" id="zw_lkv"></table></div></div>
+    <div class="box uitleg"><h3>Ziektewet zonder werkgever ("vangnet")</h3><ul id="zw_zw"></ul></div>
   </section>
 
   <!-- ===================== BEGRIPPEN ===================== -->
-  <section data-tab="begrippen" hidden>
-    <div class="box">
-      <h3>Wat betekent wat?</h3>
-      <dl class="glos" id="glos"></dl>
-    </div>
-    <div class="box uitleg">
-      <h3>Plannen die er aankomen (nog géén wet)</h3>
-      <ul id="plannen"></ul>
-    </div>
+  <section data-tab="begrippen" role="tabpanel" hidden>
+    <div class="box"><h3>Wat betekent wat?</h3><dl class="glos" id="glos"></dl></div>
+    <div class="box uitleg"><h3>Plannen die er aankomen (nog géén wet)</h3><ul id="plannen"></ul></div>
   </section>
 
   <footer>Geen officieel UWV-advies · controleer altijd je eigen brief · bedragen bruto · niets wordt verstuurd, alles rekent in je browser · bronnen in <a href="docs/research/README.md">docs/research</a></footer>
@@ -384,43 +372,61 @@ const E = window.UwvEngine, RU = window.UwvRules;
 const $ = (id) => document.getElementById(id);
 const eur = (x) => '€ ' + (Math.round(x * 100) / 100).toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const pct = (x, d = 1) => (Math.round(x * 10 ** d) / 10 ** d).toLocaleString('nl-NL') + '%';
-const num = (id) => {
-  let v = $(id).value.trim().replace(/[€\s]/g, '');
-  if (v.includes(',')) v = v.replace(/\./g, '').replace(',', '.'); // 1.234,56 → 1234.56
-  const n = parseFloat(v); return isFinite(n) ? n : null;
-};
-const vandaag = new Date().toISOString().slice(0, 10);
-const fmtDatum = (d) => new Date(d + 'T12:00:00').toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
 const li = (html) => `<li><p>${html}</p></li>`;
+const tabel = (id, kop1, kop2, rows) => ($(id).innerHTML = `<thead><tr><th>${kop1}</th><th>${kop2}</th></tr></thead><tbody>` +
+  rows.map(([a, b, cl]) => `<tr><th>${a}</th><td class="${cl || ''}">${b}</td></tr>`).join('') + '</tbody>');
+const fmtDatum = (d) => new Date(d + 'T12:00:00').toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+const lokaal = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const vandaag = lokaal(new Date());
 
-/* ---------- voorbeeldwaarden en URL-hash ---------- */
-const DEFAULTS = {
-  tab: 'grens', peildatum: vandaag,
-  g_maatman: '25', g_maatmanuren: '40', g_uurloon: '20', g_uren: '20', g_vg: '8', g_rvc: '',
-  u_fase: 'FASE2', u_maandloon: '3500', u_maandloondatum: '', u_ao: '60', u_rvc: '1400', u_geeneis: false, u_lgu12: false,
+/** Nederlandse invoer: "3.500", "3.500,50", "1.200,-", "3500,5" en "3500.5" mogen allemaal.
+ *  In %-velden is een punt altijd een decimaalteken ("8.33"). Negatief of onzin → null. */
+function num(id) {
+  let v = $(id).value.trim().replace(/[€\s%]/g, '').replace(/,-$/, '');
+  const procent = $(id).closest('.field')?.textContent.includes('%');
+  if (!procent && /^\d{1,3}(\.\d{3})+(,\d*)?$/.test(v)) v = v.replace(/\./g, '');
+  v = v.replace(',', '.');
+  return /^\d+(\.\d+)?$/.test(v) ? Number(v) : null;
+}
+/** Optioneel veld: leeg → standaardwaarde; ongeldig of te hoog → melding. */
+let fouten = [];
+function opt(id, standaard = 0, max = Infinity) {
+  if ($(id).value.trim() === '') return standaard;
+  const n = num(id);
+  if (n == null || n > max) { fouten.push(document.querySelector(`label[for="${id}"]`).textContent); return standaard; }
+  return n;
+}
+
+/* ---------- state in de URL-hash ---------- */
+const TABS = ['grens', 'uitkering', 'zw', 'begrippen'];
+const VOORBEELD = {
+  g_maatman: '25', g_maatmanuren: '40', g_uurloon: '20', g_uren: '20', g_vg: '8', g_ejo: '0', g_rvc: '',
+  u_fase: 'FASE2', u_maandloon: '3500', u_maandloondatum: '', u_dagloonongemax: '', u_ao: '60', u_rvc: '1400', u_geeneis: false, u_lgu12: false,
   u_salaris: '750', u_periode: 'maand', u_uren: '', u_vg: '8', u_ejo: '0', u_bonus: '0', u_allin: false,
 };
-const VELDEN = Object.keys(DEFAULTS).filter((k) => k !== 'tab');
+const VELDEN = ['peildatum', ...Object.keys(VOORBEELD)];
+const geldig = (el, v) => el.tagName !== 'SELECT' || [...el.options].some((o) => o.value === v);
 
+function zet(waarden) {
+  for (const k of VELDEN) {
+    const el = $(k), v = waarden[k];
+    if (v === undefined) continue;
+    if (el.type === 'checkbox') el.checked = v === true || v === '1';
+    else if (geldig(el, v)) el.value = v;
+  }
+}
 function leesHash() {
   const p = new URLSearchParams(location.hash.slice(1));
-  const s = { ...DEFAULTS };
-  for (const k of Object.keys(DEFAULTS)) if (p.has(k)) s[k] = typeof DEFAULTS[k] === 'boolean' ? p.get(k) === '1' : p.get(k);
-  return s;
+  zet({ ...VOORBEELD, peildatum: vandaag, ...Object.fromEntries(p) });
+  zetTab(TABS.includes(p.get('tab')) ? p.get('tab') : 'grens');
 }
-function schrijfHash() {
-  const p = new URLSearchParams();
-  p.set('tab', huidigeTab);
+function schrijfHash(metDatum = false) {
+  const p = new URLSearchParams({ tab: huidigeTab });
   for (const k of VELDEN) {
-    const el = $(k); const v = el.type === 'checkbox' ? (el.checked ? '1' : '0') : el.value;
-    if (k === 'peildatum' && v === vandaag) continue;
-    p.set(k, v);
+    const el = $(k), v = el.type === 'checkbox' ? (el.checked ? '1' : '0') : el.value;
+    if (metDatum || !(k === 'peildatum' && v === vandaag)) p.set(k, v);
   }
-  history.replaceState(null, '', '#' + p.toString());
-}
-function vul(s) {
-  for (const k of VELDEN) { const el = $(k); if (el.type === 'checkbox') el.checked = !!s[k]; else el.value = s[k]; }
-  zetTab(s.tab);
+  history.replaceState(null, '', '#' + p);
 }
 
 /* ---------- tabs ---------- */
@@ -428,120 +434,160 @@ let huidigeTab = 'grens';
 function zetTab(t) {
   huidigeTab = t;
   $('app').dataset.dom = t;
-  document.querySelectorAll('#topics button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.t === t)));
+  document.querySelectorAll('#topics button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.t === t)));
   document.querySelectorAll('section[data-tab]').forEach((s) => (s.hidden = s.dataset.tab !== t));
 }
-$('topics').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; zetTab(b.dataset.t); schrijfHash(); });
+$('topics').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { zetTab(b.dataset.t); alles(); } });
+
+/* ---------- peildatum ---------- */
+function peildatum() {
+  const d = $('peildatum').value || vandaag, s = E.peildatumStatus(d);
+  const r = E.regelsOp(d);
+  $('peilinfo').innerHTML = s === 'ok' ? `bedragen geldig vanaf ${fmtDatum(r.vanaf)}`
+    : s === 'teVroeg' ? `<span class="bad">Bedragen van vóór ${fmtDatum(r.vanaf)} zitten niet in de rekenhulp; er wordt gerekend met die van ${fmtDatum(r.vanaf)}.</span>`
+    : `<span class="bad">De bedragen voor deze datum zijn nog niet bekend; er wordt gerekend met die van ${fmtDatum(r.vanaf)}.</span>`;
+  document.querySelectorAll('[data-max]').forEach((el) => (el.textContent = `${eur(E.maxMaandloon(d))} per maand per ${fmtDatum(r.vanaf)}`));
+  return d;
+}
 
 /* ---------- 65%-grens ---------- */
 function renderGrens() {
   const maatman = num('g_maatman'), mUren = num('g_maatmanuren'), uurloon = num('g_uurloon'), uren = num('g_uren');
-  const vg = (num('g_vg') ?? 0) / 100, rvc = num('g_rvc');
   const fb = $('g_fb');
   if (!maatman || !mUren || uurloon == null || !uren) {
-    fb.className = 'fb warn'; fb.innerHTML = 'Vul je maatmaninkomen, maatman-uren, uurloon en uren in. <span>De voorbeeldgetallen staan er al.</span>';
+    fb.className = 'fb warn'; fb.innerHTML = 'Vul je maatmaninkomen per uur, de uren van je maatman, je uurloon en je uren in.';
+    $('g_res').hidden = true; return;
+  }
+  fouten = [];
+  const c = E.vijfenzestigCheck({
+    maatmanPerUur: maatman, maatmanUren: mUren, uurloon, uren,
+    vakantiegeldPct: opt('g_vg', 8, 50) / 100, eindejaarsPct: opt('g_ejo', 0, 50) / 100, rvcPerUur: num('g_rvc'),
+  });
+  if (fouten.length) {
+    fb.className = 'fb warn'; fb.innerHTML = `Controleer: ${fouten.join(', ')}. <span>Typ een getal, bijvoorbeeld 8 of 8,33.</span>`;
     $('g_res').hidden = true; return;
   }
   $('g_res').hidden = false;
-  const c = E.vijfenzestigCheck({ maatmanPerUur: maatman, maatmanUren: mUren, uurloon, uren, vakantiegeldPct: vg, rvcPerUur: rvc });
-  const p = c.pctVanMaatman, kaal = c.kaalPctVanMaatman;
+  const p = c.pctVanMaatman, kaal = c.kaalPctVanMaatman, meerUren = c.maandPctVanMaatman != null;
+  const toets = meerUren ? c.maandPctVanMaatman : p; // het getal waarmee de grens wordt getoetst
 
   if (c.status === 'boven65') {
     fb.className = 'fb no';
-    fb.innerHTML = `Je zit op ${pct(p)} van je maatmaninkomen: <u>boven</u> de 65%-grens. <span>Als UWV je herbeoordeelt op dit werk, kom je onder de 35% arbeidsongeschiktheid. Zie "Als je over de grens gaat".</span>`;
+    fb.innerHTML = meerUren
+      ? `Per uur zit je op ${pct(p)}, maar je werkt meer uren dan je maatman: per maand verdien je ${pct(c.maandPctVanMaatman)} van zijn inkomen. <span>Hoe UWV dit toetst is niet gepubliceerd; de rekenhulp gaat uit van het hoogste getal, en dat zit boven de 65%-grens.</span>`
+      : `Je zit op ${pct(p)} van je maatmaninkomen: <u>boven</u> de 65%-grens. <span>Neemt UWV dit werk als maatstaf, dan kom je onder de 35% arbeidsongeschiktheid. Zie "Als je over de grens gaat".</span>`;
   } else if (c.status === 'bovenRvc') {
     fb.className = 'fb warn';
     fb.innerHTML = `Je zit op ${pct(p)}: onder de 65%-grens, maar boven je resterende verdiencapaciteit. <span>Je WGA blijft, maar UWV kan bij een herbeoordeling je percentage verlagen.</span>`;
   } else {
     fb.className = 'fb ok';
-    fb.innerHTML = `Je zit op ${pct(p)} van je maatmaninkomen: onder de 65%-grens. <span>Je kunt nog ${eur(c.margePerUur)} per uur meer verdienen (bij ${uren} uur per week) voordat je erover gaat.</span>`;
+    fb.innerHTML = `Je zit op ${pct(toets)} van je maatmaninkomen: onder de 65%-grens. <span>Bij ${uren.toLocaleString('nl-NL')} uur per week kan je uurloon nog ${eur(c.grensUurloon - uurloon)} omhoog voordat je erover gaat.</span>`;
   }
 
-  // meter (0–110%)
+  // meter van 0 tot 110%; labels blijven binnen de balk
   const pos = (x) => Math.max(0, Math.min(100, (x / 110) * 100));
-  const ticks = [0, 20, 35, 50, 80, 100].map((t) => `<span class="tick" style="left:${pos(t)}%">${t}%</span>`).join('');
-  $('g_meter').style.background = `linear-gradient(90deg,var(--ok-bg) 0,var(--ok-bg) ${pos(65)}%,var(--bad-bg) ${pos(65)}%,var(--bad-bg) 100%)`;
-  $('g_meter').innerHTML = `<div class="zone" style="left:${pos(65)}%"></div>${ticks}` +
-    (c.reductiefactor < 1 ? `<div class="mk ghost" style="left:${pos(kaal)}%"><span>kaal uurloon ${pct(kaal)}</span></div>` : '') +
-    `<div class="mk" style="left:${pos(p)}%"><span>jij: ${pct(p)}</span></div>`;
-  $('g_meter').setAttribute('aria-label', `Je zit op ${pct(p)} van je maatmaninkomen; de grens is 65%.`);
+  const lab = (x) => Math.max(10, Math.min(90, pos(x)));
+  const m = $('g_meter');
+  m.style.background = `linear-gradient(90deg,var(--ok-bg) ${pos(65)}%,var(--bad-bg) ${pos(65)}%)`;
+  m.innerHTML = `<div class="zone" style="left:${pos(65)}%"><span>65%</span></div>` +
+    [0, 20, 35, 50, 80, 100].map((t) => `<span class="tick" style="left:${pos(t)}%">${t}%</span>`).join('') +
+    (c.reductiefactor < 1 ? `<div class="mk ghost" style="left:${pos(kaal)}%"></div>` + (Math.abs(kaal - 65) > 20 ? `<span class="lab boven" style="left:${lab(kaal)}%">kaal: ${pct(kaal)}</span>` : '') : '') +
+    `<div class="mk" style="left:${pos(toets)}%"></div><span class="lab onder" style="left:${lab(toets)}%">jij: ${pct(toets)}</span>`;
+  m.setAttribute('aria-label', `Je zit op ${pct(toets)} van je maatmaninkomen; de grens is 65%.`);
 
+  const urenKpi = [`Grens in uren bij ${eur(uurloon)}/u`, c.grensUren.toLocaleString('nl-NL') + ' u/wk',
+    c.grensUren < uren ? 'je zit er nu al boven' : 'meer uren = over de grens'];
   $('g_kpis').innerHTML = `
-    <div class="kpi"><small>Jouw percentage</small><b>${pct(p)}</b><small>van je maatmaninkomen</small></div>
-    <div class="kpi"><small>Grens-uurloon bij ${uren} u/wk</small><b>${eur(c.grensUurloon)}</b><small>bruto per uur, excl. vakantiegeld</small></div>
-    <div class="kpi"><small>${c.grensUren != null ? 'Grens in uren bij ' + eur(uurloon) + '/u' : 'Urencorrectie'}</small><b>${c.grensUren != null ? (c.grensUren >= mUren ? 'geen' : c.grensUren.toLocaleString('nl-NL') + ' u/wk') : 'n.v.t.'}</b><small>${c.grensUren != null ? (c.grensUren >= mUren ? 'je kunt tot je oude uren werken' : 'meer uren = over de grens') : 'je werkt evenveel of meer uren dan je maatman'}</small></div>`;
+    <div class="kpi"><small>Jouw percentage</small><b>${pct(toets)}</b><small>${meerUren ? 'per maand' : 'van je maatmaninkomen'}</small></div>
+    <div class="kpi"><small>Grens-uurloon bij ${uren.toLocaleString('nl-NL')} u/wk</small><b>${eur(c.grensUurloon)}</b><small>bruto per uur, excl. vakantiegeld</small></div>
+    <div class="kpi"><small>${urenKpi[0]}</small><b>${urenKpi[1]}</b><small>${urenKpi[2]}</small></div>`;
 
   const rows = [
     ['Je bruto uurloon', eur(uurloon)],
-    [`+ ${pct(vg * 100, 2)} vakantiegeld`, eur(c.effectiefUurloon)],
-    ['Kaal vergeleken met maatman (telt níet zo)', pct(kaal), kaal > 65 ? 'bad' : ''],
-    [`× reductiefactor ${uren} / ${mUren} uur`, c.reductiefactor.toLocaleString('nl-NL')],
+    [`+ ${pct(c.opslagPct, 2)} vakantiegeld en eindejaars`, eur(c.effectiefUurloon)],
+    ['Kaal vergeleken met je maatman (telt níet zo)', pct(kaal), ''],
+    [`× reductiefactor ${uren.toLocaleString('nl-NL')} / ${mUren.toLocaleString('nl-NL')} uur`, c.reductiefactor.toLocaleString('nl-NL')],
     ['= vergelijkbaar uurloon', eur(c.vergelijkbaarUurloon)],
     ['÷ maatmaninkomen per uur', eur(maatman)],
-    ['= jouw percentage', pct(p), p > 65 ? 'bad' : 'good'],
-    ['Arbeidsongeschiktheid als UWV dit werk als maatstaf neemt', pct(c.aoAlsUwvFeitelijkLoonNeemt) + ' (' + c.klasseAlsUwvFeitelijkLoonNeemt + ')', c.aoAlsUwvFeitelijkLoonNeemt < 35 ? 'bad' : ''],
+    [meerUren ? '= per uur' : '= jouw percentage', pct(p), meerUren ? '' : p > 65 ? 'bad' : 'good'],
+    ['Arbeidsongeschiktheid als UWV dit werk als maatstaf neemt',
+      c.ondergrens ? 'n.v.t.: onder 20% doet UWV een gewone schatting' : `${pct(c.ao)} (${c.klasse})`, c.ao != null && c.ao < 35 ? 'bad' : ''],
   ];
-  $('g_table').innerHTML = `<thead><tr><th>Stap</th><th>Bedrag / %</th></tr></thead><tbody>` +
-    rows.map(([a, b, cl]) => `<tr><th>${a}</th><td class="${cl || ''}">${b}</td></tr>`).join('') + '</tbody>';
+  if (meerUren) rows.push(['Per maand: jouw inkomen ÷ dat van je maatman', pct(c.maandPctVanMaatman), c.maandPctVanMaatman > 65 ? 'bad' : 'good']);
+  tabel('g_table', 'Stap', 'Bedrag / %', rows);
 
   $('g_steps').innerHTML = [
     `De grens staat in de wet: gedeeltelijk arbeidsgeschikt (WGA) ben je als je "ten hoogste 65% [kunt] verdienen van het maatmaninkomen <b>per uur</b>" (WIA art. 5).`,
     `Werk je minder uren dan je maatman, dan vergelijkt UWV níet je kale uurloon. Je uurloon gaat eerst × <code>gewerkte uren ÷ maatman-uren</code> (Beleidsregel uurloonschatting 2008, art. 3; CRvB 2015:1919 en CRvB 2024:1581). In de praktijk vergelijkt UWV dus je <b>weekloon</b> met dat van je maatman.`,
     `Het gaat om de uren die je <b>echt werkt</b>, niet om de uren die je volgens de arts mag werken. Ga je meer uren werken tegen hetzelfde uurloon, dan stijgt je percentage.`,
-    `Vakantiegeld en een vaste eindejaarsuitkering tellen mee zoals ze worden opgebouwd (Schattingsbesluit art. 11a). Hoe overwerk en bonussen meetellen, staat nergens precies beschreven.`,
+    `Vakantiegeld, een vaste eindejaarsuitkering en vaste toeslagen zoals ORT tellen mee (Schattingsbesluit art. 11a). Hoe overwerk en bonussen meetellen, staat nergens precies beschreven.`,
     `Een hoger uurloon door ervaring of promotie telt gewoon mee, als het werk past bij wat je medisch kunt.`,
     `Je maatmaninkomen wordt bij een herbeoordeling verhoogd met de cao-lonen (Schattingsbesluit art. 8 lid 2). Je komt dus alleen dichter bij de grens als jouw loon sneller stijgt dan gemiddeld.`,
-    `Voert UWV toch je kale uurloon op? Dan kun je bezwaar maken en wijzen op de beleidsregel en ECLI:NL:CRVB:2024:1581.`,
+    `Rekent UWV toch met je kale uurloon? Dan kun je bezwaar maken en wijzen op de beleidsregel en ECLI:NL:CRVB:2024:1581.`,
   ].map(li).join('');
+}
 
-  const e = E.eindeWga({ datumVaststelling: $('peildatum').value || vandaag });
+function renderGevolg() {
   $('g_gevolg').innerHTML = [
-    `Het gaat <b>niet automatisch</b>. UWV ziet je loon in de polisadministratie en kan een herbeoordeling starten; je werkgever of verzekeraar kan die ook aanvragen.`,
-    `Stelt UWV vast dat je met werk meer dan 65% verdient, dan loopt je WGA nog <b>1 jaar</b> door (WIA art. 56 lid 3), en nooit korter dan het einde van je LGU. Voorbeeld: besluit op ${fmtDatum($('peildatum').value || vandaag)} → uitkering tot ${fmtDatum(e.einde)}.`,
-    `Gaat het binnen <b>5 jaar</b> weer slechter door dezelfde oorzaak (≥ 35% arbeidsongeschikt), dan herleeft je recht zonder nieuwe wachttijd van 104 weken (WIA art. 57). In dit voorbeeld: tot ${fmtDatum(e.herlevingTot)}.`,
+    `UWV ziet je loon in de polisadministratie. Verdien je een jaar lang meer dan 65%, dan kan UWV je uitkering beëindigen met alleen een loonvergelijking, zonder nieuwe keuring (UWV-handreiking, zie docs/research/14). Je werkgever of verzekeraar kan ook een herbeoordeling aanvragen.`,
+    `Verdien je met werk meer dan 65%, dan eindigt je WGA <b>1 jaar na de dag dat je volgens UWV niet meer gedeeltelijk arbeidsgeschikt bent</b>, en nooit vóór het einde van je LGU (WIA art. 56 lid 3). Die dag kan vóór de datum van de brief liggen: UWV kan de uitkering beëindigen als je al een jaar boven de 65% verdient. Reken dus niet op een vol jaar ná de brief.`,
+    `Komt UWV om een andere reden onder de 35% uit, dan eindigt je WGA al <b>2 maanden</b> later, en niet vóór het einde van je LGU (art. 56 lid 2).`,
+    `Word je binnen <b>5 jaar</b> na het einde van je uitkering weer 35% of meer arbeidsongeschikt door dezelfde oorzaak, dan herleeft je recht zonder nieuwe wachttijd van 104 weken (WIA art. 57).`,
     `Ook onder de 65% kan UWV je percentage verlagen als je meer verdient dan je resterende verdiencapaciteit. Je blijft dan in de WIA, maar de vervolguitkering en de inkomenseis veranderen mee (pas na 2 kalendermaanden).`,
-    `Nog onzeker: ${c.onzeker}`,
   ].map(li).join('');
 }
 
 /* ---------- uitkering ---------- */
-function renderUitkering() {
-  const datum = $('peildatum').value || vandaag;
+function renderUitkering(datum) {
   const fase = $('u_fase').value;
   document.querySelectorAll('[data-show]').forEach((el) => (el.hidden = el.dataset.show !== fase));
   document.querySelectorAll('[data-show-periode]').forEach((el) => (el.hidden = el.dataset.showPeriode !== $('u_periode').value));
-
   const fb = $('u_fb');
-  let ml = num('u_maandloon');
-  if (!ml) { fb.className = 'fb warn'; fb.innerHTML = 'Vul je WIA-maandloon in.'; return; }
+  const stop = (tekst) => { fb.className = 'fb warn'; fb.innerHTML = tekst; $('u_res').hidden = true; };
+
+  const ruw = num('u_maandloon');
+  if (!ruw) return stop('Vul je WIA-maandloon in.');
+  const ao = num('u_ao'), rvc = num('u_rvc'), geenEis = $('u_geeneis').checked;
+  if (fase === 'FASE2') {
+    if (ao == null) return stop('Vul je arbeidsongeschiktheidspercentage in; dat bepaalt de vervolguitkering.');
+    if (ao < 35) return stop('Onder 35% arbeidsongeschiktheid heb je geen recht op WGA.');
+    if (ao > 100) return stop('Een percentage boven 100% bestaat niet.');
+    if (!geenEis && !rvc) return stop('Vul je resterende verdiencapaciteit per maand in.');
+  }
+  $('u_res').hidden = false;
+
   const steps = [];
+  let ml = ruw;
   const mlDatum = $('u_maandloondatum').value;
+  if (ruw > E.maxMaandloon(mlDatum || datum) + 0.01) steps.push(`<b>Let op:</b> ${eur(ruw)} is meer dan het maximum WIA-maandloon (${eur(E.maxMaandloon(mlDatum || datum))}). Er wordt met het maximum gerekend. Heb je misschien je salaris ingevuld?`);
   if (mlDatum) {
-    const ix = E.indexeer(ml, mlDatum, datum);
-    if (ix.stappen.length) steps.push(`Je WIA-maandloon is verhoogd met het minimumloon (WIA art. 14): ${ix.stappen.map((s) => `${pct(s.pct, 2)} per ${fmtDatum(s.datum)}`).join(', ')}. ${eur(ml)} wordt <b>${eur(ix.bedrag)}</b>.`);
+    const ix = E.indexeer(ruw, mlDatum, datum);
+    if (ix.stappen.length) steps.push(`Je WIA-maandloon is verhoogd met het minimumloon (WIA art. 14): ${ix.stappen.map((s) => `${pct(s.pct, 2)} per ${fmtDatum(s.datum)}`).join(', ')}. Dat wordt <b>${eur(ix.bedrag)}</b>.`);
     if (ix.onvolledig) steps.push(`<b>Let op:</b> je bedrag is van vóór ${fmtDatum(RU.PEILDATA[0].vanaf)}. Verhogingen daarvóór zitten niet in deze rekenhulp; vul liever een recenter bedrag in.`);
+    if (ix.achteruit) steps.push('De datum van je bedrag ligt na de rekendatum; het bedrag is niet aangepast.');
     ml = ix.bedrag;
   }
-  const max = E.regelsOp(datum).maxDagloon * RU.WIA.maandFactor;
-  if (ml > max + 0.01) steps.push(`<b>Let op:</b> dit is meer dan het maximum WIA-maandloon (${eur(max)}). Controleer je brief.`);
 
+  fouten = [];
+  const perUur = $('u_periode').value === 'uur';
   const ink = E.wiaInkomen({
-    bedrag: num('u_salaris') ?? 0, periode: $('u_periode').value, urenPerWeek: num('u_uren') ?? 0,
-    vakantiegeldPct: (num('u_vg') ?? 0) / 100, allIn: $('u_allin').checked,
-    eindejaarsOpbouwPct: (num('u_ejo') ?? 0) / 100, bonusDezeMaand: num('u_bonus') ?? 0,
+    bedrag: opt('u_salaris'), periode: $('u_periode').value, urenPerWeek: opt('u_uren', 0, 80),
+    vakantiegeldPct: opt('u_vg', 8, 50) / 100, allIn: $('u_allin').checked,
+    eindejaarsOpbouwPct: opt('u_ejo', 0, 50) / 100, bonusDezeMaand: opt('u_bonus'),
   });
-  const params = {
-    fase, wiaMaandloon: ml, datum, aoPct: num('u_ao') ?? 0, rvcMaand: num('u_rvc') ?? 0,
-    geenInkomenseis: $('u_geeneis').checked, lguMaand: $('u_lgu12').checked ? 1 : 3,
-  };
-  if (fase === 'FASE2' && !params.geenInkomenseis && !params.rvcMaand) { fb.className = 'fb warn'; fb.innerHTML = 'Vul je resterende verdiencapaciteit per maand in.'; return; }
+  const dagloonOngemax = opt('u_dagloonongemax', null);
+  if (perUur && !num('u_uren') && !fouten.length) fouten.push('Uren per week');
+  if (fouten.length) return stop(`Controleer: ${fouten.join(', ')}. <span>Typ een getal, bijvoorbeeld 1.200 of 8,33.</span>`);
+  const params = { fase, wiaMaandloon: ml, datum, aoPct: ao ?? 0, rvcMaand: rvc ?? 0, geenInkomenseis: geenEis, lguMaand: $('u_lgu12').checked ? 1 : 3, dagloonOngemax };
   const u = E.uitkering({ ...params, inkomen: ink.totaal });
+  if (u.maandloon < ml - 0.01) steps.push(`Er is gerekend met het maximum WIA-maandloon op de rekendatum (${eur(u.maandloon)}).`);
+  if (dagloonOngemax) steps.push('Je dagloon zonder maximum wordt naar verhouding meegeteld: je inkomen wordt minder dan 70 cent per euro gekort. Of UWV dat dagloon ook jaarlijks verhoogt, is niet uitgezocht; vul het bedrag van dezelfde datum als je WIA-maandloon in.');
   const totaal = ink.totaal + u.bedrag;
-  const minderDan = 1 - ink.totaal / ml;
+  const minder = 1 - ink.totaal / u.maandloon;
 
   const naam = { LGU: 'loongerelateerde uitkering (LGU)', LAU: 'loonaanvullingsuitkering (LAU)', VU: 'vervolguitkering (VU)', IVA: 'IVA-uitkering' }[u.soort];
   fb.className = 'fb ' + (u.soort === 'VU' && ink.totaal > 0 ? 'warn' : 'ok');
-  fb.innerHTML = `Je krijgt deze maand een ${naam} van ${eur(u.bedrag)} bruto. <span>Samen met je loon is dat ${eur(totaal)}. Je verdient ${minderDan >= 0 ? pct(minderDan * 100) + ' minder' : pct(-minderDan * 100) + ' méér'} dan je WIA-maandloon.</span>`;
+  fb.innerHTML = `Je krijgt deze maand een ${naam} van ${eur(u.bedrag)} bruto. <span>Samen met je loon is dat ${eur(totaal)}. Je verdient ${minder >= 0 ? pct(minder * 100) + ' minder' : pct(-minder * 100) + ' méér'} dan je WIA-maandloon.</span>`;
 
   $('u_kpis').innerHTML = `
     <div class="kpi"><small>Uitkering</small><b>${eur(u.bedrag)}</b><small>${u.soort}, incl. vakantiegeld</small></div>
@@ -549,110 +595,106 @@ function renderUitkering() {
     <div class="kpi"><small>Totaal bruto</small><b>${eur(totaal)}</b><small>per maand</small></div>`;
 
   const rows = [
-    ['WIA-maandloon (geïndexeerd)', eur(ml)],
+    ['WIA-maandloon waarmee gerekend is', eur(u.maandloon)],
     ['Je salaris omgerekend naar een kalendermaand', eur(ink.basis)],
     ['+ opgebouwd vakantiegeld', eur(ink.vakantiegeld)],
     ['+ opgebouwde 13e maand / eindejaars', eur(ink.eindejaars)],
     ['+ bonus deze maand', eur(ink.bonus)],
     ['= inkomen voor UWV', eur(ink.totaal), 'ans'],
   ];
-  if (fase === 'FASE2' && !params.geenInkomenseis) {
+  if (fase === 'FASE2' && !geenEis) {
     rows.push(['Inkomenseis (50% van RVC)', eur(u.inkomenseis), ink.totaal >= u.inkomenseis ? 'good' : 'bad']);
-    rows.push(['Resterende verdiencapaciteit (RVC)', eur(params.rvcMaand)]);
-    rows.push([`Vervolguitkering bij ${pct(params.aoPct, 2)} (${E.aoKlasse(params.aoPct)})`, eur(E.vuPercentage(params.aoPct) * Math.min(E.wiaMinimumloon(datum), ml))]);
+    rows.push(['Resterende verdiencapaciteit (RVC)', eur(rvc)]);
   }
+  if (fase === 'FASE2') rows.push([`Vervolguitkering bij ${pct(ao, 2)} (klasse ${u.klasse})`, eur(u.vu)]);
   rows.push([`Uitkering: ${u.soort}`, eur(u.bedrag), 'ans']);
   rows.push(['waarvan elke maand op je rekening (100/108)', eur(u.perMaandOpRekening)]);
   rows.push(['waarvan in mei als vakantiegeld (8/108)', eur(u.bedrag - u.perMaandOpRekening)]);
-  $('u_table').innerHTML = `<thead><tr><th>Onderdeel</th><th>Per maand</th></tr></thead><tbody>` +
-    rows.map(([a, b, cl]) => `<tr><th>${a}</th><td class="${cl || ''}">${b}</td></tr>`).join('') + '</tbody>';
+  tabel('u_table', 'Onderdeel', 'Per maand', rows);
 
   steps.unshift(u.regel);
   if ($('u_periode').value === '4weken') steps.push('Een 4-wekenloon rekent UWV om naar een kalendermaand: × 21,75 / 20.');
   if ($('u_periode').value === 'uur') steps.push('Een uurloon wordt: uurloon × uren per week × 4,35 (52,2 weken / 12 maanden).');
-  if (fase === 'FASE2' && !params.geenInkomenseis) {
+  let sprong = null;
+  if (fase === 'FASE2' && !geenEis) {
     const eis = u.inkomenseis;
-    const onder = E.uitkering({ ...params, inkomen: Math.max(0, eis - 0.01) });
-    const boven = E.uitkering({ ...params, inkomen: eis });
-    const sprong = eis + boven.bedrag - (eis - 0.01 + onder.bedrag);
-    steps.push(`UWV toetst <b>elke kalendermaand</b> opnieuw: verdien je die maand minstens ${eur(eis)}, dan krijg je de loonaanvulling; anders de vervolguitkering. Rond die grens springt je totaal ${eur(sprong)}.`);
-    if (Math.abs(ink.totaal - eis) < 150) steps.push(`<b>Let op:</b> je zit dicht bij de inkomenseis. Eén maand met minder uren of onbetaald verlof kan je die maand ${eur(Math.max(0, sprong))} kosten.`);
-    if (ink.totaal >= params.rvcMaand) steps.push('Je verdient meer dan je RVC. UWV kan bij een herbeoordeling je echte loon als nieuwe RVC nemen; dan daalt je arbeidsongeschiktheidspercentage. Kijk ook bij "De 65%-grens".');
+    const onder = E.uitkering({ ...params, inkomen: eis - 0.01 }), boven = E.uitkering({ ...params, inkomen: eis });
+    sprong = eis + boven.bedrag - (eis - 0.01 + onder.bedrag);
+    steps.push(`UWV toetst <b>elke kalendermaand</b> opnieuw: verdien je die maand minstens ${eur(eis)}, dan krijg je de loonaanvulling; anders de vervolguitkering. ` +
+      (sprong > 0 ? `Net boven die grens heb je in totaal ${eur(sprong)} méér dan net eronder.` : `In jouw geval levert net onder die grens ${eur(-sprong)} méér op dan net erboven.`));
+    if (sprong > 0 && Math.abs(ink.totaal - eis) < 150) steps.push(`<b>Let op:</b> je zit dicht bij de inkomenseis. Een maand met minder uren of onbetaald verlof kan je die maand ${eur(sprong)} kosten.`);
+    if (ink.totaal >= rvc) steps.push('Je verdient meer dan je RVC. UWV kan bij een herbeoordeling je echte loon als nieuwe RVC nemen; dan daalt je arbeidsongeschiktheidspercentage. Kijk ook bij "De 65%-grens".');
   }
-  if (fase === 'LGU') steps.push('In de LGU-fase is er geen 50%-regel: elke euro die je verdient kost 70 cent uitkering (75 cent in maand 1 en 2). Na de LGU geldt een ander systeem: zet de fase op "na de LGU" om te zien wat er dan gebeurt.');
+  if (fase === 'LGU') steps.push('In de LGU-fase is er geen 50%-regel: elke euro die je verdient kost 70 cent uitkering (75 cent in maand 1 en 2; minder als je dagloon boven het maximum lag). Na de LGU geldt een ander systeem: kies de fase "na de LGU" om te zien wat er dan gebeurt.');
   if (fase === 'IVA') steps.push('Verdien je 12 maanden achter elkaar meer dan 20% van je maatmaninkomen per maand, dan roept UWV je op voor onderzoek of je nog volledig en duurzaam arbeidsongeschikt bent (WIA art. 52 lid 2).');
   if (u.soort === 'VU') steps.push('Met een vervolguitkering kom je mogelijk onder het sociaal minimum. Dan kun je misschien een toeslag krijgen via de Toeslagenwet (het inkomen van je partner telt mee).');
   steps.push('UWV betaalt eerst een voorschot en rekent achteraf af met de loongegevens van je werkgever. Te veel ontvangen moet je terugbetalen. Geef inkomsten binnen 1 week door.');
   $('u_steps').innerHTML = steps.map(li).join('');
 
-  tekenGrafiek(params, ink.totaal, ml);
+  tekenGrafiek(params, ink.totaal, u, sprong);
 }
 
-function tekenGrafiek(params, nu, ml) {
-  const tot = Math.max(ml * 1.1, nu * 1.2, 500);
-  const stap = Math.max(5, Math.round(tot / 220));
-  const r = E.inkomensReeks(params, { van: 0, tot, stap });
-  // exacte punten rond de inkomenseis, zodat de sprong verticaal getekend wordt
-  if (params.fase === 'FASE2' && !params.geenInkomenseis && params.rvcMaand) {
-    for (const ink of [params.rvcMaand / 2 - 0.01, params.rvcMaand / 2]) {
-      const u = E.uitkering({ ...params, inkomen: ink });
-      r.push({ inkomen: ink, uitkering: u.bedrag, soort: u.soort, totaal: ink + u.bedrag });
-    }
-    r.sort((a, b) => a.inkomen - b.inkomen);
-  }
-  const W = 640, H = 260, L = 56, B = 34, T = 14, Rr = 10;
+function tekenGrafiek(params, nu, u, sprong) {
+  const box = $('u_chart');
+  const W = Math.max(300, Math.min(640, box.clientWidth || 640)), H = Math.round(W * 0.42), L = 46, B = 30, T = 14, Rr = 10;
+  const tot = Math.max(u.maandloon * 1.1, nu * 1.2, params.rvcMaand * 1.15, 500);
+  const r = E.inkomensReeks(params, tot, Math.max(5, Math.round(tot / 200)));
   const ymax = Math.max(...r.map((d) => d.totaal)) * 1.08;
   const x = (v) => L + (v / tot) * (W - L - Rr), y = (v) => H - B - (v / ymax) * (H - B - T);
   const pad = (k) => r.map((d, i) => (i ? 'L' : 'M') + x(d.inkomen).toFixed(1) + ' ' + y(d[k]).toFixed(1)).join(' ');
   let grid = '';
-  for (let i = 0; i <= 4; i++) { const v = (ymax / 4) * i; grid += `<line class="gl" x1="${L}" x2="${W - Rr}" y1="${y(v)}" y2="${y(v)}"/><text class="tl" x="${L - 4}" y="${y(v) + 3}" text-anchor="end">${Math.round(v).toLocaleString('nl-NL')}</text>`; }
-  for (let i = 0; i <= 4; i++) { const v = (tot / 4) * i; grid += `<text class="tl" x="${x(v)}" y="${H - B + 14}" text-anchor="${i === 4 ? 'end' : 'middle'}">${Math.round(v).toLocaleString('nl-NL')}</text>`; }
-  const cur = E.uitkering({ ...params, inkomen: nu });
-  let eis = '';
-  if (params.fase === 'FASE2' && !params.geenInkomenseis && params.rvcMaand) {
-    const e = params.rvcMaand / 2;
-    eis = `<line x1="${x(e)}" x2="${x(e)}" y1="${T}" y2="${H - B}" stroke="var(--bad)" stroke-dasharray="4 3"/><text class="tl" x="${x(e) + 4}" y="${T + 10}">inkomenseis</text>` +
+  for (let i = 0; i <= 4; i++) {
+    const v = (ymax / 4) * i, w = (tot / 4) * i;
+    grid += `<line class="gl" x1="${L}" x2="${W - Rr}" y1="${y(v)}" y2="${y(v)}"/><text class="tl" x="${L - 4}" y="${y(v) + 3}" text-anchor="end">${Math.round(v).toLocaleString('nl-NL')}</text>` +
+      `<text class="tl" x="${x(w)}" y="${H - B + 14}" text-anchor="${i === 4 ? 'end' : 'middle'}">${Math.round(w).toLocaleString('nl-NL')}</text>`;
+  }
+  let lijnen = '';
+  if (u.inkomenseis != null) {
+    lijnen = `<line x1="${x(u.inkomenseis)}" x2="${x(u.inkomenseis)}" y1="${T}" y2="${H - B}" stroke="var(--bad)" stroke-dasharray="4 3"/><text class="tl" x="${x(u.inkomenseis) + 4}" y="${T + 10}">inkomenseis</text>` +
       `<line x1="${x(params.rvcMaand)}" x2="${x(params.rvcMaand)}" y1="${T}" y2="${H - B}" stroke="#999" stroke-dasharray="2 3"/><text class="tl" x="${x(params.rvcMaand) + 4}" y="${T + 22}">RVC</text>`;
   }
-  $('u_chart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Totaal bruto inkomen bij oplopend loon">
-    ${grid}${eis}
-    <path d="${pad('inkomen')}" fill="none" stroke="#bbb" stroke-width="1.5" stroke-dasharray="5 4"/>
+  const label = `Grafiek: loon plus uitkering bij oplopend loon. Jij nu: ${eur(nu)} loon, ${eur(nu + u.bedrag)} totaal.` +
+    (u.inkomenseis != null ? ` Inkomenseis ${eur(u.inkomenseis)}, RVC ${eur(params.rvcMaand)}.` : '') + (sprong ? ` Sprong bij de inkomenseis: ${eur(sprong)}.` : '');
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}">
+    ${grid}${lijnen}
+    <path d="${pad('inkomen')}" fill="none" stroke="#aaa" stroke-width="1.5" stroke-dasharray="5 4"/>
     <path d="${pad('totaal')}" fill="none" stroke="var(--green-dark)" stroke-width="2.5"/>
-    <circle cx="${x(nu)}" cy="${y(nu + cur.bedrag)}" r="5" fill="var(--hover)" stroke="#fff" stroke-width="1.5"/>
+    <circle cx="${x(nu)}" cy="${y(nu + u.bedrag)}" r="5" fill="var(--hover)" stroke="#fff" stroke-width="1.5"/>
     <text class="tl" x="${L + (W - L - Rr) / 2}" y="${H - 4}" text-anchor="middle">Je loon per maand (€, zoals UWV het telt)</text>
   </svg>
   <p class="hint" style="margin:6px 0 0"><b style="color:var(--green-dark)">━</b> loon + uitkering &nbsp; <b style="color:#999">┅</b> alleen loon &nbsp; <b style="color:var(--hover)">●</b> jij nu. Waar de lijn plat loopt, levert meer verdienen je niets extra op; waar hij springt, maakt een paar euro veel verschil.</p>`;
 }
 
-/* ---------- statische tabs ---------- */
+/* ---------- vaste tabs ---------- */
 function renderStatisch() {
   const N = RU.NO_RISK, Z = RU.ZW, K = RU.LKV_2026;
   $('zw_norisk').innerHTML = [
-    `Werk je (weer) in loondienst en had je vóór of tijdens je dienstverband een WIA-uitkering, ook als je bij de keuring onder de 35% uitkwam? Dan geldt de no-riskpolis <b>${N.jarenBijWia} jaar</b>.`,
-    `Voor ${N.onbeperktVoor.join(', ')} geldt hij <b>onbeperkt</b>, zolang je in dienst bent.`,
-    `Word je ziek, dan betaalt UWV Ziektewet: <b>${N.pct * 100}%</b> van je ZW-dagloon. In de eerste 52 weken op verzoek van je werkgever <b>100%</b>, maar nooit meer dan het loon dat je werkgever echt doorbetaalt. Er zijn geen wachtdagen.`,
-    `Je werkgever moet de ziekte binnen ${N.meldenBinnenWeken} weken melden. Je zieke periode telt niet mee voor de premie van je werkgever.`,
-    `Je bent niet verplicht je werkgever over je WIA te vertellen. Maar zonder dat weet je werkgever niet dat de no-riskpolis voor jou geldt, en dat is juist een argument om je aan te nemen.`,
+    `Werk je (weer) in loondienst en had je vóór of tijdens je dienstverband een WIA-uitkering? Dan geldt de no-riskpolis <b>${N.jarenBijWia} jaar</b>. Dat kan ook gelden als je bij de WIA-keuring onder de 35% uitkwam (onder voorwaarden).`,
+    `Voor ${N.onbeperktVoor.join(', ')} geldt hij <b>onbeperkt</b> (bij het doelgroepregister: zolang je in het register staat).`,
+    `Word je ziek, dan betaalt UWV Ziektewet: <b>${N.pct * 100}%</b> van je ZW-dagloon. In de eerste 52 weken op verzoek van je werkgever <b>${N.pctEersteJaarOpVerzoek * 100}%</b>, maar nooit meer dan het loon dat je werkgever echt doorbetaalt. Er zijn geen wachtdagen.`,
+    `Je werkgever moet je ziekte binnen ${N.meldenBinnenWeken} weken bij UWV melden, met de vermelding no-riskpolis. Je zieke periode telt niet mee voor de premie van je werkgever.`,
+    `Bij het sollicitatiegesprek hoef je niet te vertellen dat de no-riskpolis voor je geldt. Ben je 2 maanden of langer in dienst, dan moet je het op verzoek van je werkgever wél zeggen, maar niet waarom. Het vertellen kan ook helpen: het neemt een risico voor je werkgever weg.`,
     `Gewone WW'ers vallen er niet onder.`,
   ].map(li).join('');
   $('zw_dgr').innerHTML = [
     `Het doelgroepregister hoort bij de banenafspraak: mensen die (bijna) niet zelfstandig het minimumloon kunnen verdienen, zoals Wajong'ers met arbeidsvermogen, Wsw'ers en mensen met een indicatie banenafspraak.`,
     `Met een WIA-uitkering sta je er <b>standaard niet</b> in. Sinds 1-1-2026 wel: IVA'ers die werken met loondispensatie, en Wajong'ers zonder arbeidsvermogen die toch werken.`,
-    `Wat het oplevert: een onbeperkte no-riskpolis, en voor je werkgever een loonkostenvoordeel en meetellen voor het quotum.`,
+    `Wat het oplevert: een onbeperkte no-riskpolis, en voor je werkgever een loonkostenvoordeel en meetellen voor de banenafspraak.`,
     `Plan (geen wet): het register uitbreiden naar mensen met WIA en WW. Dat staat alleen in een Kamerbrief van 2-7-2026.`,
   ].map(li).join('');
-  $('zw_lkv').innerHTML = `<thead><tr><th>Wie neemt je werkgever aan?</th><th>Per uur</th><th>Max per jaar</th><th>Hoe lang</th></tr></thead><tbody>
-    <tr><th>Iemand met WIA/WAO (arbeidsgehandicapt)</th><td>${eur(K.arbeidsgehandicapt.perUur)}</td><td>${eur(K.arbeidsgehandicapt.maxPerJaar)}</td><td>${K.arbeidsgehandicapt.jaren} jaar</td></tr>
-    <tr><th>Herplaatsen eigen arbeidsgehandicapte werknemer</th><td>${eur(K.herplaatsen.perUur)}</td><td>${eur(K.herplaatsen.maxPerJaar)}</td><td>${K.herplaatsen.jaren} jaar</td></tr>
-    <tr><th>Iemand uit het doelgroepregister</th><td>${eur(K.banenafspraak.perUur)}</td><td>${eur(K.banenafspraak.maxPerJaar)}</td><td>zolang in dienst</td></tr></tbody>`;
+  const rij = (wie, k, duur) => `<tr><th>${wie}</th><td>${eur(k.perUur)}</td><td>${eur(k.maxPerJaar)}</td><td>${duur}</td></tr>`;
+  $('zw_lkv').innerHTML = '<thead><tr><th>Wie neemt je werkgever aan?</th><th>Per uur</th><th>Max per jaar</th><th>Hoe lang</th></tr></thead><tbody>' +
+    rij('Iemand met WIA/WAO (arbeidsgehandicapt)', K.arbeidsgehandicapt, K.arbeidsgehandicapt.jaren + ' jaar') +
+    rij('Herplaatsen eigen arbeidsgehandicapte werknemer', K.herplaatsen, K.herplaatsen.jaren + ' jaar') +
+    rij('Iemand uit het doelgroepregister', K.banenafspraak, 'zolang in dienst') + '</tbody>';
   $('zw_zw').innerHTML = [
-    `Ziektewet krijg je als je ziek bent en geen werkgever (meer) hebt, bijvoorbeeld als je contract afloopt tijdens je ziekte, of als je in de WW ziek wordt (na 13 weken).`,
-    `Hoogte: <b>${Z.pct * 100}%</b> van je dagloon, na ${Z.wachtdagen} wachtdagen, maximaal <b>${Z.maxWeken} weken</b>. Er is géén bodem op het minimumloon (dat geldt alleen als een werkgever doorbetaalt); wel kan de Toeslagenwet aanvullen.`,
-    `Na ${Z.ezwbNaWeken} weken volgt de Eerstejaars Ziektewet-beoordeling: kun je <b>meer dan</b> 65% van je oude loon verdienen, dan stopt je Ziektewet (na nog 1 maand). Precies 65% is genoeg om het te houden.`,
+    `Ziektewet krijg je als je ziek bent en geen werkgever (meer) hebt, bijvoorbeeld als je contract afloopt tijdens je ziekte, of als je in de WW ziek wordt (dan vanaf week 14).`,
+    `Hoogte: <b>${Z.pct * 100}%</b> van je dagloon, maximaal <b>${Z.maxWeken} weken</b>. Meestal gelden ${Z.wachtdagen} wachtdagen (niet als je vanuit de WW ziek wordt). Er is géén bodem op het minimumloon (dat geldt alleen als een werkgever doorbetaalt); wel kan de Toeslagenwet aanvullen.`,
+    `Na ${Z.ezwbNaWeken} weken volgt de Eerstejaars Ziektewet-beoordeling: kun je <b>meer dan</b> ${Z.ezwbGrens * 100}% van je maatmaninkomen verdienen, dan stopt je Ziektewet (na nog 1 maand). Precies ${Z.ezwbGrens * 100}% is genoeg om het te houden.`,
     `Na 104 weken volgt de WIA-keuring.`,
   ].map(li).join('');
 
-  const G = [
+  $('glos').innerHTML = [
     ['WIA-maandloon', 'Je gemiddelde loon uit het jaar vóór je eerste ziektedag, inclusief vakantiegeld, met een maximum. De basis voor de hoogte van je uitkering. Gaat elk half jaar mee met het minimumloon.'],
     ['Maatmaninkomen (maatmanloon)', 'Wat je vóór je ziekte verdiende, per uur. Het ijkpunt voor je arbeidsongeschiktheidspercentage en de 65%-grens. Niet hetzelfde als je WIA-maandloon.'],
     ['Resterende verdiencapaciteit (RVC)', 'Wat UWV vindt dat je nog kúnt verdienen, op basis van minstens 3 functies die bij je beperkingen passen. Wordt niet geïndexeerd.'],
@@ -665,11 +707,10 @@ function renderStatisch() {
     ['Reductiefactor', 'Werk je minder uren dan je maatman, dan wordt je uurloon vermenigvuldigd met (jouw uren ÷ maatman-uren) voordat het met je maatmaninkomen wordt vergeleken.'],
     ['FML – Functionele Mogelijkhedenlijst', 'De lijst van de verzekeringsarts met wat je wel en niet kunt, inclusief een eventuele urenbeperking.'],
     ['Herbeoordeling', 'UWV stelt je arbeidsongeschiktheid opnieuw vast. Een nieuw percentage telt pas na 2 kalendermaanden.'],
-    ['Herleving', 'Word je binnen 5 jaar weer ≥ 35% arbeidsongeschikt door dezelfde oorzaak, dan krijg je je WGA terug zonder nieuwe wachttijd.'],
+    ['Herleving', 'Word je binnen 5 jaar na het einde van je uitkering weer ≥ 35% arbeidsongeschikt door dezelfde oorzaak, dan krijg je je WGA terug zonder nieuwe wachttijd.'],
     ['Polisadministratie', 'De loongegevens die je werkgever elke maand aan UWV doorgeeft. Zo ziet UWV wat je verdient.'],
     ['No-riskpolis', 'UWV betaalt Ziektewet als je ziek wordt in je nieuwe baan, zodat je werkgever geen risico loopt.'],
-  ];
-  $('glos').innerHTML = G.map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join('');
+  ].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join('');
   $('plannen').innerHTML = [
     'De IVA en het "duurzaamheidscriterium" afschaffen (coalitieakkoord; nog in gesprek met sociale partners).',
     'WW-duur naar maximaal 12 maanden per 1-1-2029. Daarmee wordt waarschijnlijk ook de LGU korter.',
@@ -679,30 +720,28 @@ function renderStatisch() {
   ].map(li).join('');
 }
 
-/* ---------- kopiëren, wissen, events ---------- */
+/* ---------- knoppen en events ---------- */
 document.addEventListener('click', async (e) => {
-  if (e.target.closest('[data-copy]')) {
-    schrijfHash();
-    try { await navigator.clipboard.writeText(location.href); e.target.textContent = 'Link gekopieerd!'; } catch { prompt('Kopieer deze link:', location.href); }
-    setTimeout(() => (e.target.textContent = 'Kopieer link met deze getallen'), 1800);
+  const knop = e.target.closest('[data-copy],[data-reset],[data-voorbeeld]');
+  if (!knop) return;
+  if (knop.hasAttribute('data-copy')) {
+    schrijfHash(true);
+    try { await navigator.clipboard.writeText(location.href); knop.textContent = 'Link gekopieerd!'; } catch { prompt('Kopieer deze link:', location.href); }
+    setTimeout(() => (knop.textContent = 'Kopieer link met deze getallen'), 1800);
+    return;
   }
-  if (e.target.closest('[data-reset]')) {
-    const t = huidigeTab;
-    for (const k of VELDEN) { const el = $(k); if (el.type === 'checkbox') el.checked = false; else if (el.tagName !== 'SELECT') el.value = ''; }
-    $('peildatum').value = vandaag; $('u_vg').value = '8'; $('g_vg').value = '8';
-    zetTab(t); alles();
-  }
+  const leeg = Object.fromEntries(Object.entries(VOORBEELD).map(([k, v]) => [k, typeof v === 'boolean' ? false : $(k).tagName === 'SELECT' ? v : '']));
+  zet(knop.hasAttribute('data-reset') ? { ...leeg, g_vg: '8', g_ejo: '0', u_vg: '8', peildatum: vandaag } : { ...VOORBEELD, peildatum: vandaag });
+  alles();
 });
 
-function peilInfo() {
-  const d = $('peildatum').value || vandaag, r = E.regelsOp(d);
-  $('peilinfo').textContent = `bedragen geldig vanaf ${fmtDatum(r.vanaf)}`;
-}
-function alles() { peilInfo(); renderGrens(); renderUitkering(); schrijfHash(); }
+function alles() { const d = peildatum(); renderGrens(); renderUitkering(d); schrijfHash(); }
 document.addEventListener('input', (e) => { if (e.target.matches('input,select')) alles(); });
-window.addEventListener('hashchange', () => { vul(leesHash()); alles(); });
+window.addEventListener('hashchange', () => { leesHash(); alles(); });
+window.addEventListener('resize', () => { if (huidigeTab === 'uitkering') renderUitkering(peildatum()); });
 
-vul(leesHash());
+leesHash();
 renderStatisch();
+renderGevolg();
 alles();
 </script>
