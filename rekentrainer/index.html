@@ -1,0 +1,612 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rekentrainer 3F</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: smalle vaste kolom in de stijl van een forum uit 2008 — topbalk, logo + tabs, groen zoekvak met de som, grijze kopbalken en tabellen met afwisselende rijen.
+   Bewust één (lichte) look, zoals die sites toen waren. */
+:root{
+  color-scheme:light;
+  --page:#ffffff; --ink:#222222; --muted:#666666;
+  --link:#1f5fa8; --hover:#d26a00;
+  --green:#5b9bd5; --green-dark:#2f6ea8; --green-bg:#ddeefd; --green-line:#a9cdef; --green-top:#eef6fe;
+  --grey-bg:#f4f4f4; --grey-line:#c9c9c9;
+  --font:Verdana, Tahoma, "DejaVu Sans", Arial, sans-serif;
+}
+[data-dom="getallen"]{--green:#5b9bd5;--green-dark:#2f6ea8;--green-bg:#ddeefd;--green-line:#a9cdef;--green-top:#eef6fe}
+[data-dom="verh"]{--green:#e8916b;--green-dark:#a9532f;--green-bg:#ffe5d8;--green-line:#f2bfa6;--green-top:#fff3ed}
+[data-dom="meten"]{--green:#5fb98c;--green-dark:#2a7550;--green-bg:#d8f2e5;--green-line:#a6dcc0;--green-top:#eefaf3}
+[data-dom="verbanden"]{--green:#9a80dd;--green-dark:#5f46a6;--green-bg:#ebe4fc;--green-line:#c9b9f2;--green-top:#f6f2fe}
+[data-dom="mix"]{--green:#d4ad2a;--green-dark:#7d630f;--green-bg:#fff2c2;--green-line:#ead68a;--green-top:#fffae6}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--page);color:var(--ink);font:13px/1.55 var(--font);
+  padding-left:max(12px, env(safe-area-inset-left, 0px));padding-right:max(12px, env(safe-area-inset-right, 0px));padding-block:10px 40px}
+.page{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+a,.lnk{color:var(--link);text-decoration:underline;cursor:pointer}
+a:hover,.lnk:hover{color:var(--hover)}
+
+/* topbalk */
+.topbar{background:linear-gradient(#fafafa,#dedede);border:1px solid var(--grey-line);text-align:center;font-size:11px;padding:3px 8px;color:#888}
+.topbar span{color:var(--link)}
+
+/* kop */
+.head{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:flex-start;justify-content:space-between;border-bottom:1px solid #e3e3e3;padding-bottom:6px}
+.logo{display:flex;gap:10px;align-items:center}
+.blocks{display:grid;grid-template-columns:repeat(2,26px);gap:3px;transform:rotate(-8deg)}
+.blocks span{display:grid;place-items:center;height:26px;font:bold 15px var(--font);color:#fff;border:1px solid rgba(0,0,0,.25);border-radius:3px;
+  background:linear-gradient(#c6e1fa,#7fb3e3);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),1px 2px 0 #bbb;text-shadow:0 1px 0 rgba(0,0,0,.3)}
+.blocks span:nth-child(2){background:linear-gradient(#ffd6c2,#eb9a76)}
+.blocks span:nth-child(3){background:linear-gradient(#c3ecd6,#6cc095)}
+.blocks span:nth-child(4){background:linear-gradient(#dcd1fa,#a58ce2)}
+.wordmark{font:bold 21px/1 var(--font);letter-spacing:-.5px;color:#333}
+.wordmark sup{font-size:11px;color:var(--green-dark);letter-spacing:0;margin-left:2px}
+.count{font-size:11px;color:var(--muted);margin-top:4px}
+.score{font-size:11px;color:#333;text-align:right;font-variant-numeric:tabular-nums}
+.score b{color:var(--link)}
+
+/* tabs */
+.topics{display:flex;flex-wrap:wrap;gap:4px 22px;padding:4px 2px 0;width:100%}
+.topics button{position:relative;background:none;border:0;padding:2px 0 10px;font:bold 13px var(--font);color:var(--link);text-decoration:underline;cursor:pointer}
+.topics button:hover{color:var(--hover)}
+.topics button[aria-pressed="true"]{color:var(--green-dark);text-decoration:none}
+.topics button[aria-pressed="true"]::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);border:7px solid transparent;border-top-color:var(--green);border-bottom:0}
+.topics button:focus-visible,.lnk:focus-visible,.classic:focus-visible{outline:2px dotted var(--link);outline-offset:2px}
+
+/* groen vak met de som */
+.sheet{background:linear-gradient(var(--green-top),var(--green-bg));border:1px solid var(--green-line);padding:12px 14px;display:grid;grid-template-columns:58px 1fr;gap:10px 14px;align-items:start}
+.badge-ic{width:54px;height:54px;border-radius:50%;border:2px solid var(--green);background:radial-gradient(circle at 40% 35%,#ffffff,var(--green-bg));display:grid;place-items:center;font:bold 24px var(--font);color:var(--green-dark);grid-row:span 5}
+.sheet > *:not(.badge-ic){grid-column:2;min-width:0}
+.filter{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;font-weight:bold;color:#333}
+.filter select{font:12px var(--font);color:#222;border:1px solid #7f9db9;background:linear-gradient(#ffffff,#ececec);padding:3px 4px;max-width:100%;cursor:pointer}
+.filter select:focus-visible{outline:2px dotted var(--link);outline-offset:2px}
+.tag{justify-self:start;display:inline-flex;align-items:stretch;font:bold 9px/1 var(--font);text-transform:uppercase;letter-spacing:.8px;border:1px solid #222}
+.tag::before{content:"★★";background:#3a3a3a;color:#ffd84a;padding:3px 5px}
+.tag span{background:linear-gradient(90deg,#4a4a4a,var(--green));color:#fff;padding:3px 8px}
+.q{margin:0;font-size:15px;line-height:1.6;color:#111}
+.q .num{font-weight:bold;white-space:nowrap;color:#000}
+.show:empty{display:none}
+.show{background:#fff;border:1px solid var(--green-line);padding:8px}
+.answer{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.field{display:flex;align-items:center;gap:6px;background:#fff;border:2px solid #3b7bd1;padding:0 6px;flex:0 1 300px;min-width:0}
+.field input{font:bold 15px var(--font);border:0;outline:0;background:transparent;color:#000;padding:4px 0;width:100%;min-width:0}
+.field span{color:var(--muted);font-size:12px;white-space:nowrap}
+.classic{font:bold 12px var(--font);color:#222;cursor:pointer;background:linear-gradient(#fdfdfd,#d2d2d2);border:1px solid #6f6f6f;border-radius:2px;padding:5px 12px;box-shadow:inset 0 1px 0 #fff}
+.classic:hover{background:linear-gradient(#ffffff,#e2e2e2)}
+.classic:active{background:linear-gradient(#d2d2d2,#f4f4f4)}
+.hint{font-size:11px;color:var(--muted)}
+
+/* infobalk */
+.info{background:var(--grey-bg);border:1px solid #dedede;padding:8px 12px;display:flex;flex-direction:column;gap:8px;font-size:12px}
+.actions{display:flex;flex-wrap:wrap;gap:4px 18px}
+.actions .lnk{background:none;border:0;padding:0;font:12px var(--font)}
+.actions .lnk::before{content:"» ";color:var(--green);font-weight:bold;text-decoration:none;display:inline-block;margin-right:3px}
+.fb{border:1px solid;padding:6px 10px;font-weight:bold;display:flex;gap:8px;align-items:baseline}
+.fb::before{flex:none;display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;color:#fff;font-size:10px;line-height:1}
+.fb.ok{background:#d8f2e5;border-color:#8fd0ae;color:#24684a}
+.fb.ok::before{content:"✔";background:#4fae80}
+.fb.no{background:#fde3e6;border-color:#eba7b0;color:#a3303f}
+.fb.no::before{content:"✘";background:#d9606f}
+.fb span{font-weight:normal;color:var(--ink)}
+
+/* kopbalk-tabellen */
+.box{border:1px solid var(--grey-line)}
+.box h3,.crib h2{margin:0;background:linear-gradient(#ececec,#cfcfcf);border-bottom:1px solid #bdbdbd;font:bold 11px var(--font);text-align:center;padding:5px;color:#333}
+.uitleg ol{list-style:none;margin:0;padding:0;counter-reset:s}
+.uitleg li{counter-increment:s;display:grid;grid-template-columns:42px 1fr;border-bottom:1px solid #fff;min-width:0}
+.uitleg li::before{content:counter(s);display:grid;place-items:center;color:var(--link);font-weight:bold;text-decoration:underline;border-right:1px solid #fff}
+.uitleg li > *{min-width:0}
+.uitleg li:nth-child(odd){background:var(--green-bg)}
+.uitleg li:nth-child(even){background:#f3f3f3}
+.uitleg li{padding:0}
+.uitleg li{align-items:center}
+.uitleg ol li{padding-block:6px;padding-right:10px}
+#extra:not(:empty){padding:10px;border-top:1px solid var(--grey-line)}
+
+.scroll{overflow-x:auto}
+.ladder{display:grid;grid-template-columns:repeat(7,minmax(42px,1fr));gap:2px;min-width:320px}
+.cell{text-align:center;font:bold 11px var(--font);padding:6px 2px;background:#f6f6f6;border:1px solid #d3d3d3;color:#777}
+.cell.path{background:var(--green-bg);color:#333;border-color:var(--green-line)}
+.cell.from{background:#fff;border:2px solid var(--green);color:var(--green-dark)}
+.cell.to{background:var(--green);border-color:var(--green-dark);color:#fff}
+.note{font-size:11px;color:var(--muted);margin-top:5px}
+
+table.vt{border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;background:#fff}
+table.vt th,table.vt td{border:1px solid var(--grey-line);padding:4px 12px;text-align:center}
+table.vt tr:first-child th,table.vt tr:first-child td{background:linear-gradient(#f2f2f2,#dadada);font-weight:bold}
+table.vt th{text-align:left;color:#333;background:#f4f4f4}
+table.vt td.ans{background:var(--green)!important;color:#fff;font-weight:bold}
+
+.chart svg{width:100%;max-width:440px;height:auto;display:block}
+.gl{stroke:#dcdcdc;stroke-width:1}
+.tl{fill:#555;font:10px var(--font)}
+.bar{fill:var(--green);stroke:var(--green-dark);stroke-width:1}
+
+/* spiekbriefje */
+.crib{border:1px solid var(--grey-line)}
+.crib .share{margin:0;padding:6px 10px;font-size:11px;color:var(--muted);background:#fafafa;border-bottom:1px solid #e3e3e3}
+.crib .rule{margin:0;padding:8px 10px 4px;font-weight:bold;color:var(--green-dark)}
+.crib > .scroll,.crib > .note{margin-inline:10px}
+.crib ul{list-style:none;margin:0 !important;padding:0}
+.crib > .note + ul{border-top:1px solid #e3e3e3;margin-top:8px !important}
+.crib li{padding:5px 10px 5px 26px;position:relative;border-top:1px solid #fff}
+.crib li::before{content:"»";position:absolute;left:11px;color:var(--green);font-weight:bold}
+.crib li:nth-child(odd){background:var(--green-bg)}
+.crib li:nth-child(even){background:#f6f6f6}
+code{font:bold 12px var(--font);background:#fffbe0;border:1px solid #e6d77a;padding:0 4px;white-space:nowrap}
+
+footer{font-size:11px;color:#888;text-align:center;border-top:1px solid #e3e3e3;padding-top:8px}
+@media (max-width:520px){
+  .sheet{grid-template-columns:1fr}
+  .badge-ic{display:none}
+  .sheet > *:not(.badge-ic){grid-column:1}
+  .score{text-align:left}
+}
+</style>
+
+<div class="page" id="app" data-dom="getallen">
+  <div class="topbar"><span>Rekentrainer 3F</span> | <span>Onbeperkt oefenen</span> | <span>Uitleg bij elke som</span></div>
+
+  <div class="head">
+    <div class="logo">
+      <div class="blocks" aria-hidden="true"><span>+</span><span>−</span><span>×</span><span>÷</span></div>
+      <div>
+        <div class="wordmark">rekentrainer<sup>3F</sup></div>
+        <div class="count">oefen in 4 domeinen · elke som is nieuw</div>
+      </div>
+    </div>
+    <div class="score" aria-live="polite">Resultaten: goed in 1x <b id="sGood">0</b> van <b id="sTot">0</b><br>Reeks: <b id="sStreak">0</b> op rij</div>
+    <nav class="topics" id="topics" aria-label="Domein">
+      <button data-t="getallen" aria-pressed="true">Getallen</button>
+      <button data-t="verh" aria-pressed="false">Verhoudingen</button>
+      <button data-t="meten" aria-pressed="false">Meten &amp; meetkunde</button>
+      <button data-t="verbanden" aria-pressed="false">Verbanden</button>
+      <button data-t="mix" aria-pressed="false">Alles door elkaar</button>
+    </nav>
+  </div>
+
+  <section class="sheet" aria-live="polite">
+    <div class="badge-ic" aria-hidden="true">÷</div>
+    <div class="filter"><label for="cat">Onderwerp:</label><select id="cat"></select></div>
+    <span class="tag"><span id="tag"></span></span>
+    <p class="q" id="question"></p>
+    <div class="show" id="show"></div>
+    <form class="answer" id="form" autocomplete="off">
+      <label class="field" for="ans">
+        <span id="pre" hidden></span>
+        <input id="ans" inputmode="decimal" placeholder="Jouw antwoord..." aria-label="Jouw antwoord">
+        <span id="unit"></span>
+      </label>
+      <button class="classic" id="check" type="submit">Controleer</button>
+    </form>
+  </section>
+
+  <div class="info">
+    <div class="fb" id="fb" hidden></div>
+    <div class="actions">
+      <button class="lnk" id="showUitleg" type="button">Laat uitleg zien</button>
+      <button class="lnk" id="next" type="button">Nieuwe som</button>
+    </div>
+  </div>
+
+  <div class="box uitleg" id="uitleg" hidden>
+    <h3>Zo los je het op</h3>
+    <ol id="steps"></ol>
+    <div id="extra"></div>
+  </div>
+
+  <section class="crib" id="crib"></section>
+  <footer>Typ kommagetallen met een komma of punt · eenheden mag je weglaten · min-getallen met een −</footer>
+</div>
+
+<script>
+const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[R(0,a.length-1)];
+const clean=x=>Number((+x).toPrecision(12));
+const fmt=x=>clean(x).toLocaleString('nl-NL',{maximumFractionDigits:6});
+const eur=c=>'€ '+(c/100).toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2});
+const N=x=>`<span class="num">${x}</span>`;
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const okDec=(x,d)=>Math.abs(x*10**d-Math.round(x*10**d))<1e-7;
+const pad=n=>String(n).padStart(2,'0');
+const tijd=m=>`${pad(Math.floor(m/60)%24)}:${pad(m%60)}`;
+
+/* ---------- hulpmiddelen ---------- */
+const L={
+  lengte:{u:['km','hm','dam','m','dm','cm','mm'],f:10,naam:'lengte',kp:1,lo:0,hi:6,max:3},
+  opp:{u:['km²','hm²','dam²','m²','dm²','cm²','mm²'],f:100,naam:'oppervlakte',kp:2,lo:2,hi:5,max:2,sup:'²'},
+  inh:{u:['km³','hm³','dam³','m³','dm³','cm³','mm³'],f:1000,naam:'inhoud',kp:3,lo:3,hi:5,max:2,sup:'³'},
+  liter:{u:['kl','hl','dal','l','dl','cl','ml'],f:10,naam:'liters',kp:1,lo:0,hi:6,max:3},
+  gewicht:{u:['kg','hg','dag','g','dg','cg','mg'],f:10,naam:'gewicht',kp:1,lo:0,hi:6,max:3},
+};
+function ladder(lad,i,j){
+  const lo=Math.min(i,j),hi=Math.max(i,j),n=hi-lo,op=j>i?'×':':';
+  const cells=lad.u.map((u,x)=>`<span class="cell${x===i?' from':''}${x===j?' to':''}${x>lo&&x<hi?' path':''}">${u}</span>`).join('');
+  return `<div class="scroll"><div class="ladder">${cells}</div></div><div class="note">${lad.u[i]} → ${lad.u[j]}: ${n} ${n===1?'stap':'stappen'} naar ${j>i?'rechts':'links'} = ${Array(n).fill(op+' '+fmt(lad.f)).join('  ')}</div>`;
+}
+function vtab(rows,ansPos){
+  return `<div class="scroll"><table class="vt">${rows.map((r,ri)=>`<tr><th>${r[0]}</th>${r.slice(1).map((c,ci)=>`<td${ansPos&&ansPos[0]===ri&&ansPos[1]===ci?' class="ans"':''}>${c}</td>`).join('')}</tr>`).join('')}</table></div>`;
+}
+function pct(n,p){
+  const v=clean(n*p/100),t=clean(n/10);let s;
+  if(p===50)s=[`50% is de helft: ${fmt(n)} : 2 = ${fmt(v)}`];
+  else if(p===25)s=[`25% is een kwart: ${fmt(n)} : 4 = ${fmt(v)}`];
+  else if(p===75)s=[`25% = ${fmt(n)} : 4 = ${fmt(n/4)}`,`75% = 3 × 25% = ${fmt(v)}`];
+  else if(p===1)s=[`1% = ${fmt(n)} : 100 = ${fmt(v)}`];
+  else if(p%10===0)s=[`10% = ${fmt(n)} : 10 = ${fmt(t)}`].concat(p===10?[]:[`${p}% = ${p/10} × 10% = ${fmt(v)}`]);
+  else if(p===5)s=[`10% = ${fmt(n)} : 10 = ${fmt(t)}`,`5% = de helft van 10% = ${fmt(v)}`];
+  else if(p%10===5)s=[`10% = ${fmt(n)} : 10 = ${fmt(t)}`,`5% = de helft van 10% = ${fmt(t/2)}`,`${p}% = ${(p-5)/10} × 10% + 5% = ${fmt(clean(t*(p-5)/10))} + ${fmt(t/2)} = ${fmt(v)}`];
+  else s=[`1% = ${fmt(n)} : 100 = ${fmt(n/100)}`,`${p}% = ${p} × 1% = ${fmt(v)}`];
+  return {v,s};
+}
+function bars(labels,vals,step){
+  const W=360,H=220,l=40,b=26,t=10,r=6,max=Math.ceil(Math.max(...vals)/step)*step,ph=H-b-t,pw=W-l-r,bw=pw/labels.length;
+  let g='';
+  for(let y=0;y<=max;y+=step){const yy=t+ph-(y/max)*ph;g+=`<line class="gl" x1="${l}" x2="${W-r}" y1="${yy}" y2="${yy}"/><text class="tl" x="${l-6}" y="${yy+4}" text-anchor="end">${fmt(y)}</text>`;}
+  labels.forEach((lb,i)=>{const h=vals[i]/max*ph,x=l+i*bw+bw*.2;g+=`<rect class="bar" x="${x}" y="${t+ph-h}" width="${bw*.6}" height="${h}" rx="3"/><text class="tl" x="${x+bw*.3}" y="${H-8}" text-anchor="middle">${lb}</text>`;});
+  return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Staafdiagram">${g}</svg></div>`;
+}
+
+/* ================= GETALLEN ================= */
+const GETALLEN=[
+ function splitsen(){
+  const a=R(3,9),base=R(2,9)*10,d=pick([-2,-1,1,2]),b=base+d,ans=a*b;
+  return {type:'Hoofdrekenen · splitsen',text:`Reken uit zonder rekenmachine: ${N(a+' × '+b)}`,answer:ans,
+   steps:[`${b} ligt dicht bij ${base}. Reken eerst ${a} × ${base} = ${fmt(a*base)}.`,
+    `${b} is ${Math.abs(d)} ${d<0?'minder':'meer'} dan ${base}, dus ${d<0?'haal':'tel'} ${a} × ${Math.abs(d)} = ${a*Math.abs(d)} ${d<0?'eraf':'erbij'}.`,
+    `${fmt(a*base)} ${d<0?'−':'+'} ${a*Math.abs(d)} = <b>${fmt(ans)}</b>`]};
+ },
+ function keer25(){
+  const n=R(6,48),ans=n*25;
+  return {type:'Hoofdrekenen · handig keer',text:`Reken uit: ${N(n+' × 25')}`,answer:ans,
+   steps:[`25 is een kwart van 100. Dus × 25 = × 100 en dan : 4.`,`${n} × 100 = ${fmt(n*100)}.`,`${fmt(n*100)} : 2 = ${fmt(n*50)}, nog eens : 2 = <b>${fmt(ans)}</b>`]};
+ },
+ function keer5(){
+  const n=R(13,98),ans=n*5;
+  return {type:'Hoofdrekenen · handig keer',text:`Reken uit: ${N(n+' × 5')}`,answer:ans,
+   steps:[`5 is de helft van 10. Dus × 5 = × 10 en dan halveren.`,`${n} × 10 = ${n*10}.`,`${n*10} : 2 = <b>${fmt(ans)}</b>`]};
+ },
+ function delen(){
+  const b=pick([4,5,6,7,8,12,15,25]),q=R(12,40),a=b*q;let steps;
+  if(b===4) steps=[`: 4 = twee keer halveren.`,`${a} : 2 = ${a/2}, en ${a/2} : 2 = <b>${q}</b>`];
+  else if(b===8) steps=[`: 8 = drie keer halveren.`,`${a} → ${a/2} → ${a/4} → <b>${q}</b>`];
+  else if(b===5) steps=[`: 5 = eerst × 2, dan : 10.`,`${a} × 2 = ${a*2}, en ${a*2} : 10 = <b>${q}</b>`];
+  else if(b===25) steps=[`: 25 = eerst × 4, dan : 100.`,`${a} × 4 = ${fmt(a*4)}, en ${fmt(a*4)} : 100 = <b>${q}</b>`];
+  else {const t=Math.floor(q/10)*10,r=q-t;
+    steps=[`Begin met een rond getal: ${b} × ${t} = ${b*t}.`,`Over: ${a} − ${b*t} = ${a-b*t}. En ${b} × ${r} = ${b*r}.`,`Samen ${t} + ${r} = <b>${q}</b>`];}
+  return {type:'Hoofdrekenen · delen',text:`Reken uit: ${N(fmt(a)+' : '+b)}`,answer:q,steps};
+ },
+ function delenKomma(){
+  const b=pick([0.5,0.25,0.2,0.1,0.05,0.12,0.4,0.02]),q=pick([R(3,40)*10,R(4,60)]),a=clean(q*b),m=b<0.1||b===0.12||b===0.25?100:10;
+  return {type:'Delen door een kommagetal',text:`Reken uit: ${N(fmt(a)+' : '+fmt(b))}`,answer:q,
+   steps:[`Een kommagetal als deler is lastig. Maak er een heel getal van: doe <b>beide</b> getallen × ${m}.`,`${fmt(a)} × ${m} = ${fmt(a*m)} en ${fmt(b)} × ${m} = ${fmt(b*m)}.`,`${fmt(a*m)} : ${fmt(b*m)} = <b>${fmt(q)}</b>`,`Controle: delen door iets kleiners dan 1 geeft een <b>groter</b> getal.`]};
+ },
+ function kommakeer(){
+  const k=pick([0.5,0.25,1.5,2.5]),n=pick([R(6,40)*2,R(3,25)*4]),ans=n*k;
+  const s={0.5:[`0,5 is de helft.`,`${n} : 2 = <b>${fmt(ans)}</b>`],0.25:[`0,25 is een kwart.`,`${n} : 4 = <b>${fmt(ans)}</b>`],
+   1.5:[`1,5 keer = 1 keer + een halve keer.`,`${n} + ${fmt(n/2)} = <b>${fmt(ans)}</b>`],2.5:[`2,5 keer = 2 keer + een halve keer.`,`${2*n} + ${fmt(n/2)} = <b>${fmt(ans)}</b>`]};
+  return {type:'Kommagetallen',text:`Reken uit: ${N(fmt(k)+' × '+n)}`,answer:ans,steps:s[k]};
+ },
+ function breukVan(){
+  const [t,d]=pick([[1,4],[3,4],[2,3],[1,3],[3,5],[2,5],[1,8],[3,8],[5,6]]),n=d*R(3,20),ans=n/d*t;
+  return {type:'Breuken',text:`Hoeveel is ${N(t+'/'+d)} van ${N(n)}?`,answer:ans,
+   steps:[`De noemer (${d}) zegt: verdeel in ${d} gelijke stukken. ${n} : ${d} = ${n/d}.`,`De teller (${t}) zegt: neem er ${t} van. ${n/d} × ${t} = <b>${fmt(ans)}</b>`]};
+ },
+ function breukKomma(){
+  const [t,d]=pick([[1,2],[1,4],[3,4],[1,5],[2,5],[4,5],[1,8],[3,8],[7,10],[3,20],[7,25]]);
+  const m=[10,100,1000].find(x=>x%d===0)/d,ans=t/d;
+  return {type:'Breuken',text:`Schrijf ${N(t+'/'+d)} als kommagetal.`,answer:ans,
+   steps:[`Maak de noemer 10, 100 of 1000. Doe boven én onder × ${m}.`,`${t}/${d} = ${t*m}/${d*m}.`,`${t*m} ${d*m===10?'tiende':d*m===100?'honderdste':'duizendste'}n = <b>${fmt(ans)}</b>`]};
+ },
+ function afronden(){
+  const k=R(1001,99999),v=k/1000,mode=pick(['dec','heel','geld']);
+  if(mode==='heel'){const ans=Math.round(v),nxt=Math.floor(k/100)%10;
+   return {type:'Afronden',text:`Rond ${N(fmt(v))} af op een heel getal.`,answer:ans,
+    steps:[`Kijk naar het cijfer direct achter de komma: ${nxt}.`,nxt>=5?`${nxt} is 5 of meer, dus naar boven.`:`${nxt} is minder dan 5, dus naar beneden.`,`Antwoord: <b>${ans}</b>`]};}
+  const nxt=Math.floor(k/(mode==='geld'?1:10))%10,ans=mode==='geld'?Math.round(k/10)/100:Math.round(k/100)/10;
+  if(mode==='geld') return {type:'Afronden',text:`Een rekenmachine geeft ${N('€ '+fmt(v))}. Rond af op hele centen.`,answer:ans,pre:'€',
+    steps:[`Hele centen = 2 cijfers achter de komma. Kijk naar het 3e cijfer: ${nxt}.`,nxt>=5?`5 of meer, dus naar boven.`:`Minder dan 5, dus naar beneden.`,`Antwoord: <b>${eur(Math.round(ans*100))}</b>`]};
+  return {type:'Afronden',text:`Rond ${N(fmt(v))} af op 1 decimaal.`,answer:ans,
+   steps:[`1 decimaal = 1 cijfer achter de komma. Kijk naar het 2e cijfer achter de komma: ${nxt}.`,nxt>=5?`${nxt} is 5 of meer, dus naar boven.`:`${nxt} is minder dan 5, dus naar beneden.`,`Antwoord: <b>${fmt(ans)}</b>`]};
+ },
+ function machten(){
+  const k=pick(['kw','wortel','tien']);
+  if(k==='kw'){const a=pick([11,12,13,14,15,20,25,30]);return {type:'Machten en wortels',text:`Reken uit: ${N(a+'²')}`,answer:a*a,steps:[`${a}² betekent ${a} × ${a}.`,`${a} × ${a} = <b>${a*a}</b>`]};}
+  if(k==='wortel'){const a=pick([4,5,6,7,8,9,11,12,15,20,30,50]);return {type:'Machten en wortels',text:`Reken uit: ${N('√'+a*a)}`,answer:a,steps:[`√${a*a} vraagt: welk getal keer zichzelf is ${a*a}?`,`${a} × ${a} = ${a*a}, dus <b>${a}</b>`]};}
+  const n=R(2,6),b=pick([3,4.5,1.2,7,2.5]),ans=clean(b*10**n);
+  return {type:'Machten en wortels',text:`Reken uit: ${N(fmt(b)+' × 10<sup>'+n+'</sup>')}`,answer:ans,steps:[`10<sup>${n}</sup> = 1 met ${n} nullen = ${fmt(10**n)}.`,`× ${fmt(10**n)}: de komma schuift ${n} plekken naar rechts.`,`Antwoord: <b>${fmt(ans)}</b>`]};
+ },
+ function negatief(){
+  if(Math.random()<.5){const a=R(2,12),b=R(3,18);
+   return {type:'Negatieve getallen',text:`'s Nachts is het ${N('−'+a+' °C')}. Overdag is het ${N(b+' °C')}. Hoeveel graden is het verschil?`,answer:a+b,unit:'°C',
+    steps:[`Denk aan een thermometer. Van −${a} naar 0 is ${a} graden.`,`Van 0 naar ${b} is nog ${b} graden.`,`Samen ${a} + ${b} = <b>${a+b} graden</b>`]};}
+  const t=R(2,8),d=R(t+2,t+12),ans=t-d;
+  return {type:'Negatieve getallen',text:`Het is ${N(t+' °C')}. De temperatuur daalt ${N(d+' graden')}. Hoe koud is het dan?`,answer:ans,unit:'°C',
+   steps:[`Eerst ${t} graden omlaag tot 0.`,`Dan nog ${d} − ${t} = ${d-t} graden onder 0.`,`Antwoord: <b>${fmt(ans).replace('-','−')} °C</b>`]};
+ },
+ function wisselgeld(){
+  const it=[0,0,0].map(()=>Math.round(R(105,995)/5)*5),sum=it.reduce((a,b)=>a+b,0),pay=sum<2000?2000:5000;
+  return {type:'Rekenen met geld',text:`Je koopt drie dingen van ${it.map(c=>N(eur(c))).join(', ')}. Je betaalt met ${N(eur(pay))}. Hoeveel wisselgeld krijg je?`,answer:(pay-sum)/100,pre:'€',
+   steps:[`Tel eerst op: ${eur(it[0])} + ${eur(it[1])} = ${eur(it[0]+it[1])}, + ${eur(it[2])} = ${eur(sum)}.`,`Wisselgeld: ${eur(pay)} − ${eur(sum)} = <b>${eur(pay-sum)}</b>`,`Controle: tel op van ${eur(sum)} naar ${eur(pay)}, zoals bij de kassa.`]};
+ },
+];
+
+/* ================= VERHOUDINGEN ================= */
+const VERH=[
+ function procent(){
+  const p=pick([10,5,15,20,25,50,75,1,2,30,35]),n=R(2,40)*20,{v,s}=pct(n,p);
+  const ctx=pick([[`Hoeveel is ${N(p+'%')} van ${N(fmt(n))}?`,''],[`Van de ${N(fmt(n))} leerlingen komt ${N(p+'%')} met de bus. Hoeveel leerlingen zijn dat?`,'']]);
+  return {type:'Procenten',text:ctx[0],answer:v,steps:[...s,`Antwoord: <b>${fmt(v)}</b>`]};
+ },
+ function nieuwePrijs(){
+  const p=pick([10,15,20,25,5,30]),n=R(4,50)*20,up=Math.random()<.35,{v,s}=pct(n,p),ans=up?n+v:n-v;
+  const ding=pick(['fiets','jas','telefoon','bank','laptop']);
+  return {type:'Procenten · nieuwe prijs',text:up?`Een ${ding} kost ${N('€ '+fmt(n))}. De prijs gaat ${N(p+'%')} omhoog. Wat is de nieuwe prijs?`:`Een ${ding} kost ${N('€ '+fmt(n))}. Je krijgt ${N(p+'%')} korting. Wat betaal je?`,answer:ans,pre:'€',
+   steps:[...s.map(x=>x),up?`Nieuwe prijs: ${fmt(n)} + ${fmt(v)} = <b>€ ${fmt(ans)}</b>`:`Je betaalt: ${fmt(n)} − ${fmt(v)} = <b>€ ${fmt(ans)}</b>`,`Andere manier: ${up?100+p:100-p}% van ${fmt(n)} = ${fmt(n)} × ${fmt((up?100+p:100-p)/100)}.`]};
+ },
+ function welkPercentage(){
+  const [t,d]=pick([[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,2],[7,10],[3,20],[9,25],[1,8]]),k=R(2,12),deel=t*k,geheel=d*k,ans=t/d*100;
+  return {type:'Procenten · welk percentage',text:`Van de ${N(geheel)} sollicitanten worden er ${N(deel)} uitgenodigd. Welk percentage is dat?`,answer:ans,unit:'%',
+   steps:[`Percentage = deel : geheel × 100.`,`${deel} : ${geheel} = ${fmt(t/d)}.`,`${fmt(t/d)} × 100 = <b>${fmt(ans)}%</b>`,`Of met een tabel: ${geheel} is 100%, dus 1 is ${fmt(clean(100/geheel))}%.`],
+   extra:vtab([['aantal',geheel,deel],['procent','100%',fmt(ans)+'%']],[1,1])};
+ },
+ function recept(){
+  const ing=pick([['pasta',100],['rijst',75],['gehakt',125],['kaas',40],['bloem',50],['groente',150]]);
+  const p1=pick([4,6,8,3]),k=ing[1],p2=pick([2,5,7,9,10,12].filter(x=>x!==p1)),ans=k*p2;
+  return {type:'Verhoudingstabel',text:`Een recept voor ${N(p1+' personen')} gebruikt ${N(p1*k+' gram')} ${ing[0]}. Hoeveel gram heb je nodig voor ${N(p2+' personen')}?`,answer:ans,unit:'gram',
+   steps:[`Maak een verhoudingstabel. Wat je boven doet, doe je onder ook.`,`Ga eerst naar 1 persoon: ${p1*k} : ${p1} = ${k} gram.`,`Dan naar ${p2} personen: ${k} × ${p2} = <b>${ans} gram</b>`],
+   extra:vtab([['personen',p1,1,p2],['gram',p1*k,k,ans]],[1,2])};
+ },
+ function prijs(){
+  const n1=pick([3,4,5,6]),c=pick([125,150,175,250,80,120,90,240,60]),n2=pick([2,7,8,9,10,12].filter(x=>x!==n1));
+  const what=pick(['pakken koffie','flessen frisdrank','schriften','zakken chips']);
+  return {type:'Verhoudingstabel',text:`${N(n1+' '+what)} kosten samen ${N(eur(n1*c))}. Wat kosten ${N(n2+' '+what)}?`,answer:c*n2/100,pre:'€',
+   steps:[`Prijs van 1: ${eur(n1*c)} : ${n1} = ${eur(c)}.`,`× ${n2}: ${eur(c)} × ${n2} = <b>${eur(c*n2)}</b>`],
+   extra:vtab([['aantal',n1,1,n2],['euro',eur(n1*c),eur(c),eur(c*n2)]],[1,2])};
+ },
+ function schaal(){
+  const s=pick([25000,50000,10000,100000,200000]),cm=pick([2,3,4,5,6,7,2.5,1.5,8,12]),real=cm*s,ans=real/100000;
+  return {type:'Schaal',text:`Op een kaart met schaal ${N('1 : '+fmt(s))} is een fietsroute ${N(fmt(cm)+' cm')}. Hoeveel km is dat in het echt?`,answer:ans,unit:'km',
+   steps:[`1 cm op de kaart = ${fmt(s)} cm in het echt.`,`${fmt(cm)} × ${fmt(s)} = ${fmt(real)} cm.`,`cm → m: : 100 = ${fmt(real/100)} m.`,`m → km: : 1000 = <b>${fmt(ans)} km</b>`],
+   extra:ladder(L.lengte,5,0)};
+ },
+ function mengsel(){
+  const a=pick([3,4,5,7,9]),deel=pick([0.25,0.5,0.2,1,0.3]),tot=clean(deel*(a+1));
+  return {type:'Verhouding · mengen',text:`Je maakt ${N(fmt(tot)+' liter')} ranja: ${N('1 deel siroop op '+a+' delen water')}. Hoeveel liter siroop heb je nodig?`,answer:deel,unit:'liter',
+   steps:[`Tel de delen: 1 + ${a} = <b>${a+1} delen</b> in totaal. (Valkuil: niet delen door ${a}!)`,`1 deel = ${fmt(tot)} : ${a+1} = ${fmt(deel)} liter.`,`Siroop is 1 deel = <b>${fmt(deel)} liter</b>`]};
+ },
+ function verdelen(){
+  const [x,y]=pick([[2,3],[1,4],[3,5],[2,5],[1,3],[3,7],[1,2]]),per=pick([10,15,20,25,12,30,40]),tot=(x+y)*per,ans=y*per;
+  return {type:'Verhouding · verdelen',text:`Sam en Noor verdienen samen ${N('€ '+tot)}. Ze verdelen het in de verhouding ${N(x+' : '+y)}. Hoeveel krijgt Noor (${y} delen)?`,answer:ans,pre:'€',
+   steps:[`Tel de delen: ${x} + ${y} = ${x+y}.`,`1 deel = ${tot} : ${x+y} = € ${per}.`,`Noor: ${y} × ${per} = <b>€ ${ans}</b>`]};
+ },
+ function snelheid(){
+  let v,t,d;
+  for(let k=0;k<100;k++){v=pick([60,80,90,100,120,45,30,15,20,12]);t=pick([15,20,30,45,90,40,12,10,75]);d=v*t/60;if(okDec(d,1))break;}
+  const g=gcd(60,t),dg=v*g/60;
+  return {type:'Snelheid (km/u)',text:`Een ${v<=20?'fietser':'auto'} rijdt gemiddeld ${N(v+' km/u')}. Hoeveel km is dat in ${N(t+' minuten')}?`,answer:d,unit:'km',
+   steps:[`${v} km/u = ${v} km in 60 minuten.`,`Naar ${g} minuten: ${v} : ${60/g} = ${fmt(dg)} km.`,`${t} minuten = ${t/g} × ${g}: ${fmt(dg)} × ${t/g} = <b>${fmt(d)} km</b>`],
+   extra:vtab([['km',v,fmt(dg),fmt(d)],['minuten',60,g,t]],[0,2])};
+ },
+];
+
+/* ================= METEN & MEETKUNDE ================= */
+const KOP=[
+ {f:'m³',t:'liter',k:1000,v:()=>pick([R(2,9)/2,R(1,30)/10,R(2,12)]),why:'1 m³ = 1000 liter, dus keer 1000.'},
+ {f:'liter',t:'m³',k:1/1000,v:()=>R(3,90)*50,why:'1000 liter = 1 m³, dus delen door 1000.'},
+ {f:'dm³',t:'liter',k:1,v:()=>pick([R(2,90),R(5,95)/10]),why:'1 dm³ = precies 1 liter. Het getal blijft hetzelfde.'},
+ {f:'liter',t:'dm³',k:1,v:()=>pick([R(2,90),R(5,95)/10]),why:'1 liter = precies 1 dm³. Het getal blijft hetzelfde.'},
+ {f:'cm³',t:'ml',k:1,v:()=>R(20,900),why:'1 cm³ = precies 1 ml. Het getal blijft hetzelfde.'},
+ {f:'cm³',t:'liter',k:1/1000,v:()=>R(5,90)*50,why:'1 cm³ = 1 ml, en 1000 ml = 1 liter. Dus delen door 1000.'},
+ {f:'liter',t:'cm³',k:1000,v:()=>pick([R(2,9)/2,R(11,40)/10]),why:'1 liter = 1 dm³ = 1000 cm³. Dus keer 1000.'},
+ {f:'ml',t:'dm³',k:1/1000,v:()=>R(5,90)*50,why:'1 ml = 1 cm³, en 1000 cm³ = 1 dm³. Dus delen door 1000.'},
+];
+const METEN=[
+ function omrekenen(){
+  const key=pick(['lengte','lengte','opp','inh','liter','gewicht']),lad=L[key];let i,j,v,ans;
+  for(let k=0;k<200;k++){i=R(lad.lo,lad.hi);j=R(lad.lo,lad.hi);if(i===j||Math.abs(i-j)>lad.max)continue;
+    v=pick([R(2,99),R(2,99)/10,R(100,999),R(1,9)+0.5,R(1,99)/100,R(11,99)*10]);ans=clean(v*lad.f**(j-i));
+    if(ans>=0.001&&ans<=5e6&&okDec(ans,4))break;}
+  const n=Math.abs(j-i),dir=j>i?'rechts':'links',kp=lad.kp;
+  return {type:'Omrekenen · '+lad.naam,text:`${N(fmt(v)+' '+lad.u[i])} = … ${N(lad.u[j])}`,answer:ans,unit:lad.u[j],
+   steps:[`Zoek ${lad.u[i]} en ${lad.u[j]} op de rij van ${lad.naam} (balk hieronder).`,
+    `${lad.u[j]} staat ${n} ${n===1?'stap':'stappen'} naar ${dir}. ${j>i?'Naar rechts = kleinere eenheid = het getal wordt groter, dus <b>keer</b>.':'Naar links = grotere eenheid = het getal wordt kleiner, dus <b>delen</b>.'}`,
+    `Elke stap is ${j>i?'×':':'} ${fmt(lad.f)}: de komma schuift ${kp} ${kp===1?'plek':'plekken'} per stap.${lad.sup?` (Het kleine ${lad.sup} vertelt je: ${kp} plekken.)`:''}`,
+    `${n} × ${kp} = ${n*kp} ${n*kp===1?'plek':'plekken'} naar ${dir}: <b>${fmt(ans)} ${lad.u[j]}</b>`],extra:ladder(lad,i,j)};
+ },
+ function koppeling(){
+  const k=pick(KOP),v=clean(k.v()),ans=clean(v*k.k);
+  return {type:'Inhoud ↔ liters',text:`${N(fmt(v)+' '+k.f)} = … ${N(k.t)}`,answer:ans,unit:k.t,
+   steps:[`De drie bruggen: <code>1 m³ = 1000 l</code> <code>1 dm³ = 1 l</code> <code>1 cm³ = 1 ml</code>`,k.why,`${fmt(v)} ${k.f} = <b>${fmt(ans)} ${k.t}</b>`]};
+ },
+ function balkCm(){
+  const ctx=pick(['Een aquarium','Een opbergdoos','Een koelbox','Een plantenbak']);
+  const l=R(3,12)*10,b=R(2,6)*10,h=R(2,8)*10,ans=l*b*h/1000;
+  return {type:'Inhoud · balk',text:`${ctx} is ${N(l+' cm')} lang, ${N(b+' cm')} breed en ${N(h+' cm')} hoog. Hoeveel liter past erin?`,answer:ans,unit:'liter',
+   steps:[`Truc: zet alles eerst om naar <b>dm</b> (cm : 10). Dan krijg je meteen liters.`,`${l/10} dm × ${b/10} dm × ${h/10} dm = ${fmt(ans)} dm³.`,`1 dm³ = 1 liter, dus <b>${fmt(ans)} liter</b>`]};
+ },
+ function balkM(){
+  const ctx=pick(['Een zandbak','Een vijver','Een watertank','Een container']);
+  const l=pick([2,2.5,3,4,1.5,5]),b=pick([1,1.5,2,0.5,1.2]),h=pick([0.5,1,0.4,0.8,0.6]),m3=clean(l*b*h),ans=clean(m3*1000);
+  return {type:'Inhoud · balk',text:`${ctx} is ${N(fmt(l)+' m')} lang, ${N(fmt(b)+' m')} breed en ${N(fmt(h)+' m')} diep. Hoeveel liter is de inhoud?`,answer:ans,unit:'liter',
+   steps:[`${fmt(l)} × ${fmt(b)} × ${fmt(h)} = ${fmt(m3)} m³.`,`1 m³ = 1000 liter: ${fmt(m3)} × 1000 = <b>${fmt(ans)} liter</b>`]};
+ },
+ function cilinder(){
+  const d=pick([20,30,40,60,10,50]),h=pick([30,50,40,80,100,60]),r=d/20,hd=h/10,ans=Math.round(3.14*r*r*hd*10)/10;
+  return {type:'Inhoud · cilinder',text:`${pick(['Een regenton','Een pan','Een emmer'])} is een cilinder met een diameter van ${N(d+' cm')} en een hoogte van ${N(h+' cm')}. Hoeveel liter past erin? Gebruik π ≈ 3,14 en rond af op 1 decimaal.`,answer:ans,unit:'liter',tol:0.015,
+   steps:[`Inhoud = π × straal × straal × hoogte.`,`Straal = helft van de diameter: ${d/2} cm = ${fmt(r)} dm. Hoogte = ${fmt(hd)} dm.`,`3,14 × ${fmt(r)} × ${fmt(r)} × ${fmt(hd)} = ${fmt(clean(3.14*r*r*hd))} dm³.`,`Afgerond: <b>${fmt(ans)} liter</b>`]};
+ },
+ function hoogte(){
+  const l=R(4,10)*10,b=R(3,6)*10,h=R(2,6)*10,lit=l*b*h/1000;
+  return {type:'Inhoud · terugrekenen',text:`Een bak is ${N(l+' cm')} lang en ${N(b+' cm')} breed. Er zit ${N(fmt(lit)+' liter')} water in. Hoe hoog staat het water?`,answer:h,unit:'cm',
+   steps:[`${fmt(lit)} liter = ${fmt(lit)} dm³. Reken in dm.`,`Bodem: ${l/10} × ${b/10} = ${l*b/100} dm².`,`Hoogte = ${fmt(lit)} : ${l*b/100} = ${fmt(h/10)} dm = <b>${h} cm</b>`]};
+ },
+ function oppervlakte(){
+  const l=pick([3.5,4,4.5,5,6,3.2]),b=pick([2.5,3,3.2,4,2.8]),a=clean(l*b);
+  if(Math.random()<.5) return {type:'Oppervlakte',text:`Een kamer is ${N(fmt(l)+' m')} lang en ${N(fmt(b)+' m')} breed. Hoeveel m² is de vloer?`,answer:a,unit:'m²',
+    steps:[`Oppervlakte rechthoek = lengte × breedte.`,`${fmt(l)} × ${fmt(b)} = <b>${fmt(a)} m²</b>`]};
+  const pak=pick([2.2,2.5,1.8,2,1.5]),x=clean(a/pak),ans=Math.ceil(x-1e-9);
+  return {type:'Oppervlakte · hoeveel pakken',text:`Een kamer is ${N(fmt(l)+' m')} bij ${N(fmt(b)+' m')}. Eén pak laminaat is genoeg voor ${N(fmt(pak)+' m²')}. Hoeveel pakken moet je kopen?`,answer:ans,unit:'pakken',
+   steps:[`Vloer: ${fmt(l)} × ${fmt(b)} = ${fmt(a)} m².`,`${fmt(a)} : ${fmt(pak)} = ${fmt(Math.round(x*100)/100)}.`,`Je kunt geen half pak kopen, dus naar boven afronden: <b>${ans} pakken</b>`]};
+ },
+ function omtrek(){
+  if(Math.random()<.6){const l=pick([R(6,20),R(6,20)+0.5]),b=pick([R(4,12),R(4,12)+0.5]),ans=clean(2*(l+b));
+   return {type:'Omtrek',text:`Een tuin is ${N(fmt(l)+' m')} lang en ${N(fmt(b)+' m')} breed. Er komt een hek omheen. Hoeveel meter hek is nodig?`,answer:ans,unit:'m',
+    steps:[`Omtrek = alle zijden bij elkaar: 2 × lang + 2 × breed.`,`2 × ${fmt(l)} + 2 × ${fmt(b)} = ${fmt(2*l)} + ${fmt(2*b)} = <b>${fmt(ans)} m</b>`]};}
+  const d=pick([2,3,4,5,6,8]),ans=Math.round(3.14*d*10)/10;
+  return {type:'Omtrek · cirkel',text:`Een rond zwembad heeft een diameter van ${N(d+' m')}. Hoeveel meter is de rand rondom? Gebruik π ≈ 3,14.`,answer:ans,unit:'m',tol:0.015,
+   steps:[`Omtrek cirkel = π × diameter.`,`3,14 × ${d} = <b>${fmt(ans)} m</b>`]};
+ },
+ function tijdsduur(){
+  const dep=R(7,20)*60+R(0,59),dur=R(25,150),arr=dep+dur,m=dep%60;
+  const same=Math.floor(arr/60)===Math.floor(dep/60);
+  return {type:'Tijd',text:`De trein vertrekt om ${N(tijd(dep))} en komt aan om ${N(tijd(arr))}. Hoeveel minuten duurt de reis?`,answer:dur,unit:'minuten',
+   steps:same?[`Zelfde uur: ${arr%60} − ${m} = <b>${dur} minuten</b>`]:[`Vul aan tot het hele uur: van ${tijd(dep)} tot ${tijd(dep-m+60)} is ${60-m} minuten.`,
+     `Van ${tijd(dep-m+60)} tot ${tijd(arr)} is ${arr-(dep-m+60)} minuten.`,`Samen: ${60-m} + ${arr-(dep-m+60)} = <b>${dur} minuten</b>`,`Let op: een uur heeft 60 minuten, dus gewoon ${tijd(arr).replace(':','')} − ${tijd(dep).replace(':','')} werkt niet.`]};
+ },
+];
+
+/* ================= VERBANDEN ================= */
+const VERBANDEN=[
+ function taxi(){
+  const st=pick([350,400,295,450]),pk=pick([220,250,180,300,240]),km=R(3,18),c=st+pk*km;
+  return {type:'Formule invullen',text:`Een taxi rekent met de formule ${N('kosten = '+eur(st).replace('€ ','')+' + '+eur(pk).replace('€ ','')+' × aantal km')}. Wat kost een rit van ${N(km+' km')}?`,answer:c/100,pre:'€',
+   steps:[`Vul in: kosten = ${eur(st)} + ${eur(pk)} × ${km}.`,`Eerst keer (× gaat vóór +): ${eur(pk)} × ${km} = ${eur(pk*km)}.`,`Dan plus: ${eur(st)} + ${eur(pk*km)} = <b>${eur(c)}</b>`]};
+ },
+ function fahrenheit(){
+  const c=pick([10,20,25,30,35,0,15,-10,5,40]),f=clean(c*1.8+32);
+  return {type:'Formule invullen',text:`Met de formule ${N('°F = °C × 1,8 + 32')} reken je Celsius om naar Fahrenheit. Hoeveel °F is ${N(fmt(c).replace('-','−')+' °C')}?`,answer:f,unit:'°F',
+   steps:[`Vul in: ${fmt(c).replace('-','−')} × 1,8 + 32.`,`Eerst keer: ${fmt(c).replace('-','−')} × 1,8 = ${fmt(clean(c*1.8)).replace('-','−')}.`,`Dan + 32: <b>${fmt(f).replace('-','−')} °F</b>`]};
+ },
+ function onweer(){
+  const s=R(2,10)*3,ans=s/3;
+  return {type:'Vuistregel',text:`Vuistregel: ${N('afstand van onweer (km) = seconden tussen bliksem en donder : 3')}. Je telt ${N(s+' seconden')}. Hoe ver is het onweer ongeveer?`,answer:ans,unit:'km',
+   steps:[`Vul in: ${s} : 3.`,`${s} : 3 = <b>${ans} km</b>`,`Een vuistregel geeft een schatting, geen exact antwoord.`]};
+ },
+ function verzendTabel(){
+  const T=[[2,495],[5,695],[10,895],[23,1395]],cost=w=>T.find(r=>w<=r[0])[1];
+  const w1=pick([R(3,19)/10*10/10,R(21,49)/10,R(51,99)/10,R(11,22)]),w2=pick([1.5,2,4.8,5,7.5,10,12,0.8]),c=cost(w1)+cost(w2);
+  const tab=vtab([['gewicht t/m','2 kg','5 kg','10 kg','23 kg'],['prijs',...T.map(r=>eur(r[1]))]]);
+  return {type:'Tabel aflezen',text:`Je verstuurt twee pakketten: één van ${N(fmt(w1)+' kg')} en één van ${N(fmt(w2)+' kg')}. Wat betaal je samen? Gebruik de tabel.`,show:tab,answer:c/100,pre:'€',
+   steps:[`"t/m" = tot en met. Precies 5 kg valt dus nog in het vak "5 kg".`,`${fmt(w1)} kg → ${eur(cost(w1))}. ${fmt(w2)} kg → ${eur(cost(w2))}.`,`Samen: <b>${eur(c)}</b>`]};
+ },
+ function grafiek(){
+  const days=['ma','di','wo','do','vr','za','zo'],vals=days.map(()=>R(3,14)*50);
+  let i=R(0,6),j=R(0,6);while(j===i||vals[j]===vals[i])j=R(0,6);
+  const sum=Math.random()<.5,ans=sum?vals[i]+vals[j]:Math.abs(vals[i]-vals[j]);
+  const full=['maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag','zondag'];
+  return {type:'Grafiek aflezen',text:sum?`Het staafdiagram toont het aantal bezoekers van een zwembad per dag. Hoeveel bezoekers waren er op ${full[i]} en ${full[j]} samen?`:`Het staafdiagram toont het aantal bezoekers van een zwembad per dag. Hoeveel bezoekers was het verschil tussen ${full[i]} en ${full[j]}?`,
+   show:bars(days,vals,100),answer:ans,unit:'bezoekers',
+   steps:[`Lees de as links: elke lijn is 100. Een staaf halverwege twee lijnen is 50 erbij.`,`${full[i]}: ${vals[i]}. ${full[j]}: ${vals[j]}.`,sum?`Samen: ${vals[i]} + ${vals[j]} = <b>${ans}</b>`:`Verschil: ${Math.max(vals[i],vals[j])} − ${Math.min(vals[i],vals[j])} = <b>${ans}</b>`]};
+ },
+];
+
+const GEN={getallen:GETALLEN,verh:VERH,meten:METEN,verbanden:VERBANDEN};
+const DOMNAAM={getallen:'Getallen',verh:'Verhoudingen',meten:'Meten & meetkunde',verbanden:'Verbanden'};
+const CAT={splitsen:'Hoofdrekenen',keer25:'Hoofdrekenen',keer5:'Hoofdrekenen',delen:'Hoofdrekenen',
+ delenKomma:'Kommagetallen',kommakeer:'Kommagetallen',breukVan:'Breuken',breukKomma:'Breuken',afronden:'Afronden',
+ machten:'Machten en wortels',negatief:'Negatieve getallen',wisselgeld:'Rekenen met geld',
+ procent:'Procenten',nieuwePrijs:'Procenten',welkPercentage:'Procenten',recept:'Verhoudingstabel',prijs:'Verhoudingstabel',
+ schaal:'Schaal',mengsel:'Mengen en verdelen',verdelen:'Mengen en verdelen',snelheid:'Snelheid (km/u)',
+ omrekenen:'Omrekenen (rekenkaart)',koppeling:'Inhoud ↔ liters',balkCm:'Inhoud berekenen',balkM:'Inhoud berekenen',
+ cilinder:'Inhoud berekenen',hoogte:'Inhoud berekenen',oppervlakte:'Oppervlakte',omtrek:'Omtrek',tijdsduur:'Tijd',
+ taxi:'Formules en vuistregels',fahrenheit:'Formules en vuistregels',onweer:'Formules en vuistregels',
+ verzendTabel:'Tabellen',grafiek:'Grafieken'};
+const catsOf=d=>[...new Set(GEN[d].map(f=>CAT[f.name]))];
+function buildCats(){
+  const opt=d=>catsOf(d).map(c=>`<option value="${d}|${c}">${c}</option>`).join('');
+  document.getElementById('cat').innerHTML='<option value="alle">Alle onderwerpen</option>'+
+    (topic==='mix'?Object.keys(GEN).map(d=>`<optgroup label="${DOMNAAM[d]}">${opt(d)}</optgroup>`).join(''):opt(topic));
+}
+const CRIB={
+ getallen:`<h2>Spiekbriefje getallen</h2><p class="share">Ongeveer 30% van het examen. Kale sommen maak je zonder rekenmachine.</p><ul>
+  <li><b>Splitsen:</b> 7 × 48 = 7 × 50 − 7 × 2 = 350 − 14 = 336</li>
+  <li><b>× 5</b> = × 10 en halveren · <b>× 25</b> = × 100 en : 4 · <b>: 4</b> = 2× halveren</li>
+  <li><b>Delen door een kommagetal:</b> 48 : 0,12 → beide × 100 → 4800 : 12 = 400</li>
+  <li><b>Breuk van een getal:</b> ¾ van 60 → 60 : 4 = 15, × 3 = 45</li>
+  <li><b>Afronden:</b> kijk naar het cijfer erna. 5 of meer → omhoog.</li></ul>`,
+ verh:`<h2>Spiekbriefje verhoudingen</h2><p class="share">Ongeveer 30% van het examen.</p><ul>
+  <li><b>Procenten:</b> 10% = : 10 · 1% = : 100 · 5% = helft van 10% · 25% = : 4</li>
+  <li><b>Welk percentage?</b> deel : geheel × 100</li>
+  <li><b>Verhoudingstabel:</b> wat je boven doet, doe je onder ook. Twijfel? Reken eerst terug naar 1.</li>
+  <li><b>Schaal 1 : 50.000:</b> 1 cm op de kaart = 50.000 cm = 500 m echt</li>
+  <li><b>Mengen 1 : 4</b> = 5 delen in totaal · <b>km/u</b> = zoveel km in 60 minuten</li></ul>`,
+ meten:`<h2>Spiekbriefje meten &amp; meetkunde</h2><p class="share">Ongeveer 20% van het examen.</p>
+  <p class="rule">Rekenkaart: naar rechts (kleiner) = keer, naar links (groter) = delen.</p>
+  ${ladder(L.lengte,3,5)}<ul style="margin-top:12px">
+  <li>Per stap: lengte <b>1</b> plek komma · m² <b>2</b> plekken · m³ <b>3</b> plekken</li>
+  <li><code>1 m³ = 1000 l</code> <code>1 dm³ = 1 l</code> <code>1 cm³ = 1 ml</code></li>
+  <li><b>Inhoud:</b> l × b × h. Reken in dm, dan heb je meteen liters.</li>
+  <li><b>Cilinder:</b> 3,14 × straal × straal × hoogte · <b>omtrek cirkel:</b> 3,14 × diameter</li>
+  <li><b>Tijd:</b> vul aan tot het hele uur. Een uur is 60 minuten, niet 100.</li></ul>`,
+ verbanden:`<h2>Spiekbriefje verbanden</h2><p class="share">Ongeveer 20% van het examen: tabellen, grafieken, formules.</p><ul>
+  <li><b>Grafiek:</b> lees eerst de titel, wat er op de assen staat en hoe groot één hokje is.</li>
+  <li><b>Tabel:</b> let op woorden als "t/m" (tot en met) en "vanaf".</li>
+  <li><b>Formule:</b> vul in en reken × en : vóór + en −.</li>
+  <li><b>Vuistregel:</b> geeft een schatting, geen exact antwoord.</li></ul>`,
+ mix:`<h2>Alles door elkaar</h2><p class="share">Zo ziet het echte examen eruit: alle vier de domeinen gemengd.</p><ul>
+  <li>Getallen ±30% · Verhoudingen ±30% · Meten &amp; meetkunde ±20% · Verbanden ±20%</li>
+  <li>Lees de vraag twee keer. Wat moet je precies uitrekenen, en in welke eenheid?</li>
+  <li>Schat eerst. Kan je antwoord kloppen?</li></ul>`,
+};
+
+/* ---------- state ---------- */
+let topic='getallen',cat='alle',cur=null,tries=0,solved=false,good=0,tot=0,streak=0;
+const $=id=>document.getElementById(id);
+function parse(s){
+  s=s.trim().toLowerCase().replace(/[−–]/g,'-').replace(/[€\s]/g,'').replace(/[a-z³²°%]+$/,'');
+  if(!s) return NaN;
+  if(/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s=s.replace(/\./g,'').replace(',','.');
+  else s=s.replace(',','.');
+  return Number(s);
+}
+function newQ(){
+  let d,pool;
+  if(cat!=='alle'){const [cd,cn]=cat.split('|');d=cd;pool=GEN[cd].filter(f=>CAT[f.name]===cn);}
+  else{d=topic==='mix'?pick(['getallen','getallen','verh','verh','meten','verbanden']):topic;pool=GEN[d];}
+  cur=pick(pool)();cur.dom=d;tries=0;solved=false;
+  $('tag').textContent=cur.type;
+  $('question').innerHTML=cur.text;
+  $('show').innerHTML=cur.show||'';
+  $('unit').textContent=cur.unit||'';
+  $('pre').textContent=cur.pre||'';$('pre').hidden=!cur.pre;
+  $('ans').value='';$('fb').hidden=true;$('uitleg').hidden=true;
+  $('showUitleg').textContent='Laat uitleg zien';
+  $('steps').innerHTML=cur.steps.map(s=>`<li>${s}</li>`).join('');
+  $('extra').innerHTML=cur.extra||'';
+  $('check').textContent='Controleer';
+}
+function answerText(){
+  const a=cur.pre==='€'?(Math.round(cur.answer*100)/100).toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2}):fmt(cur.answer).replace('-','−');
+  return (cur.pre?cur.pre+' ':'')+a+(cur.unit?' '+cur.unit:'');
+}
+$('form').addEventListener('submit',e=>{
+  e.preventDefault();
+  if(solved){newQ();$('ans').focus();return;}
+  const v=parse($('ans').value),fb=$('fb');
+  if(isNaN(v)){fb.hidden=false;fb.className='fb no';fb.innerHTML='Typ eerst een getal. <span>Bijvoorbeeld 2,5 of 160.</span>';return;}
+  tries++;
+  const tol=cur.tol||1e-9,ok=Math.abs(v-cur.answer)<=Math.max(1e-9,Math.abs(cur.answer)*tol);
+  fb.hidden=false;
+  if(tries===1)tot++;
+  if(ok){solved=true;if(tries===1){good++;streak++;}else streak=0;
+    fb.className='fb ok';fb.innerHTML=`Goed! <span>Het antwoord is ${answerText()}. Druk op Enter voor een nieuwe som.</span>`;
+    $('check').textContent='Volgende som';
+  }else{streak=0;fb.className='fb no';
+    fb.innerHTML=tries<2?`Nog niet goed. <span>Probeer het nog eens, of bekijk de uitleg.</span>`:`Nog niet goed. <span>Het juiste antwoord is ${answerText()}. Lees de uitleg hieronder.</span>`;
+    if(tries>=2){$('uitleg').hidden=false;$('showUitleg').textContent='Verberg uitleg';}}
+  $('sGood').textContent=good;$('sTot').textContent=tot;$('sStreak').textContent=streak;
+});
+$('next').addEventListener('click',()=>{newQ();$('ans').focus();});
+$('showUitleg').addEventListener('click',()=>{const u=$('uitleg');u.hidden=!u.hidden;$('showUitleg').textContent=u.hidden?'Laat uitleg zien':'Verberg uitleg';});
+$('topics').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  topic=b.dataset.t;$('app').dataset.dom=topic;
+  document.querySelectorAll('#topics button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  cat='alle';buildCats();$('crib').innerHTML=CRIB[topic];newQ();
+});
+$('cat').addEventListener('change',e=>{cat=e.target.value;newQ();});
+buildCats();$('crib').innerHTML=CRIB[topic];
+newQ();
+</script>
