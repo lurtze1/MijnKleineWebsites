@@ -223,7 +223,6 @@
       nettoLoonMaand: rond((loon - inhWerkgever) / 12),
       nettoUitkeringMaand: rond((uit - inhUwv) / 12),
       bijbetalenJaar: rond(verschuldigd - inhWerkgever - inhUwv), // negatief = terugkrijgen
-      ahk: rond(ahk(totaal, t)), ak: rond(ak(loon, t)),
     };
   }
 
@@ -255,28 +254,28 @@
 
   function zorgtoeslag({ jaarinkomen, partner = false, vermogenTeHoog = false, jaar = 2026 }) {
     if (vermogenTeHoog) return 0;
-    const z = toeslagTabel(jaar).zorg;
+    const tt = toeslagTabel(jaar), z = tt.zorg;
     const sp = z.standaardpremie * (partner ? 2 : 1);
     const norm = (partner ? z.pctPartner : z.pctAlleen) * z.drempel + z.afbouw * Math.max(0, jaarinkomen - z.drempel);
     const perJaar = Math.round(Math.max(0, sp - norm));
-    return perJaar >= toeslagTabel(jaar).minimumPerJaar ? Math.floor(perJaar / 12) : 0;
+    return perJaar >= tt.minimumPerJaar ? Math.floor(perJaar / 12) : 0;
   }
 
   /** Huurtoeslag per maand (regels per 2026: vaste basishuur, servicekosten tellen niet mee). */
   function huurtoeslag({ kaleHuur, personen = 1, rekeninkomen, vermogenTeHoog = false, jaar = 2026 }) {
     if (vermogenTeHoog || !kaleHuur) return 0;
-    const h = toeslagTabel(jaar).huur, meer = personen >= 2;
+    const tt = toeslagTabel(jaar), h = tt.huur, meer = personen >= 2;
     const rekenhuur = Math.min(kaleHuur, h.huurgrens);
     const aftop = personen >= 3 ? h.aftop3 : h.aftop12;
     const A = Math.max(0, Math.min(rekenhuur, h.kkg) - (meer ? h.basishuurMeer : h.basishuur1));
-    const B = Math.max(0, Math.min(rekenhuur, aftop) - h.kkg) * 0.65;
-    const C = Math.max(0, rekenhuur - aftop) * 0.40;
+    const B = Math.max(0, Math.min(rekenhuur, aftop) - h.kkg) * h.pctTotAftop;
+    const C = Math.max(0, rekenhuur - aftop) * h.pctBovenAftop;
     const korting = Math.max(0, rekeninkomen - (meer ? h.ijkpuntMeer : h.ijkpunt1)) * (meer ? h.afbouwMeer : h.afbouw1) / 12;
     const ht = Math.max(0, A + B + C - korting);
-    return ht * 12 >= toeslagTabel(jaar).minimumPerJaar ? Math.floor(ht) : 0;
+    return ht * 12 >= tt.minimumPerJaar ? Math.floor(ht) : 0;
   }
 
-  const api = { regelsOp, peildatumStatus, maxMaandloon, wiaMinimumloon, indexeer, wiaInkomen, klasse, uitkering, inkomensReeks, vijfenzestigCheck, netto, belastingTabel, toeslagenwet, zorgtoeslag, huurtoeslag };
+  const api = { regelsOp, peildatumStatus, maxMaandloon, wiaMinimumloon, indexeer, wiaInkomen, klasse, uitkering, inkomensReeks, vijfenzestigCheck, netto, toeslagTabel, toeslagenwet, zorgtoeslag, huurtoeslag };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.UwvEngine = api;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -102,11 +102,12 @@
   // Toeslagen 2026 (docs/research/16). Bedragen per jaar tenzij anders vermeld.
   const TOESLAGEN = {
     2026: {
-      zorg: { standaardpremie: 2119, drempel: 29736, pctAlleen: 0.01912, pctPartner: 0.04289, afbouw: 0.1373 },
+      zorg: { standaardpremie: 2119, drempel: 29736, pctAlleen: 0.01912, pctPartner: 0.04289, afbouw: 0.1373, vermogenAlleen: 146011, vermogenPartner: 184633 },
       huur: {
         huurgrens: 932.93, kkg: 498.20, aftop12: 713.02, aftop3: 764.14, // per maand
         basishuur1: 202.52, basishuurMeer: 200.71,                       // per maand
         ijkpunt1: 23425, ijkpuntMeer: 31500, afbouw1: 0.27, afbouwMeer: 0.22,
+        pctTotAftop: 0.65, pctBovenAftop: 0.40, vermogenPerPersoon: 38479,
       },
       minimumPerJaar: 24, // Awir art. 14: lager → geen toeslag
     },

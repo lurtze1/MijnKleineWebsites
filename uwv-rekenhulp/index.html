@@ -322,31 +322,32 @@ footer{font-size:11px;color:var(--muted);text-align:center;border-top:1px solid 
           <summary>Mijn huishouden (voor netto en toeslagen)</summary>
           <div class="form">
             <div class="fld">
-              <div class="lbl"><label for="h_situatie">Woonsituatie</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Bepaalt de norm van de Toeslagenwet en de zorgtoeslag. <b>Kostendeler</b>: je woont met andere volwassenen (27+) die niet je partner zijn.</div></details></div>
-              <select id="h_situatie"><option value="alleen">Alleenstaand</option><option value="gehuwd">Met partner (getrouwd of samenwonend)</option><option value="kostendeler">Kostendeler (met andere volwassenen)</option></select>
+              <div class="lbl"><label for="h_situatie">Woonsituatie</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Bepaalt de norm van de Toeslagenwet en de zorgtoeslag. <b>Kostendeler</b>: je woont met medebewoners van 27 jaar of ouder die niet je partner zijn (geen commerciële huurder of student met studiefinanciering).</div></details></div>
+              <select id="h_situatie"><option value="alleen">Alleenstaand</option><option value="gehuwd">Met partner (getrouwd of samenwonend)</option><option value="kostendeler">Kostendeler (met medebewoners van 27+)</option></select>
             </div>
             <div class="fld" data-show-sit="gehuwd">
-              <div class="lbl"><label for="h_partnerinkomen">Bruto inkomen partner per maand</label><span class="hint">(excl. vakantiegeld)</span></div>
+              <div class="lbl"><label for="h_partnerinkomen">Bruto inkomen partner per maand</label><span class="hint">(excl. vakantiegeld; we tellen er 8% bij op)</span></div>
               <div class="field"><span>€</span><input id="h_partnerinkomen" inputmode="decimal"></div>
             </div>
             <div class="fld wide" data-show-sit="gehuwd">
               <label class="chk"><input type="checkbox" id="h_partnerna1971"> <span>Mijn partner is na 1971 geboren</span></label>
-              <label class="chk"><input type="checkbox" id="h_kind12"> <span>Er woont een kind onder de 12 bij ons</span></label>
+              <label class="chk"><input type="checkbox" id="h_kind12"> <span>Er woont een eigen, aangehuwd of pleegkind onder de 12 bij ons</span></label>
             </div>
             <div class="fld">
               <div class="lbl"><label for="h_huur">Kale huur per maand</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">Zonder servicekosten: die tellen sinds 2026 niet meer mee voor de huurtoeslag. Koophuis of geen huur? Laat leeg.</div></details></div>
               <div class="field"><span>€</span><input id="h_huur" inputmode="decimal"></div>
             </div>
             <div class="fld">
-              <div class="lbl"><label for="h_personen">Personen in huis</label></div>
+              <div class="lbl"><label for="h_personen">Personen in huis</label><span class="hint">(inclusief jezelf)</span></div>
               <div class="field"><input id="h_personen" inputmode="decimal"></div>
             </div>
             <div class="fld">
               <div class="lbl"><label for="h_lhk">Loonheffingskorting toegepast bij</label><details class="tip"><summary aria-label="Uitleg">?</summary><div class="tiptext">De korting die je aanzet op het formulier "loonheffingskorting toepassen". Laat die bij één betaler toepassen; bij twee moet je achteraf flink bijbetalen.</div></details></div>
-              <select id="h_lhk"><option value="werkgever">mijn werkgever</option><option value="uwv">UWV</option><option value="beide">allebei</option><option value="geen">geen van beide</option></select>
+              <select id="h_lhk"><option value="auto">automatisch: werkgever als je loon hebt, anders UWV</option><option value="werkgever">mijn werkgever</option><option value="uwv">UWV</option><option value="beide">allebei</option><option value="geen">geen van beide</option></select>
             </div>
             <div class="fld wide">
-              <label class="chk"><input type="checkbox" id="h_vermogen"> <span>Ons vermogen ligt boven de grens voor toeslagen</span></label>
+              <label class="chk"><input type="checkbox" id="h_vermogenhuur"> <span>Vermogen boven <span data-vg="huur"></span> per persoon (dan geen huurtoeslag)</span></label>
+              <label class="chk"><input type="checkbox" id="h_vermogenzorg"> <span>Vermogen boven <span data-vg="zorg"></span> (dan geen zorgtoeslag)</span></label>
               <label class="chk"><input type="checkbox" id="h_vrijlating"> <span>Ik werk nog geen 2 jaar naast mijn uitkering (dan laat de Toeslagenwet een deel van je loon buiten beschouwing)</span></label>
             </div>
           </div>
@@ -445,7 +446,7 @@ const VOORBEELD = {
   g_maatman: '25', g_maatmanuren: '40', g_uurloon: '20', g_uren: '20', g_vg: '8', g_ejo: '0', g_rvc: '',
   u_fase: 'FASE2', u_maandloon: '3500', u_maandloondatum: '', u_dagloonongemax: '', u_ao: '60', u_rvc: '1400', u_geeneis: false, u_lgu12: false,
   u_salaris: '750', u_periode: 'maand', u_uren: '', u_vg: '8', u_ejo: '0', u_bonus: '0', u_allin: false,
-  h_situatie: 'alleen', h_partnerinkomen: '', h_partnerna1971: false, h_kind12: false, h_huur: '', h_personen: '1', h_lhk: 'werkgever', h_vermogen: false, h_vrijlating: true,
+  h_situatie: 'alleen', h_partnerinkomen: '', h_partnerna1971: false, h_kind12: false, h_huur: '', h_personen: '1', h_lhk: 'auto', h_vermogenhuur: false, h_vermogenzorg: false, h_vrijlating: true,
 };
 const VELDEN = ['peildatum', ...Object.keys(VOORBEELD)];
 const geldig = (el, v) => el.tagName !== 'SELECT' || [...el.options].some((o) => o.value === v);
@@ -675,52 +676,61 @@ function renderUitkering(datum) {
   steps.push('UWV betaalt eerst een voorschot en rekent achteraf af met de loongegevens van je werkgever. Te veel ontvangen moet je terugbetalen. Geef inkomsten binnen 1 week door.');
   $('u_steps').innerHTML = steps.map(li).join('');
 
-  renderNetto(datum, ink, u);
+  renderNetto(datum, ink, u, ink.bonus ? E.uitkering({ ...params, inkomen: ink.totaal - ink.bonus }) : u);
   tekenGrafiek(params, ink.totaal, u, sprong);
 }
 
-function renderNetto(datum, ink, u) {
+function renderNetto(datum, ink, u, uGewoon) {
   fouten = [];
   const sit = $('h_situatie').value, gehuwd = sit === 'gehuwd';
+  const VB = RU.TW.vakantiebijslag;
   const partnerMaand = gehuwd ? opt('h_partnerinkomen') : 0;
-  const huur = opt('h_huur'), personen = Math.max(1, Math.round(opt('h_personen', 1, 20)));
-  const vermogen = $('h_vermogen').checked, lhk = $('h_lhk').value;
+  const huur = opt('h_huur');
+  const personen = Math.max(sit === 'alleen' ? 1 : 2, Math.round(opt('h_personen', 1, 20)));
   const jaar = Number(datum.slice(0, 4));
-  const loonMaand = ink.totaal - ink.bonus + ink.bonus / 12; // bonus over het jaar verspreid
-  const tw = E.toeslagenwet({
-    datum, leefsituatie: sit, partnerNa1971: $('h_partnerna1971').checked, kindOnder12: $('h_kind12').checked,
-    uitkeringInclVb: u.bedrag, loonExclVb: ink.basis + ink.eindejaars, partnerInkomenExclVb: partnerMaand, vrijlating: $('h_vrijlating').checked,
-  });
-  const twIncl = tw.bedrag * (1 + RU.TW.vakantiebijslag);
-  const n = E.netto({ loonMaand, uitkeringMaand: u.bedrag + twIncl, lhkWerkgever: lhk === 'werkgever' || lhk === 'beide', lhkUwv: lhk === 'uwv' || lhk === 'beide', jaar });
-  const eigenJaar = (loonMaand + u.bedrag + twIncl) * 12, partnerJaar = partnerMaand * 12 * 1.08;
-  const zt = E.zorgtoeslag({ jaarinkomen: eigenJaar + partnerJaar, partner: gehuwd, vermogenTeHoog: vermogen, jaar });
-  const ht = E.huurtoeslag({ kaleHuur: huur, personen, rekeninkomen: eigenJaar + partnerJaar, vermogenTeHoog: vermogen, jaar });
+  const tt = E.toeslagTabel(jaar);
+  document.querySelectorAll('[data-vg]').forEach((el) => (el.textContent = el.dataset.vg === 'huur'
+    ? eur(tt.huur.vermogenPerPersoon) : eur(gehuwd ? tt.zorg.vermogenPartner : tt.zorg.vermogenAlleen)));
   if (fouten.length) { $('n_table').innerHTML = ''; $('n_steps').innerHTML = li(`Controleer bij "Mijn huishouden": ${fouten.join(', ')}.`); return; }
 
+  // Een gewone maand (zonder bonus) × 11 plus de bonusmaand, gemiddeld per maand.
+  const loonMaand = ink.totaal - ink.bonus + ink.bonus / 12;
+  const uitkMaand = (uGewoon.bedrag * 11 + u.bedrag) / 12;
+  const loonExclVb = ($('u_allin').checked ? ink.basis / (1 + VB) : ink.basis) + ink.eindejaars; // AIB 2:5
+  const tw = E.toeslagenwet({
+    datum, leefsituatie: sit, partnerNa1971: $('h_partnerna1971').checked, kindOnder12: $('h_kind12').checked,
+    uitkeringInclVb: uGewoon.bedrag, loonExclVb, partnerInkomenExclVb: partnerMaand, vrijlating: $('h_vrijlating').checked,
+  });
+  const twIncl = tw.bedrag * (1 + VB);
+  const lhk = $('h_lhk').value === 'auto' ? (loonMaand > 0 ? 'werkgever' : 'uwv') : $('h_lhk').value;
+  const n = E.netto({ loonMaand, uitkeringMaand: uitkMaand + twIncl, lhkWerkgever: lhk === 'werkgever' || lhk === 'beide', lhkUwv: lhk === 'uwv' || lhk === 'beide', jaar });
+  const jaarinkomen = (loonMaand + uitkMaand + twIncl) * 12 + partnerMaand * 12 * (1 + VB);
+  const zt = E.zorgtoeslag({ jaarinkomen, partner: gehuwd, vermogenTeHoog: $('h_vermogenzorg').checked, jaar });
+  const ht = E.huurtoeslag({ kaleHuur: huur, personen, rekeninkomen: jaarinkomen, vermogenTeHoog: $('h_vermogenhuur').checked, jaar });
+
   const correctie = -n.bijbetalenJaar / 12;
-  const opRekening = n.nettoLoonMaand + n.nettoUitkeringMaand + zt + ht;
-  const rij = (a, b, c, cl = '') => `<tr class="${cl}"><th>${a}</th><td>${b == null ? '' : eur(b)}</td><td>${c == null ? '' : eur(c)}</td></tr>`;
-  $('n_table').innerHTML = '<thead><tr><th>Per maand</th><th>Bruto</th><th>Netto</th></tr></thead><tbody>' +
+  const rij = (a, b, c, cl = '', ccl = '') => `<tr class="${cl}"><th>${a}</th><td>${b == null ? '' : eur(b)}</td><td class="${ccl}">${c == null ? '' : eur(c)}</td></tr>`;
+  $('n_table').innerHTML = '<thead><tr><th>Per maand, gemiddeld over het jaar</th><th>Bruto</th><th>Netto</th></tr></thead><tbody>' +
     rij('Loon (incl. opgebouwd vakantiegeld)', loonMaand, n.nettoLoonMaand) +
-    rij(`WIA-uitkering (${u.soort})`, u.bedrag, null) +
+    rij('WIA-uitkering', uitkMaand, null) +
     rij('Toeslagenwet (incl. 8%)', twIncl, null) +
-    rij('Uitkering UWV samen', u.bedrag + twIncl, n.nettoUitkeringMaand) +
+    rij('Uitkering UWV samen', uitkMaand + twIncl, n.nettoUitkeringMaand) +
     rij('Zorgtoeslag', null, zt) +
     rij('Huurtoeslag', null, ht) +
-    rij('Op je rekening (gemiddeld)', loonMaand + u.bedrag + twIncl, opRekening, 'tot') +
-    `<tr><th>${correctie < 0 ? 'Bijbetalen bij de aanslag, per maand' : 'Terug bij de aanslag, per maand'}</th><td></td><td class="${correctie < -5 ? 'bad' : ''}">${eur(correctie)}</td></tr>` +
-    `<tr class="tot"><th>Wat je echt overhoudt</th><td></td><td class="ans">${eur(opRekening + correctie)}</td></tr></tbody>`;
+    rij('Op je rekening', loonMaand + uitkMaand + twIncl, n.nettoLoonMaand + n.nettoUitkeringMaand + zt + ht, 'tot') +
+    rij(correctie < 0 ? 'Bijbetalen bij de aanslag' : 'Terug bij de aanslag', null, Math.abs(correctie), '', correctie < -5 ? 'bad' : '') +
+    `<tr class="tot"><th>Wat je echt overhoudt</th><td></td><td class="ans">${eur(n.nettoMaandGemiddeld + zt + ht)}</td></tr></tbody>`;
 
   const st = [];
-  st.push(`Netto is een indicatie op jaarbasis (belastingregels ${n.tabelJaar}, onder de AOW-leeftijd). Je werkgever en UWV houden elk loonheffing in alsof ze je enige inkomen betalen; het verschil verreken je via de aanslag.`);
-  if (n.bijbetalenJaar > 50) st.push(`Je betaalt naar schatting <b>${eur(n.bijbetalenJaar)} per jaar</b> bij. ${lhk === 'beide' ? 'Vooral omdat je de loonheffingskorting bij twee betalers laat toepassen; zet die bij één uit.' : 'Dat komt doordat geen van beide betalers je totale inkomen ziet.'} Met een voorlopige aanslag kun je dat per maand betalen.`);
-  if (jaar !== n.tabelJaar) st.push(`De belastingregels voor ${jaar} zijn nog niet bekend; er is gerekend met die van ${n.tabelJaar}.`);
+  st.push(`Netto is een indicatie op jaarbasis (belastingregels ${n.tabelJaar}, onder de AOW-leeftijd). Je werkgever en UWV houden elk loonheffing in alsof ze je enige inkomen betalen; het verschil verreken je via de aanslag. Loonheffingskorting toegepast bij: ${{ werkgever: 'je werkgever', uwv: 'UWV', beide: 'allebei', geen: 'geen van beide' }[lhk]}.`);
+  if (n.bijbetalenJaar > 50) st.push(`Je betaalt naar schatting <b>${eur(n.bijbetalenJaar)} per jaar</b> bij. ${lhk === 'beide' ? 'Vooral omdat je de loonheffingskorting bij twee betalers laat toepassen; zet die bij één uit.' : 'Dat komt doordat geen van beide betalers je totale inkomen ziet.'}`);
+  if (ink.bonus) st.push(`Je bonus is over het jaar verspreid: in de bonusmaand is je uitkering lager (${eur(u.bedrag)} in plaats van ${eur(uGewoon.bedrag)}).`);
+  if (jaar !== n.tabelJaar) st.push(`<b>Let op:</b> de belasting- en toeslagregels voor ${jaar} zitten niet in de rekenhulp; er is gerekend met die van ${n.tabelJaar}.`);
   st.push(tw.bedrag > 0
-    ? `Toeslagenwet: je uitkering wordt aangevuld tot het sociaal minimum van ${eur(tw.norm)} per maand (excl. vakantiegeld). UWV kan dit lager vaststellen als je dagloon laag was (art. 8a, niet meegerekend).`
+    ? `Toeslagenwet: UWV vult je inkomen aan tot de norm van ongeveer ${eur(tw.norm)} per maand (excl. vakantiegeld). Je uitkering, je loon (na vrijlating) en het inkomen van je partner tellen daarbij mee. Was je dagloon laag, dan kan UWV de toeslag lager vaststellen (art. 8a, niet meegerekend).`
     : `Toeslagenwet: ${tw.reden || 'je inkomen ligt boven het sociaal minimum, dus geen aanvulling.'}`);
-  st.push(`Zorg- en huurtoeslag zijn berekend op een jaarinkomen van ${eur(eigenJaar + partnerJaar)}${gehuwd ? ' (samen met je partner)' : ''}. Toeslagen zijn een voorschot: wijkt je echte jaarinkomen af, dan betaal je terug of krijg je bij.`);
-  if (personen > 1 && !gehuwd) st.push('Wonen er meer mensen met inkomen bij je? Hun inkomen telt mee voor de huurtoeslag; dat zit niet in deze berekening.');
+  st.push(`Zorg- en huurtoeslag zijn berekend op een jaarinkomen van ${eur(jaarinkomen)}${gehuwd ? ' (samen met je partner)' : ''} en ${personen} ${personen === 1 ? 'persoon' : 'personen'} in huis. Toeslagen zijn een voorschot: wijkt je echte jaarinkomen af, dan betaal je terug of krijg je bij.`);
+  if (sit === 'kostendeler' || (personen > 1 && !gehuwd)) st.push('Het inkomen van je medebewoners telt mee voor de huurtoeslag; dat zit niet in deze berekening, dus je huurtoeslag is waarschijnlijk lager.');
   $('n_steps').innerHTML = st.map(li).join('');
 }
 
@@ -821,7 +831,7 @@ document.addEventListener('click', async (e) => {
     setTimeout(() => (knop.textContent = 'Kopieer link met deze getallen'), 1800);
     return;
   }
-  const leeg = Object.fromEntries(Object.entries(VOORBEELD).map(([k, v]) => [k, typeof v === 'boolean' ? false : $(k).tagName === 'SELECT' ? v : '']));
+  const leeg = Object.fromEntries(Object.entries(VOORBEELD).map(([k, v]) => [k, typeof v === 'boolean' || $(k).tagName === 'SELECT' ? v : '']));
   zet(knop.hasAttribute('data-reset') ? { ...leeg, g_vg: '8', g_ejo: '0', u_vg: '8', peildatum: vandaag } : { ...VOORBEELD, peildatum: vandaag });
   alles();
 });
