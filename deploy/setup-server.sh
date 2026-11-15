@@ -13,7 +13,7 @@ if [ ! -d "$STACK/.git" ]; then
   fi
   git clone --branch main "$REPO" "$STACK"
 fi
-bash "$STACK/deploy/pull.sh" --force
+bash "$STACK/deploy/pull.sh" --force </dev/null   # </dev/null: anders eet docker de rest van dit script op als het via stdin komt
 
 sudo cp "$STACK"/deploy/kleinewebsites-pull.{service,timer} /etc/systemd/system/
 sudo systemctl daemon-reload
