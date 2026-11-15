@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mijn kleine websites</title>
+<meta name="description" content="Kleine rekenhulpen en uitlegsites: UWV-rekenhulp (WIA), huis verduurzamen in Hardenberg en de rekentrainer 3F.">
+<link rel="stylesheet" href="shared/site.css">
+<style>
+/* Basis: shared/site.css. Hier alleen de startpagina: één gekleurd vak per site. */
+.oranje{--green:#e8916b;--green-dark:#a9532f;--green-bg:#ffe5d8;--green-line:#f2bfa6;--green-top:#fff3ed}
+.groen{--green:#5fb98c;--green-dark:#2a7550;--green-bg:#d8f2e5;--green-line:#a6dcc0;--green-top:#eefaf3}
+.blocks span:nth-child(1){background:linear-gradient(#ffd6c2,#eb9a76)}
+.blocks span:nth-child(2){background:linear-gradient(#c3ecd6,#6cc095)}
+.blocks span:nth-child(4){background:linear-gradient(#dcd1fa,#a58ce2)}
+a.sheet{color:inherit;text-decoration:none}
+a.sheet:hover{color:inherit;border-color:var(--green-dark)}
+a.sheet:focus-visible{outline:2px dotted var(--link);outline-offset:2px}
+a.sheet .badge-ic{grid-row:span 4}
+a.sheet .q b{color:var(--link);text-decoration:underline;font-size:15px}
+a.sheet:hover .q b{color:var(--hover)}
+a.sheet p{margin:0}
+</style>
+
+<div class="page">
+  <div class="topbar"><span>Mijn kleine websites</span> | <span>Geen account, geen cookies</span> | <span>Alles rekent in je browser</span></div>
+
+  <div class="head">
+    <div class="logo">
+      <div class="blocks" aria-hidden="true"><span>%</span><span>☀</span><span>+</span><span>÷</span></div>
+      <div>
+        <h1 class="wordmark">mijn kleine websites</h1>
+        <div class="count">kleine rekenhulpen · kies er één</div>
+      </div>
+    </div>
+  </div>
+
+  <a class="sheet oranje" href="uwv-rekenhulp/">
+    <div class="badge-ic" aria-hidden="true">65%</div>
+    <span class="tag"><span>WIA · WGA · IVA · Ziektewet</span></span>
+    <p class="q"><b>Hoe werkt het UWV</b></p>
+    <p>Rekenhulp voor de WIA. Hoe dicht zit je bij de 65%-grens, wat krijg je per maand als je werkt naast je uitkering (bruto, netto en toeslagen), en hoe zitten de no-riskpolis en het doelgroepregister in elkaar.</p>
+    <p class="hint">Vul je brief in · deel de link met je getallen</p>
+  </a>
+
+  <a class="sheet groen" href="verduurzamen-hardenberg/">
+    <div class="badge-ic" aria-hidden="true">0→5</div>
+    <span class="tag"><span>Gemeente Hardenberg · 2026</span></span>
+    <p class="q"><b>Huis verduurzamen in Hardenberg</b></p>
+    <p>Welke stap eerst: isoleren, zonnepanelen, je eigen stroom zelf gebruiken, hybride warmtepomp, batterij. Met de subsidies van gemeente en ISDE, leningen bij het Warmtefonds en een rekenhulp voor de bedragen.</p>
+    <p class="hint">Stappenplan · subsidies · lenen · regels die eraan komen</p>
+  </a>
+
+  <a class="sheet" href="rekentrainer/">
+    <div class="badge-ic" aria-hidden="true">÷</div>
+    <span class="tag"><span>Rekenexamen mbo</span></span>
+    <p class="q"><b>Rekentrainer 3F</b></p>
+    <p>Oefenen voor het rekenexamen 3F. Steeds nieuwe sommen in de vier examendomeinen: getallen, verhoudingen, meten &amp; meetkunde en verbanden. Met uitleg per stap en een spiekbriefje.</p>
+    <p class="hint">Onbeperkt oefenen · uitleg bij elke som</p>
+  </a>
+
+  <footer>Geen officieel advies · controleer bedragen altijd bij de bron · niets wordt verstuurd</footer>
+</div>
+</html>

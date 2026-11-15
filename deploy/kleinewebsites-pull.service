@@ -1,0 +1,9 @@
+[Unit]
+Description=Kleine websites: git pull en uitrollen als main veranderd is
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=lurtze1
+ExecStart=/usr/bin/bash /opt/stacks/rekenen/deploy/pull.sh

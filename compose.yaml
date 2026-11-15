@@ -1,0 +1,21 @@
+# ┌──────────────────────────────────────────────────────────────────────────────────────────┐
+# │ LET OP: NIET BEWERKEN IN DOCKGE.                                                         │
+# │ Dit bestand komt uit git (github.com/lurtze1/MijnKleineWebsites). De server haalt elke   │
+# │ minuut main op en zet dit bestand dan terug: wat je in de Dockge-editor verandert, is    │
+# │ bij de volgende push weg. Aanpassen = in de repo wijzigen, committen en pushen naar main.│
+# └──────────────────────────────────────────────────────────────────────────────────────────┘
+# De server-map /opt/stacks/rekenen is een git-clone van deze repo; Dockge leest dit bestand daar direct.
+services:
+  sites:
+    image: nginx:alpine
+    container_name: kleinewebsites
+    restart: unless-stopped
+    ports:
+      - 8088:80
+    volumes:
+      - .:/usr/share/nginx/html:ro
+      # de map, niet het losse bestand: een los gemount bestand blijft na een pull naar de oude versie wijzen
+      - ./deploy/nginx:/etc/nginx/conf.d:ro
+x-dockge:
+  urls:
+    - https://rekenen.blankandblank.party
