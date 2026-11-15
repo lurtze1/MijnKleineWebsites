@@ -80,7 +80,7 @@ test('65%-check zonder urenverschil', () => {
   let c = E.vijfenzestigCheck({ maatmanPerUur: 25, maatmanUren: 40, uurloon: 15, uren: 40 });
   assert.equal(c.pctVanMaatman, 64.8);
   assert.equal(c.status, 'veilig');
-  assert.equal(c.grensUurloon, 15.05);
+  assert.equal(c.grensUurloon, 15.04);
   c = E.vijfenzestigCheck({ maatmanPerUur: 25, maatmanUren: 40, uurloon: 16, uren: 40 });
   assert.equal(c.status, 'boven65');
   assert.equal(c.klasse, '<35%');
@@ -101,7 +101,7 @@ test('65%-check met minder uren (reductiefactor, doc 14)', () => {
   c = E.vijfenzestigCheck({ maatmanPerUur: 25, maatmanUren: 40, uurloon: 20, uren: 20 });
   assert.equal(c.pctVanMaatman, 43.2);
   assert.equal(c.grensUurloon, 30.09);
-  assert.equal(c.grensUren, 30.1);
+  assert.equal(c.grensUren, 30);
 });
 
 test('65%-check: meer uren dan maatman en 20%-ondergrens', () => {
@@ -109,7 +109,7 @@ test('65%-check: meer uren dan maatman en 20%-ondergrens', () => {
   assert.equal(c.pctVanMaatman, 64.8);
   assert.equal(c.maandPctVanMaatman, 81);
   assert.equal(c.status, 'boven65'); // voorzichtig: maandvergelijking telt
-  assert.equal(c.grensUurloon, 12.04);
+  assert.equal(c.grensUurloon, 12.03);
   const laag = E.vijfenzestigCheck({ maatmanPerUur: 25, maatmanUren: 40, uurloon: 15, uren: 10 });
   assert.equal(laag.ondergrens, true);
   assert.equal(laag.ao, null);
@@ -133,4 +133,15 @@ test('toeslagen 2026 (doc 16): alleenstaande met VU 1.060,06, huur 750', () => {
   assert.equal(E.huurtoeslag({ kaleHuur: 750, personen: 1, rekeninkomen: 21475 }), 450);
   assert.equal(E.toeslagenwet({ datum: D, leefsituatie: 'gehuwd', partnerNa1971: true, uitkeringInclVb: 1000 }).bedrag, 0);
   assert.equal(E.zorgtoeslag({ jaarinkomen: 60000 }), 0);
+});
+
+test('precies 65% is veilig, en de getoonde grens is zelf ook veilig', () => {
+  const basis = { maatmanPerUur: 25.4, maatmanUren: 40, uurloon: 16.51, uren: 40, vakantiegeldPct: 0 };
+  const c = E.vijfenzestigCheck(basis);
+  assert.equal(c.status, 'veilig');
+  assert.equal(c.klasse, '35–45%');
+  const d = E.vijfenzestigCheck({ maatmanPerUur: 25, maatmanUren: 40, uurloon: 15, uren: 40 });
+  assert.equal(E.vijfenzestigCheck({ maatmanPerUur: 25, maatmanUren: 40, uurloon: d.grensUurloon, uren: 40 }).status, 'veilig');
+  const e = E.vijfenzestigCheck({ maatmanPerUur: 25, maatmanUren: 40, uurloon: 20, uren: 20 });
+  assert.equal(E.vijfenzestigCheck({ maatmanPerUur: 25, maatmanUren: 40, uurloon: 20, uren: e.grensUren }).status, 'veilig');
 });

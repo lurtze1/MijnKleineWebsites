@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Huis verduurzamen in Hardenberg</title>
+<link rel="stylesheet" href="../shared/site.css">
+<style>
+/* Basis: ../shared/site.css. Hier alleen wat deze site zelf nodig heeft. */
+:root{--green:#5fb98c;--green-dark:#2a7550;--green-bg:#d8f2e5;--green-line:#a6dcc0;--green-top:#eefaf3}
+[data-dom="subsidies"]{--green:#5b9bd5;--green-dark:#2f6ea8;--green-bg:#ddeefd;--green-line:#a9cdef;--green-top:#eef6fe}
+[data-dom="lenen"]{--green:#9a80dd;--green-dark:#5f46a6;--green-bg:#ebe4fc;--green-line:#c9b9f2;--green-top:#f6f2fe}
+[data-dom="reken"]{--green:#e8916b;--green-dark:#a9532f;--green-bg:#ffe5d8;--green-line:#f2bfa6;--green-top:#fff3ed}
+[data-dom="ardo"]{--green:#e0b030;--green-dark:#8a6a0c;--green-bg:#fff2c2;--green-line:#ead68a;--green-top:#fffaea}
+[data-dom="regels"]{--green:#7d8b99;--green-dark:#465360;--green-bg:#e6ebf0;--green-line:#bcc7d1;--green-top:#f4f6f8}
+section{display:flex;flex-direction:column;gap:10px}
+p{margin:0}
+
+.blocks span:nth-child(1){background:linear-gradient(#c3ecd6,#6cc095)}
+.blocks span:nth-child(3){background:linear-gradient(#ffe9a8,#e0b030)}
+.blocks span:nth-child(4){background:linear-gradient(#ffd6c2,#eb9a76)}
+.peil b{color:var(--bad-ink)}
+.badge-ic{font-size:16px}
+
+.form h4{grid-column:1/-1;margin:6px 0 0;font-size:12px;color:var(--green-dark);border-bottom:1px solid var(--green-line)}
+.lbl small{font-weight:normal;color:var(--muted)}
+.box .in{display:flex;flex-direction:column;gap:8px}
+
+/* stappen */
+.stap{border:1px solid var(--grey-line)}
+.stap > summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:42px 1fr auto;align-items:center;background:linear-gradient(#ececec,#cfcfcf);border-bottom:1px solid #bdbdbd}
+.stap > summary::-webkit-details-marker{display:none}
+.stap > summary .nr{display:grid;place-items:center;align-self:stretch;background:var(--green);color:#fff;font:bold 16px var(--font);text-shadow:0 1px 0 rgba(0,0,0,.3)}
+.stap > summary .ti{padding:6px 10px;font-weight:bold;color:#222}
+.stap > summary .ti small{display:block;font-weight:normal;color:#555}
+.stap > summary .wn{padding:0 10px;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.wn.nu{color:var(--bad-ink)} .wn.gauw{color:var(--warn-ink)} .wn.later{color:var(--muted)}
+.stap .in{padding:10px;display:flex;flex-direction:column;gap:8px}
+.stap dl{margin:0;display:grid;grid-template-columns:110px 1fr;gap:4px 10px}
+.stap dt{font-weight:bold;color:var(--green-dark)}
+.stap dd{margin:0;min-width:0}
+
+table.vt{width:100%}
+table.vt th,table.vt td{padding:4px 8px;text-align:left;vertical-align:top}
+table.vt thead th{background:linear-gradient(#f2f2f2,#dadada);font-weight:bold;text-align:center}
+table.vt tbody th{color:#333;background:#f4f4f4;font-weight:bold}
+table.vt tbody tr:nth-child(even) td{background:#fafafa}
+table.vt td.r,table.vt th.r{text-align:right;white-space:nowrap}
+.pill{display:inline-block;font:bold 9px/1 var(--font);text-transform:uppercase;letter-spacing:.5px;padding:2px 5px;border:1px solid;white-space:nowrap}
+.pill.open{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok-ink)}
+.pill.eind{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
+.pill.dicht{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad-ink)}
+.bron{font-size:11px;color:var(--muted)}
+
+@media (max-width:560px){
+  .kpis{grid-template-columns:1fr}
+  .stap > summary{grid-template-columns:34px 1fr}
+  .stap > summary .nr{grid-row:1 / span 2}
+  .stap > summary .wn{grid-column:2;padding:0 10px 6px}
+  .stap dl{grid-template-columns:1fr}
+}
+</style>
+
+<div class="page" id="app" data-dom="stappen">
+  <div class="topbar"><a href="../">« alle sites</a> | <span>Huis verduurzamen</span> | <span>gemeente Hardenberg</span> | <span>Stand: 12 november 2026</span></div>
+
+  <div class="head">
+    <div class="logo">
+      <div class="blocks" aria-hidden="true"><span>R</span><span>€</span><span>☀</span><span>°C</span></div>
+      <div>
+        <h1 class="wordmark">verduurzamen in Hardenberg<sup>2026</sup></h1>
+        <div class="count">welke stap eerst · welke subsidie · welke lening</div>
+      </div>
+    </div>
+    <div class="peil">Gemeentelijke isolatiesubsidie:<br><b id="aftel">…</b></div>
+    <nav class="topics" id="topics" role="tablist" aria-label="Onderdeel">
+      <button role="tab" data-t="stappen">Stappenplan</button>
+      <button role="tab" data-t="subsidies">Subsidies</button>
+      <button role="tab" data-t="lenen">Lenen</button>
+      <button role="tab" data-t="reken">Rekenhulp</button>
+      <button role="tab" data-t="ardo">Zonnestroom zelf gebruiken</button>
+      <button role="tab" data-t="regels">Regels die eraan komen</button>
+    </nav>
+  </div>
+
+  <!-- ===================== STAPPENPLAN ===================== -->
+  <section data-tab="stappen" role="tabpanel">
+    <div class="sheet">
+      <div class="badge-ic" aria-hidden="true">0→5</div>
+      <span class="tag"><span>De volgorde in het kort</span></span>
+      <p class="q"><b>Eerst isoleren en ventileren</b>, tegelijk <b>zonnepanelen</b>. Daarna je eigen zonnestroom <b>zelf opmaken</b> (warm water via een boiler met slimme sturing). De <b>cv-ketel</b> blijft tot hij aan vervanging toe is; dan wordt het een hybride warmtepomp. Een <b>thuisbatterij</b> komt als laatste.</p>
+      <p>Die volgorde volgt uit het geld: op isolatie zit nu de meeste subsidie (en een deel daarvan stopt op 31 december 2026), op zonnepanelen zit alleen 0% btw, en op een batterij zit niets.</p>
+    </div>
+
+    <div class="fb no"><div><b>Dit moet je vóór 31 december 2026 geregeld hebben</b>
+      <ul style="margin:4px 0 0;padding-left:18px">
+        <li><b>Gemeentelijke isolatiesubsidie (tot € 1.800) aanvragen.</b> De regeling vervalt volgens de tekst op 31 december 2026, of eerder als het budget op is. Vraag vooraf aan met een offerte, dan is het geld gereserveerd en heb je daarna 12 maanden om het uit te voeren. Het aanvraagportaal noemt "aanvragen mogelijk t/m 30-06-2027", maar dat staat niet in de regeling; reken op 31 december en bel het Energieloket (085 023 22 22) of er nog budget is.</li>
+        <li><b>Wil je triple glas in nieuwe kozijnen?</b> Teken de offerte nog in 2026. De ISDE daarvoor halveert in 2027 (van € 111 naar € 55 per m²). Met een koopbewijs uit 2026 krijg je het oude bedrag, ook als het in 2027 geplaatst wordt.</li>
+        <li><b>Toch al een (hybride) warmtepomp van plan?</b> Zelfde verhaal: het bedrag per kW voor lucht-water-warmtepompen gaat in 2027 van € 225 naar € 120.</li>
+      </ul></div></div>
+
+    <details class="stap" open>
+      <summary><span class="nr">0</span><span class="ti">Gratis advies halen<small>Energieloket Hardenberg, zodat je weet wat jouw huis nodig heeft</small></span><span class="wn nu">deze week</span></summary>
+      <div class="in"><dl>
+        <dt>Wat</dt><dd>Het <a href="https://energieloketten.nl/hardenberg">Energieloket Hardenberg</a> (Duurzaam Bouwloket, in opdracht van de gemeente) geeft gratis en onafhankelijk advies en doet de subsidiecheck. Telefoon <b>085 023 22 22</b>.</dd>
+        <dt>Neem mee</dt><dd>Bouwjaar, energielabel (opzoeken op <a href="https://www.ep-online.nl">ep-online.nl</a>), jaarverbruik gas en stroom, en de leeftijd van de cv-ketel.</dd>
+        <dt>Handig</dt><dd>Via het Energieloket kun je een gratis energiecoach aan huis krijgen. Via de Energiebieb leen je gratis een CO₂-meter en energiemeters. Daarmee zie je of er genoeg geventileerd wordt en welke apparaten veel stroom trekken. De gemeente heeft ook een <a href="https://www.hardenberg.nl/energieloket/energiebespaarroute">energiebespaarroute per woningtype</a>.</dd>
+      </dl></div>
+    </details>
+
+    <details class="stap" open>
+      <summary><span class="nr">1</span><span class="ti">Isoleren en ventileren<small>Spouwmuur, vloer/bodem, dak, glas, met ventilatie erbij</small></span><span class="wn nu">nu aanvragen</span></summary>
+      <div class="in"><dl>
+        <dt>Waarom eerst</dt><dd>Wat je niet verliest hoef je niet op te wekken, en elke latere stap (warmtepomp, boiler) wordt er kleiner en goedkoper van. Spouwmuur- en vloer/bodemisolatie verdienen zich meestal het snelst terug.</dd>
+        <dt>Subsidie</dt><dd><b>Gemeente Hardenberg: 100% van de kosten tot € 1.800</b> per woning, eenmalig. Daar bovenop de landelijke <b>ISDE</b>, die <b>verdubbelt bij twee of meer maatregelen</b> binnen 24 maanden. Reken het uit onder <span class="lnk" data-go="reken">Rekenhulp</span>.</dd>
+        <dt>Ventilatie</dt><dd>Een goed geïsoleerd huis moet actief ventileren, anders krijg je vocht en schimmel. ISDE geeft <b>€ 400</b> voor CO₂-gestuurde ventilatie of WTW, maar alleen samen met een isolatiemaatregel.</dd>
+        <dt>Let op</dt><dd>Voor ISDE moet een bedrijf het werk doen (niet zelf), en je vraagt pas <i>na</i> uitvoering aan, binnen 24 maanden. De gemeentelijke subsidie vraag je het liefst <i>vooraf</i> aan met een offerte, zodat het geld gereserveerd is. Achteraf indienen met factuur kan ook, zolang er budget is.</dd>
+        <dt>Lenen</dt><dd>Energiebespaarlening van het Warmtefonds: 0% rente bij een verzamelinkomen onder € 60.000.</dd>
+      </dl></div>
+    </details>
+
+    <details class="stap" open>
+      <summary><span class="nr">2</span><span class="ti">Zonnepanelen<small>Kan tegelijk met stap 1; het dak moet wel eerst geïsoleerd zijn als dat van buitenaf gebeurt</small></span><span class="wn gauw">tegelijk</span></summary>
+      <div class="in"><dl>
+        <dt>Subsidie</dt><dd>Geen. Wel <b>0% btw</b> op panelen en installatie op een woning. Het Warmtefonds financiert panelen wel.</dd>
+        <dt>Belangrijk</dt><dd><b>Salderen stopt op 1 januari 2027</b>, in één keer. Daarna krijg je voor teruggeleverde stroom nog minimaal 50% van het kale leveringstarief (tot 2030), en veel leveranciers rekenen terugleverkosten. Stroom die je zelf gebruikt levert dus veel meer op dan stroom die je teruglevert.</dd>
+        <dt>Dus</dt><dd>Leg niet het dak zo vol mogelijk, maar stem het aantal panelen af op wat je zelf kunt gebruiken, inclusief de boiler uit stap 3. Vraag de installateur om een berekening <i>zonder</i> saldering.</dd>
+      </dl></div>
+    </details>
+
+    <details class="stap" open>
+      <summary><span class="nr">3</span><span class="ti">Zonnestroom zelf gebruiken: boiler met slimme sturing<small>Warm water op eigen stroom in plaats van op gas</small></span><span class="wn gauw">na de panelen</span></summary>
+      <div class="in"><dl>
+        <dt>Wat</dt><dd>Een elektrische boiler (100 liter of meer) die opwarmt wanneer de panelen meer leveren dan het huis gebruikt, aangestuurd door bijvoorbeeld een <span class="lnk" data-go="ardo">Ardo One</span>. De boiler komt tussen de waterleiding en de cv-ketel, als voorverwarmer; de ketel verwarmt alleen na als het boilerwater niet warm genoeg is. Later kan de boiler ook de verwarming helpen: de Ardo One gaat een driewegklep aansturen die het cv-water door een leiding in het vat stuurt, zodat het daar warmte meepakt voordat het naar de ketel gaat.</dd>
+        <dt>Subsidie</dt><dd><b>Geen.</b> Een elektrische boiler is geen zonneboiler en geen warmtepomp, dus geen ISDE. Lenen kan misschien wel: het Warmtefonds financiert een <i>warmtebatterij</i> (onder meer water in een buffervat, maximaal € 8.500, alleen in combinatie met zonnepanelen of een warmtepomp). Of een gewone elektrische boiler met sturing daaronder valt staat er niet bij; vraag het vooraf na.</dd>
+        <dt>Eerlijk</dt><dd>Dit werkt goed voor <b>warm water</b>: van april tot en met september vrijwel helemaal op eigen stroom, in maart en oktober voor het grootste deel. Ook op heldere winterdagen is er rond de middag overschot, genoeg voor een deel van het warme water. Voor het <b>verwarmen van het huis</b> is dat te weinig: het dekt in december een paar procent van de warmtevraag. Zie <span class="lnk" data-go="ardo">Zonnestroom zelf gebruiken</span>.</dd>
+      </dl></div>
+    </details>
+
+    <details class="stap">
+      <summary><span class="nr">4</span><span class="ti">Verwarming: ketel laten uitdienen, dan hybride<small>Geen haast, maar wel een plan voor het moment dat de ketel stukgaat</small></span><span class="wn later">als de ketel op is</span></summary>
+      <div class="in"><dl>
+        <dt>Regels</dt><dd>Er is <b>nu geen verplichting</b>. De hybride-plicht per 2026 is geschrapt. Het kabinet wil wel dat je <b>vanaf 2029</b> bij vervanging van de cv-ketel een slimme hybride warmtepomp (of volledig elektrisch) neemt, voor een groot deel van de woningen; wie er precies onder valt wordt in 2027 uitgewerkt. Dat is een voornemen, nog geen wet. De norm geldt pas bij vervanging, dus een werkende ketel mag blijven.</dd>
+        <dt>Subsidie</dt><dd>ISDE 2026: € 1.025 + € 225 per kW (+ € 200 bij label A+++); een hybride van 5 kW met A+++ krijgt € 2.350. In 2027 daalt het bedrag per kW van € 225 naar € 120; dezelfde warmtepomp krijgt dan € 1.875, of € 2.075 als hij ook "slim" is. Het vermogen is het subsidiabele vermogen van de meldcodelijst, en sinds 2026 krijgen sommige split-toestellen met een ouder type koudemiddel niets meer: check de meldcode vóór je tekent. En: een warmtepomp <b>verdubbelt je isolatiesubsidie</b> als hij binnen 24 maanden na de isolatie komt.</dd>
+        <dt>Dus</dt><dd>Ketel jonger dan ± 10 jaar: laten zitten en eerst stap 1 t/m 3 doen. Ketel 12–15 jaar of ouder: vraag nu al een offerte voor een hybride, zodat je niet in de kou hoeft te kiezen. Een hybride doet alleen de verwarming; warm water blijft van de ketel komen, en daar vult de boiler uit stap 3 precies het gat.</dd>
+      </dl></div>
+    </details>
+
+    <details class="stap">
+      <summary><span class="nr">5</span><span class="ti">Thuisbatterij<small>Pas als al het andere gedaan is</small></span><span class="wn later">als laatste</span></summary>
+      <div class="in"><dl>
+        <dt>Subsidie</dt><dd><b>Geen</b>, en 21% btw. Het Warmtefonds leent er maximaal € 8.500 voor. Mails of telefoontjes over "€ 1.850 thuisbatterijsubsidie" zijn oplichting.</dd>
+        <dt>Waarom laatst</dt><dd>Een boiler is ook een batterij, alleen voor warmte, en kost een fractie per opgeslagen kWh. Eerst verbruik verschuiven naar de zon (boiler, wasmachine, vaatwasser overdag) en het gasverbruik omlaag. Wat er dan nog aan overschot is, bepaalt of een batterij uit kan en hoe groot hij moet zijn.</dd>
+      </dl></div>
+    </details>
+
+    <div class="box uitleg"><h3>Hoe je aanvragen op elkaar stapelt</h3><ol>
+      <li><p>Offerte(s) voor isolatie opvragen, liefst twee maatregelen tegelijk (bijvoorbeeld spouw + vloer).</p></li>
+      <li><p>Met de offerte de <b>gemeentelijke subsidie</b> aanvragen bij het <a href="https://nip.duurzaambouwloket.nl/hardenberg">Duurzaam Bouwloket</a>, liefst vóór uitvoering en in elk geval vóór 31 december 2026. Kies je de installateur van de collectieve isolatieactie, dan gaat de subsidie direct van de offerte en factuur af.</p></li>
+      <li><p>Zo nodig de <b>Energiebespaarlening</b> aanvragen bij het Warmtefonds (de aanvraag is 3 maanden geldig).</p></li>
+      <li><p>Laten uitvoeren door een bedrijf. Bewaar factuur, betaalbewijs, meldcodes en een foto per maatregel waarop het huis herkenbaar is.</p></li>
+      <li><p>Daarna <b>ISDE</b> aanvragen bij RVO met DigiD, binnen 24 maanden. Een volgende maatregel binnen 24 maanden telt mee voor de verdubbeling.</p></li>
+    </ol></div>
+  </section>
+
+  <!-- ===================== SUBSIDIES ===================== -->
+  <section data-tab="subsidies" role="tabpanel" hidden>
+    <div class="sheet">
+      <div class="badge-ic" aria-hidden="true">€</div>
+      <span class="tag"><span>Wat is er te halen</span></span>
+      <p class="q">Voor een koopwoning in Hardenberg zijn er op dit moment twee regelingen die voor de meeste huizen het verschil maken: de <b>gemeentelijke isolatiesubsidie</b> en de landelijke <b>ISDE</b>. Ze mogen samen. De kleinere en vervallen regelingen staan in het overzicht.</p>
+    </div>
+
+    <div class="box"><h3>Overzicht</h3><div class="scroll"><table class="vt">
+      <thead><tr><th>Regeling</th><th>Voor wat</th><th>Bedrag</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><th>Isolatiesubsidie gemeente Hardenberg</th><td>Spouw, gevel, vloer, bodem, dak, zolder, HR++/triple glas</td><td>100% van de kosten, max. € 1.800 per woning</td><td><span class="pill eind">tot 31-12-2026</span></td></tr>
+        <tr><th>ISDE isolatie (RVO)</th><td>Zelfde maatregelen</td><td>Per m², dubbel bij 2+ maatregelen</td><td><span class="pill open">open</span></td></tr>
+        <tr><th>ISDE ventilatie</th><td>CO₂-gestuurde afzuiging of WTW</td><td>€ 400, alleen samen met isolatie</td><td><span class="pill open">open</span></td></tr>
+        <tr><th>ISDE warmtepomp</th><td>Hybride of volledig elektrisch (lucht-water)</td><td>€ 1.025 + € 225/kW, + € 200 bij A+++</td><td><span class="pill eind">lager in 2027</span></td></tr>
+        <tr><th>ISDE zonneboiler</th><td>Thermische collectoren + vat</td><td>Gemiddeld € 300 – € 1.750</td><td><span class="pill open">open</span></td></tr>
+        <tr><th>ISDE elektrisch koken</th><td>Inductie, alleen bij aansluiting op een warmtenet en zonder gasaansluiting</td><td>€ 400</td><td><span class="pill eind">stopt in 2027</span></td></tr>
+        <tr><th>Zonnepanelen</th><td>PV op de woning</td><td>Geen subsidie, wel 0% btw</td><td><span class="pill open">0% btw</span></td></tr>
+        <tr><th>Elektrische boiler + sturing</th><td>Bijvoorbeeld Ardo One met boiler</td><td>Geen subsidie</td><td><span class="pill dicht">niets</span></td></tr>
+        <tr><th>Thuisbatterij</th><td></td><td>Geen subsidie, 21% btw</td><td><span class="pill dicht">niets</span></td></tr>
+        <tr><th>Isolatiesubsidie VvE's Hardenberg</th><td>Koopappartement van vóór 1992</td><td>100% van de kosten, max. € 1.800 per appartement</td><td><span class="pill open">tot 31-12-2027</span></td></tr>
+        <tr><th>Groene subsidie Hardenberg</th><td>Groen dak, regenton, regenwater afkoppelen</td><td>O.a. € 35–55 per m² groen dak</td><td><span class="pill open">open</span></td></tr>
+        <tr><th>Regio Deal-subsidie (tot € 4.000)</th><td>Was voor inkomens tot € 52.671 (grens 2024)</td><td></td><td><span class="pill dicht">vervallen 1-1-2026</span></td></tr>
+        <tr><th>Warmtepompsubsidie Hardenberg</th><td>Was een bedrag gelijk aan de ISDE, max. € 4.000</td><td></td><td><span class="pill dicht">vervallen 31-12-2025</span></td></tr>
+      </tbody></table></div></div>
+
+    <div class="box"><h3>Isolatiesubsidie gemeente Hardenberg</h3><div class="in">
+      <p><b>Voor wie:</b> eigenaar-bewoner van een grondgebonden woning (geen appartement) in de gemeente Hardenberg, met <b>energielabel D, E, F of G</b>. Heeft de woning een beter of geen label, dan kan het ook als hij <b>vóór 1992</b> gebouwd is en er nog minstens twee bouwdelen te isoleren zijn. Er geldt geen inkomensgrens.</p>
+      <p><b>Hoeveel:</b> 100% van de werkelijke kosten tot € 1.800 per woning, eenmalig. Mag naast de ISDE.</p>
+      <p><b>Hoe:</b> online aanvragen bij het <a href="https://nip.duurzaambouwloket.nl/hardenberg">Duurzaam Bouwloket</a>. Er zijn drie routes: de installateur van de collectieve actie (de subsidie gaat dan direct van de factuur af), een eigen bedrijf, of zelf doen met bonnen van het materiaal en foto's voor, tijdens en na (voor ISDE mag zelf doen <i>niet</i>). Vooraf aanvragen met een offerte is het veiligst: dan is het geld gereserveerd en heb je 12 maanden om het uit te voeren. Werk van na 1 januari 2023 kun je ook achteraf indienen met factuur, zolang er budget is. Aanbouwen, dakkapellen, garages en schuren tellen niet mee.</p>
+      <p><b>Einde:</b> de regeling vervalt op 31 december 2026, of eerder als het plafond van € 5.080.000 bereikt is. Het aanvraagportaal vermeldt "aanvragen mogelijk t/m 30-06-2027", maar een verlenging is niet gepubliceerd. Hoeveel budget er nog is staat niet op de site van de gemeente of het aanvraagportaal (12 november 2026); bel 085 023 22 22.</p>
+      <p><b>Appartement?</b> Daarvoor is er een aparte regeling voor VvE's en eigenaren van een koopappartement van vóór 1992, met hetzelfde bedrag, tot 31 december 2027.</p>
+      <p class="bron">Bron: <a href="https://lokaleregelgeving.overheid.nl/CVDR714145">Subsidieregeling isolatiemaatregelen particulieren Hardenberg</a> · <a href="https://www.hardenberg.nl/energieloket/subsidies-en-regelingen">hardenberg.nl: subsidies en regelingen</a> · <a href="https://energieloketten.nl/hardenberg">Energieloket Hardenberg</a> · <a href="https://zoek.officielebekendmakingen.nl/gmb-2026-174475.html">regeling VvE's</a> · <a href="https://www.hardenberg.nl/kleurtgroen/groene-subsidie">groene subsidie</a></p>
+    </div></div>
+
+    <div class="box"><h3>ISDE isolatie: bedragen per m² (uitvoering 2025 of later)</h3><div class="scroll"><table class="vt">
+      <thead><tr><th>Maatregel</th><th>1 maatregel</th><th>2 of meer</th><th>Min. – max. m²</th><th>Eis</th></tr></thead>
+      <tbody>
+        <tr><th>Spouwmuur</th><td class="r">€ 5,25</td><td class="r">€ 10,50</td><td class="r">10 – 170</td><td>Rd ≥ 1,1</td></tr>
+        <tr><th>Gevel (binnen/buiten)</th><td class="r">€ 20,25</td><td class="r">€ 40,50</td><td class="r">10 – 170</td><td>Rd ≥ 3,5</td></tr>
+        <tr><th>Dak</th><td class="r">€ 16,25</td><td class="r">€ 32,50</td><td class="r">20 – 200</td><td>Rd ≥ 3,5</td></tr>
+        <tr><th>Zolder-/vlieringvloer</th><td class="r">€ 4,00</td><td class="r">€ 8,00</td><td class="r">20 – 130</td><td>Rd ≥ 3,5, zolder onverwarmd</td></tr>
+        <tr><th>Vloer</th><td class="r">€ 5,50</td><td class="r">€ 11,00</td><td class="r">20 – 130</td><td>Rd ≥ 3,5</td></tr>
+        <tr><th>Bodem (kruipruimte)</th><td class="r">€ 3,00</td><td class="r">€ 6,00</td><td class="r">20 – 130</td><td>Rd ≥ 3,5</td></tr>
+        <tr><th>HR++ glas</th><td class="r">€ 25,00</td><td class="r">€ 50,00</td><td class="r">3 – 45</td><td>U ≤ 1,2 · 2027: € 30 (€ 60)</td></tr>
+        <tr><th>Triple glas in nieuw kozijn</th><td class="r">€ 111,00</td><td class="r">€ 222,00</td><td class="r">3 – 45</td><td>U ≤ 0,7 · 2027: € 55 (€ 110)</td></tr>
+      </tbody></table></div>
+      <div class="in">
+        <p>"2 of meer" geldt ook als je één isolatiemaatregel combineert met een warmtepomp, zonneboiler of warmtenetaansluiting binnen 24 maanden. Ventilatie telt daarvoor niet mee. Biobased isolatiemateriaal geeft een kleine bonus per m². De woning moet van vóór 2019 zijn.</p>
+        <p>Glas telt als één soort maatregel: HR++ en triple samen tellen niet als twee maatregelen, glas plus spouwmuur wel. Dak en zolder gelden hier samen als één maatregel, net als vloer en bodem. Voor spouwmuurisolatie met UF-schuim is er sinds 1 april 2026 geen subsidie meer.</p>
+        <p class="hint">De 2027-bedragen zijn nog voorgenomen; de dubbele glasbedragen voor 2027 (tussen haakjes) zijn afgeleid, niet door RVO genoemd. Controleer je eigen situatie in de <a href="https://www.rvo.nl/onderwerpen/isde/woningeigenaren/rekentool">ISDE-rekentool</a>.</p>
+        <p class="bron">Bron: <a href="https://www.rvo.nl/subsidies-financiering/isde/woningeigenaren/isolatiemaatregelen">RVO isolatiemaatregelen</a> · <a href="https://www.rvo.nl/subsidies-financiering/isde/woningeigenaren/ventilatie">RVO ventilatie</a> · <a href="https://www.rvo.nl/subsidies-financiering/isde/woningeigenaren/warmtepomp">RVO warmtepomp</a> · <a href="https://www.rvo.nl/subsidies-financiering/isde/woningeigenaren/zonneboiler">RVO zonneboiler</a></p>
+      </div></div>
+  </section>
+
+  <!-- ===================== LENEN ===================== -->
+  <section data-tab="lenen" role="tabpanel" hidden>
+    <div class="sheet">
+      <div class="badge-ic" aria-hidden="true">0%</div>
+      <span class="tag"><span>Lenen zonder rente kan</span></span>
+      <p class="q">De <b>Energiebespaarlening</b> van het Nationaal Warmtefonds is voor de meeste mensen de beste optie: <b>0% rente bij een verzamelinkomen onder € 60.000</b>, en geen leeftijdsgrens.</p>
+    </div>
+
+    <div class="box"><h3>Energiebespaarlening (Nationaal Warmtefonds)</h3><div class="scroll"><table class="vt"><tbody>
+      <tr><th>Bedrag</th><td>€ 1.000 tot € 29.000 (thuisbatterij: maximaal € 8.500)</td></tr>
+      <tr><th>Rente</th><td><b>0%</b> bij een gezamenlijk verzamelinkomen onder € 60.000. Daarboven een vaste rente; voorbeelden van het fonds per 12 oktober 2026: 4,60% effectief (€ 15.000, 10 jaar) en 5,02% (€ 29.000, 20 jaar).</td></tr>
+      <tr><th>Looptijd</th><td>7, 10 of 15 jaar; 20 jaar alleen boven € 15.000. Boetevrij extra aflossen.</td></tr>
+      <tr><th>Voor wie</th><td>Eigenaar én bewoner van een bestaande woning. Ook 75-plussers kunnen een aanvraag doen. Wie te weinig leenruimte heeft kan in aanmerking komen voor de Combinatielening: altijd 0%, maximaal € 10.000, de eerste 5 jaar geen aflossing.</td></tr>
+      <tr><th>Waarvoor</th><td>Isolatie, glas, ventilatie, zonnepanelen, zonneboiler, (hybride) warmtepomp, warmtepompboiler, thuisbatterij, warmtebatterij en nog een aantal kleinere posten. Zonnepanelen tot € 750 per paneel inclusief installatie. Een thuisbatterij alleen als je zonnepanelen hebt of tegelijk laat leggen. Een "elektrische boiler" staat niet als zodanig op de lijst, maar een <b>warmtebatterij</b> wel (warmteopslag van eigen opgewekte stroom, onder meer water in een buffervat; maximaal € 8.500, alleen met zonnepanelen of warmtepomp). Vraag het Warmtefonds vooraf of jouw boiler daaronder valt.</td></tr>
+      <tr><th>Hoe</th><td>Aanvragen op <a href="https://warmtefonds.nl/aanvraag">warmtefonds.nl/aanvraag</a>. Je aanvraag en de offerte van het fonds zijn 3 maanden geldig, en je kunt niet meer lenen dan het bedrag op de offertes van je installateurs. Het geld staat in een bouwdepot (9 maanden, te verlengen tot 24) waaruit het fonds de facturen betaalt. Subsidie die je later krijgt kun je gebruiken om boetevrij af te lossen (minimaal € 250 per keer).</td></tr>
+    </tbody></table></div>
+    <div class="in"><p class="bron">Bron: <a href="https://www.warmtefonds.nl/particulieren">warmtefonds.nl/particulieren</a> · <a href="https://www.warmtefonds.nl/particulieren/voorwaarden-energiebespaarlening">voorwaarden</a> · <a href="https://www.warmtefonds.nl/particulieren/energiebesparende-maatregelen/warmtebatterij">warmtebatterij</a> · <a href="https://www.warmtefonds.nl/actuele-rentetarieven">actuele rentetarieven</a></p></div></div>
+
+    <div class="box uitleg"><h3>Andere manieren om het te betalen</h3><ul>
+      <li><p><b>Verzilverlening gemeente Hardenberg (58+):</b> voor eigenaar-bewoners van 58 jaar of ouder met overwaarde. € 2.500 tot € 40.000 via SVn, zonder maandlasten: rente wordt bijgeschreven en je lost af bij verkoop of overlijden. Bedoeld voor levensloopbestendig maken (minimaal € 2.500 daaraan); isolatie, HR++ glas, warmtepomp en zonnepanelen mogen erbij. Zie <a href="https://www.hardenberg.nl/bouwen-en-verbouwen/verzilverlening">hardenberg.nl/verzilverlening</a>.</p></li>
+      <li><p><b>Gemeente Hardenberg, overig:</b> geen algemene duurzaamheidslening voor particulieren. De stimuleringsleningen zijn voor kleine VvE's (2 tot 7 appartementen) en maatschappelijk vastgoed.</p></li>
+      <li><p><b>Provincie Overijssel:</b> geen eigen regeling voor particuliere woningeigenaren gevonden. Het Energiefonds Overijssel is er voor bedrijven en organisaties.</p></li>
+      <li><p><b>Hypotheek verhogen / bouwdepot:</b> kan. Voor energiebesparende maatregelen mag je tot 106% van de woningwaarde lenen, en een deel van de lening telt niet mee bij de vraag hoeveel je op je inkomen mag lenen: € 20.000 bij label E, F of G, € 15.000 bij C of D, € 10.000 bij A of B (regels 2026). Zonnepanelen en warmtepompen tellen mee, een thuisbatterij niet. Vraag je eigen bank; de rente is hoger dan 0% maar de looptijd langer.</p></li>
+      <li><p><b>Spaargeld:</b> voor kleine posten (boiler + sturing, ± € 1.000 – € 1.500 met installatie) is lenen meestal de moeite niet waard.</p></li>
+    </ul></div>
+
+    <div class="fb warn"><div><b>Volgorde van aanvragen</b>Gemeentelijke subsidie en lening vraag je aan <i>vóór</i> de uitvoering. De ISDE vraag je pas <i>na</i> de uitvoering aan; de beoordeling duurt ongeveer 8 weken. Je schiet dat bedrag dus voor, of leent het mee en lost het daarna af.</div></div>
+  </section>
+
+  <!-- ===================== REKENHULP ===================== -->
+  <section data-tab="reken" role="tabpanel" hidden>
+    <div class="sheet">
+      <div class="badge-ic" aria-hidden="true">m²</div>
+      <span class="tag"><span>Wat krijg ik ongeveer?</span></span>
+      <p class="q">Vul in wat je wilt laten doen. Alles rekent in je browser; je invoer staat in de link, dus je kunt hem doorsturen.</p>
+      <div class="form" id="form">
+        <h4>Isolatie (m²)</h4>
+        <div class="fld"><label class="lbl" for="spouw">Spouwmuur</label><div class="field"><input id="spouw" inputmode="decimal"><span>m²</span></div></div>
+        <div class="fld"><label class="lbl" for="gevel">Gevel <small>(binnen of buiten)</small></label><div class="field"><input id="gevel" inputmode="decimal"><span>m²</span></div></div>
+        <div class="fld"><label class="lbl" for="dak">Dak</label><div class="field"><input id="dak" inputmode="decimal"><span>m²</span></div></div>
+        <div class="fld"><label class="lbl" for="zolder">Zolder-/vlieringvloer</label><div class="field"><input id="zolder" inputmode="decimal"><span>m²</span></div></div>
+        <div class="fld"><label class="lbl" for="vloer">Vloer</label><div class="field"><input id="vloer" inputmode="decimal"><span>m²</span></div></div>
+        <div class="fld"><label class="lbl" for="bodem">Bodem <small>(kruipruimte)</small></label><div class="field"><input id="bodem" inputmode="decimal"><span>m²</span></div></div>
+        <div class="fld"><label class="lbl" for="hr">HR++ glas</label><div class="field"><input id="hr" inputmode="decimal"><span>m²</span></div></div>
+        <div class="fld"><label class="lbl" for="triple">Triple glas in nieuwe kozijnen</label><div class="field"><input id="triple" inputmode="decimal"><span>m²</span></div></div>
+        <div class="fld wide"><label class="lbl" for="kosten">Totale kosten isolatie volgens offerte <small>(voor de gemeentelijke subsidie)</small></label><div class="field"><span>€</span><input id="kosten" inputmode="decimal"></div></div>
+
+        <h4>Installaties</h4>
+        <label class="chk"><input type="checkbox" id="vent"> Ventilatie (CO₂-gestuurd of WTW)</label>
+        <label class="chk"><input type="checkbox" id="zb"> Zonneboiler (thermisch)</label>
+        <label class="chk"><input type="checkbox" id="wp"> (Hybride) lucht-water-warmtepomp</label>
+        <div class="fld"><label class="lbl" for="kw">Vermogen warmtepomp</label><div class="field"><input id="kw" inputmode="decimal" placeholder="5"><span>kW</span></div></div>
+        <label class="chk"><input type="checkbox" id="appp"> Warmtepomp heeft label A+++</label>
+        <label class="chk"><input type="checkbox" id="slim"> Warmtepomp is "slim" (EEBus, S2 of Matter)</label>
+
+        <h4>Situatie</h4>
+        <div class="fld"><label class="lbl" for="jaar">Gekocht / offerte getekend in</label><select id="jaar"><option value="2026">2026</option><option value="2027">2027 (voorgenomen bedragen)</option></select></div>
+        <div></div>
+        <label class="chk wide"><input type="checkbox" id="hb" checked> Grondgebonden koopwoning in de gemeente Hardenberg, zelf bewoond, met label D–G (of gebouwd vóór 1992 met nog minstens twee te isoleren bouwdelen)</label>
+        <label class="chk wide"><input type="checkbox" id="ink" checked> Gezamenlijk verzamelinkomen onder € 60.000</label>
+      </div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+    <div class="box"><h3>Opbouw</h3><div class="scroll"><table class="vt" id="uit"></table></div></div>
+    <div id="meldingen" style="display:flex;flex-direction:column;gap:6px"></div>
+    <p class="hint">Indicatie. De echte bedragen hangen af van de meldcode van het product en de beoordeling door RVO en het Duurzaam Bouwloket. Biobased bonus is niet meegerekend. <button type="button" class="lnk" id="wis" style="background:none;border:0;padding:0;font:inherit">Invoer wissen</button></p>
+  </section>
+
+  <!-- ===================== ARDO ===================== -->
+  <section data-tab="ardo" role="tabpanel" hidden>
+    <div class="sheet">
+      <div class="badge-ic" aria-hidden="true">☀→♨</div>
+      <span class="tag"><span>Je eigen stroom opmaken</span></span>
+      <p class="q">Vanaf 1 januari 2027 is een kWh die je teruglevert nog maar een paar cent waard, en een kWh die je zelf gebruikt het volle tarief. De goedkoopste manier om overschot op te maken is er <b>warm water</b> van maken.</p>
+      <p class="hint">Openheid: deze site is gemaakt door iemand die zelf aan de Ardo One werkt. De prijzen en besparingen hieronder komen van ardo.nl en zijn niet onafhankelijk gecontroleerd.</p>
+    </div>
+
+    <div class="box"><h3>Wat er komt te hangen</h3><div class="scroll"><table class="vt">
+      <thead><tr><th>Onderdeel</th><th>Wat het doet</th><th>Prijs</th></tr></thead>
+      <tbody>
+        <tr><th>Ardo One</th><td>Meet via de slimme meter (P1) wat er over is en schakelt de boiler in op zonne-overschot of op goedkope uren.</td><td class="r">€ 449</td></tr>
+        <tr><th>Elektrische boiler, 100 l</th><td>Slaat de stroom op als warm water. Een vat van 100 liter dat 45 graden opwarmt bergt ongeveer 5 kWh. Wil je later ook de verwarming via de driewegklep laten meedoen, dan heb je een vat met spiraal nodig; vraag of dit vat die heeft en wat het anders kost.</td><td class="r">€ 519</td></tr>
+        <tr><th>Warm water</th><td>De boiler komt als voorverwarmer tussen de waterleiding en de cv-ketel, met een thermostatisch mengventiel. De ketel verwarmt alleen na als dat nodig is en moet daarvoor geschikt zijn (Gaskeur NZ); vraag dit na.</td><td class="r">offerte</td></tr>
+        <tr><th>Verwarming: driewegklep</th><td>Komt eraan. Een driewegklep stuurt het cv-water door een leiding (spiraal) in het vat, zodat het warmte uit de boiler meepakt en de ketel minder hoeft te stoken. Dit vraagt een vat met zo'n spiraal. Het levert vooral in het voor- en najaar iets op; zie hieronder.</td><td class="r">offerte</td></tr>
+        <tr><th>Installatie</th><td>Ardo.nl rekent € 0 voor het koppelen van ketel en panelen. Een eigen groep in de meterkast en extra leidingwerk kunnen erbij komen.</td><td class="r">navragen</td></tr>
+        <tr class="tot"><th>Volgens ardo.nl</th><td style="font-weight:normal">Ardo One + boiler bij een cv-ketel met 10 zonnepanelen. Opgegeven besparing: € 662 per jaar. Dat bedrag rekent met € 1,97 per m³ gas, € 0,11 per kWh vermeden terugleverkosten en ook met cv-verwarming via de boiler (die er nu nog niet is). Alleen warm water, bij ongeveer € 1,50 per m³ gas: reken op ruwweg € 200 tot € 300 per jaar (eigen schatting).</td><td class="r">€ 968</td></tr>
+      </tbody></table></div>
+      <div class="in"><p class="bron">Bron: <a href="https://ardo.nl/">ardo.nl</a> · <a href="https://ardo.nl/savings-explained">hoe Ardo de besparing berekent</a>. Gebruik de configurator op die site voor je eigen adres.</p></div></div>
+
+    <div class="fb ok"><div><b>Waar het goed voor is: warm water</b>Douchen en de keukenkraan kosten een gemiddeld huishouden een paar honderd m³ gas per jaar. Van april tot en met september kan de boiler dat vrijwel helemaal op eigen zonnestroom doen, in maart en oktober voor het grootste deel, en de cv-ketel hoeft dan maandenlang nauwelijks aan. Reken het na met je eigen gasverbruik in de zomermaanden: dat is bijna alleen warm water.</div></div>
+
+    <div class="fb warn"><div><b>Waar het weinig doet: het huis verwarmen</b>Ook in de winter is er overschot: op een heldere dag leveren 10 panelen rond de middag 6 tot 8 kWh, genoeg om de boiler te vullen. Nieuwere panelen doen het dan beter, en steil gelegde panelen (60° in plaats van 35°) leveren in december ongeveer 20% meer. Maar over de hele maand december leveren 10 moderne panelen op het zuiden ruwweg 100 tot 125 kWh, waarvan na eigen verbruik ongeveer de helft over is, terwijl een gemiddeld huis dan ruim 1.000 kWh warmte vraagt. Op een gemiddelde decemberdag komt er minder dan 1 kW van het dak, minder dan het verwarmingselement van de boiler vraagt. Bovendien maakt een elektrische boiler van 1 kWh stroom 1 kWh warmte; een warmtepomp maakt er 3 tot 4 van. In de winter gaat het overschot dus naar warm water, en cv-verwarming via de boiler telt pas mee in het voor- en najaar. Maak de businesscase op warm water en zie verwarming als bijvangst.</div></div>
+
+    <div class="box uitleg"><h3>Wat het betekent voor de rest van het plan</h3><ul>
+      <li><p><b>Lenen:</b> het Warmtefonds financiert een "warmtebatterij" (warmteopslag van eigen stroom, onder meer water in een buffervat) tot € 8.500, als je zonnepanelen of een warmtepomp hebt. Of deze boiler daaronder valt moet je vooraf navragen.</p></li>
+      <li><p><b>Subsidie:</b> geen. Een elektrische boiler valt niet onder ISDE en telt dus ook niet mee voor de verdubbeling van de isolatiesubsidie. Een thermische zonneboiler wel, en een warmtepompboiler waarschijnlijk ook (check de meldcodelijst van RVO), maar die zijn een stuk duurder.</p></li>
+      <li><p><b>Later een hybride warmtepomp:</b> past goed. De hybride neemt het grootste deel van de verwarming over en de boiler het warme water. De cv-ketel springt nog bij op de koudste dagen, en voor warm water als de boiler niet warm genoeg is.</p></li>
+      <li><p><b>Later een batterij:</b> de Ardo kan die ook aansturen, dus de volgorde boiler eerst, batterij later kost niets extra.</p></li>
+      <li><p><b>Legionella:</b> in de winter staat een boiler op zonne-overschot dagenlang lauw. Het water moet dan alsnog naar 60 °C: door de ketel als naverwarmer, of door de boiler af en toe op netstroom door te verwarmen. Vraag hoe dat geregeld is.</p></li>
+      <li><p><b>Netstroom is duurder dan gas:</b> warmte uit de boiler op netstroom kost ongeveer anderhalf keer zoveel als dezelfde warmte uit de ketel. De besparing zit dus in overschot, niet in bijstoken van het net. Een boiler verliest daarnaast ongeveer 1 kWh per dag aan stilstand.</p></li>
+      <li><p><b>Vraag aan de installateur:</b> is mijn cv-ketel geschikt voor voorverwarmd water (Gaskeur NZ), komt er een mengventiel tegen te heet water aan de kraan, kan de sturing het element terugregelen bij weinig zon, en blijft de garantie op de ketel geldig?</p></li>
+    </ul></div>
+  </section>
+
+  <!-- ===================== REGELS ===================== -->
+  <section data-tab="regels" role="tabpanel" hidden>
+    <div class="sheet">
+      <div class="badge-ic" aria-hidden="true">§</div>
+      <span class="tag"><span>Wat verandert er</span></span>
+      <p class="q">Vier dingen sturen de planning: het einde van salderen, de lagere ISDE in 2027, de hybride-norm van 2029 en het warmteprogramma dat de gemeente nog moet maken.</p>
+    </div>
+
+    <div class="box"><h3>Tijdlijn</h3><div class="scroll"><table class="vt">
+      <thead><tr><th>Wanneer</th><th>Wat</th><th>Zeker?</th></tr></thead>
+      <tbody>
+        <tr><th>31-12-2026</th><td>Isolatiesubsidie gemeente Hardenberg vervalt (of eerder bij leeg budget).</td><td>Staat in de regeling</td></tr>
+        <tr><th>1-1-2027</th><td><b>Salderen stopt</b> in één keer. Tot 2030 minimaal 50% van het kale leveringstarief als terugleververgoeding; terugleverkosten blijven mogelijk.</td><td>Wet, aangenomen</td></tr>
+        <tr><th>1-1-2027</th><td>ISDE: lucht-water-warmtepomp € 225 → € 120 per kW; A+++ bonus € 200 → € 250; nieuwe bonus € 200 voor slimme warmtepomp; HR++ glas € 25 → € 30; triple in nieuw kozijn € 111 → € 55; elektrisch koken vervalt. Loket open vanaf 5 januari 2027.</td><td>Voorgenomen</td></tr>
+        <tr><th>31-12-2027</th><td>Gemeenten moeten een warmteprogramma hebben vastgesteld: welke wijken in de komende tien jaar van het gas gaan en hoe. (De termijn was eerst eind 2026 en is een jaar opgeschoven.)</td><td>Termijn volgens VNG</td></tr>
+        <tr><th>2029</th><td>Bij vervanging van de cv-ketel wordt een <b>slimme hybride warmtepomp</b> (of volledig elektrisch) de norm voor een groot deel van de woningen. Niet voor woningen die (binnenkort) op een warmtenet komen; appartementen en monumenten voorlopig uitgezonderd. De precieze afbakening volgt in 2027.</td><td>Voornemen (Kamerbrief 7-10-2026), nog geen wet; 2029 is de vroegst haalbare datum</td></tr>
+        <tr><th>1-1-2030</th><td>De ondergrens voor de terugleververgoeding vervalt; daarna "een redelijke vergoeding".</td><td>Wet</td></tr>
+      </tbody></table></div></div>
+
+    <div class="box uitleg"><h3>Wat betekent dat voor de keuzes</h3><ul>
+      <li><p><b>Hybride-norm 2029:</b> je hoeft nu niets. De eerdere plicht per 2026 is in 2024 geschrapt. Het nieuwe plan geldt pas op het moment dat de ketel vervangen wordt, en een werkende ketel mag blijven. Wie in 2027 of 2028 nog een gewone ketel plaatst, zit daar wel 15 jaar aan vast terwijl gas duurder wordt.</p></li>
+      <li><p><b>Warmtepomp nu of later:</b> de subsidie wordt in 2027 lager, maar slimme toestellen krijgen een bonus. Voor een slimme A+++ hybride van 5 kW scheelt het per saldo ongeveer € 275 (2026: € 2.350, 2027: € 2.075). Dat is geen reden om een goede ketel er nu uit te halen.</p></li>
+      <li><p><b>Warmteprogramma Hardenberg:</b> er is nog geen warmteprogramma vastgesteld, en er zijn geen wijken aangewezen die van het gas gaan. Het Programma Energie van de gemeente (maart 2025) wil vanaf 2026 meer wijkgericht werken en noemt micro-warmtenetten en groen gas als mogelijkheid, zonder plaatsen te noemen. Vraag het toch na vóór je een warmtepomp koopt: in een wijk met een warmtenet is die investering zonde.</p></li>
+      <li><p><b>Salderen:</b> vanaf 2027 bepaalt je eigen verbruik overdag wat panelen opleveren. Dat is de reden voor de boiler vóór de batterij.</p></li>
+    </ul></div>
+
+    <div class="box"><h3>Bronnen</h3><div class="in">
+      <p><a href="https://zoek.officielebekendmakingen.nl/kst-1275995.pdf">Kamerbrief 7 oktober 2026: voorgenomen normering slimme, hybride warmtepompen</a> · <a href="https://www.nplw.nl/nieuws/kabinet-hybride-warmtepomp-vanaf-2029-de-norm">NPLW: hybride warmtepomp vanaf 2029 de norm</a></p>
+      <p><a href="https://www.rvo.nl/subsidies-financiering/isde/isde-wat-wijzigt-er-2027">RVO: ISDE, wat wijzigt er vanaf 2027</a> · <a href="https://www.rvo.nl/subsidies-financiering/isde/woningeigenaren">RVO: ISDE woningeigenaren</a></p>
+      <p><a href="https://www.rijksoverheid.nl/onderwerpen/energie-thuis/salderingsregeling">Rijksoverheid: salderingsregeling</a> · <a href="https://consument.acm.nl/elektriciteit-en-gas/duurzame-energie/wat-is-salderen">ACM: salderen en terugleververgoeding</a> · <a href="https://www.consumentenbond.nl/energie-vergelijken/blijft-de-salderingsregeling-toch-bestaan">Consumentenbond: salderingsregeling na 2027</a> · <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/btw/content/btw-terugvragen-voor-zonnepanelen-ik-ben-particulier">Belastingdienst: btw en zonnepanelen</a> · <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/btw/content/thuisbatterij-btw">Belastingdienst: thuisbatterij en btw</a></p>
+      <p><a href="https://hardenberg.nl/plannen-projecten/duurzaam-hardenberg">Gemeente Hardenberg: Duurzaam Hardenberg</a> · <a href="https://lokaleregelgeving.overheid.nl/CVDR714145">Isolatieregeling Hardenberg</a> · <a href="https://lokaleregelgeving.overheid.nl/CVDR723145">Regio Deal-regeling (vervallen)</a> · <a href="https://www.hardenberg.nl/plannen-projecten/duurzaam-hardenberg/programma-energie">Programma Energie Hardenberg</a> · <a href="https://vng.nl/nieuws/gemeenten-krijgen-meer-tijd-voor-warmteprogrammas">VNG: meer tijd voor warmteprogramma's</a></p>
+    </div></div>
+  </section>
+
+  <footer>Geen officieel advies · bedragen gecontroleerd op 12 november 2026 · regelingen kunnen wijzigen of op raken, check altijd RVO en het Energieloket (085 023 22 22) · niets wordt verstuurd, alles rekent in je browser</footer>
+</div>
+
+<script>
+// ---------- regels als data ----------
+const ISDE = {
+  // €/m² bij één maatregel; verdubbelt bij 2+ maatregelen of combinatie met warmtepomp/zonneboiler
+  spouw:{t:"Spouwmuur",e:5.25,min:10,max:170,g:"spouw"},
+  gevel:{t:"Gevel",e:20.25,min:10,max:170,g:"gevel"},
+  dak:{t:"Dak",e:16.25,min:20,max:200,g:"dak"},
+  zolder:{t:"Zolder-/vlieringvloer",e:4,min:20,max:130,g:"dak"},
+  vloer:{t:"Vloer",e:5.5,min:20,max:130,g:"vloer"},
+  bodem:{t:"Bodem",e:3,min:20,max:130,g:"vloer"},
+  // triple vóór HR++: het gedeelde maximum van 45 m² glas gaat eerst naar het hoogste tarief
+  triple:{t:"Triple glas in nieuw kozijn",e:{2026:111,2027:55},min:3,max:45,g:"glas"},
+  hr:{t:"HR++ glas",e:{2026:25,2027:30},min:3,max:45,g:"glas"},
+};
+const WP = {2026:{start:1025,kw:225,appp:200,slim:0}, 2027:{start:1025,kw:120,appp:250,slim:200}};
+const VENT = 400, ZB = [300,1750], GEMEENTE_MAX = 1800, GEMEENTE_EIND = new Date(2026,11,31,23,59,59);
+
+function bereken(v){
+  const jaar = v.jaar === 2027 ? 2027 : 2026;
+  const m2 = {}, groep = {};
+  for (const k in ISDE){ m2[k] = Math.max(0, v[k] || 0); groep[ISDE[k].g] = (groep[ISDE[k].g] || 0) + m2[k]; }
+  // het minimum geldt per groep (dak+zolder, vloer+bodem, al het glas samen)
+  const telt = k => m2[k] > 0 && groep[ISDE[k].g] >= ISDE[k].min;
+  const groepen = new Set(Object.keys(ISDE).filter(telt).map(k => ISDE[k].g));
+  const dubbel = groepen.size >= 2 || (groepen.size >= 1 && (v.wp || v.zb));
+  const regels = [], meld = [];
+  let isolatie = 0, glasOver = ISDE.hr.max;
+  for (const k in ISDE){
+    if (!m2[k]) continue;
+    const r = ISDE[k];
+    if (!telt(k)){ meld.push(["warn", r.t + ": te weinig m²", "Minimaal " + r.min + " m² nodig voor ISDE."]); continue; }
+    let opp = Math.min(m2[k], r.max);
+    if (r.g === "glas"){ opp = Math.min(opp, glasOver); glasOver -= opp; }
+    if (opp < m2[k]) meld.push(["warn", r.t + ": maximum bereikt", r.g === "glas" ? "ISDE vergoedt maximaal " + ISDE.hr.max + " m² glas in totaal; er is gerekend met " + nl(opp, 1).replace(",0", "") + " m²." : "ISDE vergoedt maximaal " + r.max + " m²; daarmee is gerekend."]);
+    if (!opp) continue;
+    const tarief = (typeof r.e === "object" ? r.e[jaar] : r.e) * (dubbel ? 2 : 1);
+    const b = opp * tarief; isolatie += b;
+    regels.push([r.t, nl(opp, 1).replace(",0", "") + " m² × € " + nl(tarief, 2), b]);
+  }
+  let vent = 0, wp = 0;
+  if (v.vent){
+    if (groepen.size) { vent = VENT; regels.push(["Ventilatie", "vast bedrag", vent]); }
+    else meld.push(["warn", "Ventilatie zonder isolatie", "De € 400 krijg je alleen samen met een isolatiemaatregel."]);
+  }
+  if (v.wp){
+    const w = WP[jaar], kw = v.kw > 0 ? Math.min(v.kw, 25) : 5;
+    if (v.kw > 25) meld.push(["warn", "Vermogen boven 25 kW", "ISDE rekent met maximaal 25 kW; daarmee is gerekend."]);
+    if (!(v.kw > 0)) meld.push(["warn", "Vermogen niet ingevuld", "Gerekend met 5 kW. Gebruik het subsidiabele vermogen van de meldcodelijst van RVO; dat wijkt soms af van het typeplaatje."]);
+    wp = w.start + kw * w.kw + (v.appp ? w.appp : 0) + (v.slim ? w.slim : 0);
+    regels.push(["Warmtepomp " + nl(kw, 1).replace(",0","") + " kW", "€ " + nl(w.start, 0) + " + " + nl(kw,1).replace(",0","") + " × € " + w.kw + (v.appp ? " + € " + w.appp : "") + (v.slim && w.slim ? " + € " + w.slim : ""), wp]);
+    if (v.slim && !w.slim) meld.push(["warn", "Slim-bonus bestaat pas in 2027", "In 2026 krijg je geen extra bedrag voor een slimme warmtepomp."]);
+  }
+  const isde = isolatie + vent + wp;
+  let gemeente = 0;
+  if (v.hb && groepen.size){
+    if (jaar === 2027) meld.push(["no", "Gemeentelijke subsidie niet meegerekend", "De regeling vervalt op 31 december 2026. Vraag hem nog dit jaar aan met een offerte; uitvoeren mag daarna 12 maanden."]);
+    else if (!(v.kosten > 0)) meld.push(["warn", "Vul de kosten in", "De gemeente vergoedt 100% van de isolatiekosten tot € 1.800. Zonder bedrag kan dit niet worden meegerekend."]);
+    else gemeente = Math.min(GEMEENTE_MAX, v.kosten);
+  } else if (v.hb && v.kosten > 0 && jaar === 2026) {
+    meld.push(["warn", "Gemeentelijke subsidie niet meegerekend", "Vul de m² in van wat je laat isoleren. De gemeente hanteert dezelfde minimumoppervlakten als de ISDE."]);
+  }
+  if (dubbel) meld.push(["ok", "Isolatiesubsidie verdubbeld", groepen.size >= 2 ? "Je doet twee of meer isolatiemaatregelen. Ze moeten binnen 24 maanden na elkaar uitgevoerd zijn." : "Eén isolatiemaatregel plus warmtepomp of zonneboiler binnen 24 maanden telt ook."]);
+  else if (groepen.size === 1) meld.push(["warn", "Eén maatregel erbij verdubbelt dit", "Met een tweede isolatiemaatregel (of een warmtepomp/zonneboiler) binnen 24 maanden wordt de isolatiesubsidie " + eur(isolatie * 2) + " in plaats van " + eur(isolatie) + "."]);
+  if (v.zb) meld.push(["ok", "Zonneboiler", "Daar komt nog gemiddeld " + eur(ZB[0]) + " tot " + eur(ZB[1]) + " ISDE bij, afhankelijk van collector en vat. Niet in het totaal opgenomen."]);
+  if (v.kosten > 0 && isolatie + gemeente > v.kosten) meld.push(["warn", "Subsidie samen hoger dan de kosten", "De gemeente vergoedt nooit meer dan de factuur. Of je beide bedragen volledig krijgt als ze samen boven de kosten (" + eur(v.kosten) + ") uitkomen staat niet in de regeling; vraag het na bij het Energieloket."]);
+  meld.push(v.ink ? ["ok", "Lenen tegen 0%", "Met een verzamelinkomen onder € 60.000 leen je de rest renteloos bij het Warmtefonds (€ 1.000 – € 29.000)."]
+                  : ["warn", "Lenen kost rente", "Boven € 60.000 verzamelinkomen rekent het Warmtefonds een vaste rente van ongeveer 4,6 – 5,0% (oktober 2026)."]);
+  return {regels, isolatie, vent, wp, isde, gemeente, totaal: isde + gemeente, dubbel, meld};
+}
+
+// ---------- UI ----------
+const $ = id => document.getElementById(id);
+const nl = (x, d) => x.toLocaleString("nl-NL", {minimumFractionDigits:d, maximumFractionDigits:d});
+const eur = x => "€ " + nl(Math.round(x), 0);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const NUM = ["spouw","gevel","dak","zolder","vloer","bodem","hr","triple","kosten","kw"];
+const CHK = ["vent","zb","wp","appp","slim","hb","ink"];
+// "1.500,5" en "1.500" zijn duizendtallen; "4.5" en "4,5" zijn decimalen
+const getal = s => {
+  // "€ 3.500,-", "45 m2" en "12,5 kW" zijn gewoon 3500, 45 en 12,5
+  s = String(s).replace(/[\s€]/g, "").replace(/[a-z²³]+\d?$/i, "").replace(/,-?$/, "");
+  if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+  else if (/^[1-9]\d{0,2}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, "");
+  const x = /^\d*\.?\d+$/.test(s) ? parseFloat(s) : 0;
+  return isFinite(x) ? x : 0;
+};
+
+function lees(){
+  const v = {jaar: +$("jaar").value};
+  NUM.forEach(k => v[k] = getal($(k).value));
+  CHK.forEach(k => v[k] = $(k).checked);
+  return v;
+}
+function toon(){
+  const v = lees(), r = bereken(v);
+  $("kpis").innerHTML =
+    `<div class="kpi"><b>${eur(r.isde)}</b><small>ISDE (landelijk, achteraf)</small></div>` +
+    `<div class="kpi"><b>${eur(r.gemeente)}</b><small>Gemeente Hardenberg</small></div>` +
+    `<div class="kpi"><b>${eur(r.totaal)}</b><small>Samen${v.kosten > 0 ? " · eigen deel isolatie ± " + eur(Math.max(0, v.kosten - r.isolatie - r.gemeente)) : ""}</small></div>`;
+  let h = "<thead><tr><th>Post</th><th>Berekening</th><th>Bedrag</th></tr></thead><tbody>";
+  if (!r.regels.length) h += '<tr><td colspan="3">Nog niets ingevuld.</td></tr>';
+  r.regels.forEach(x => h += `<tr><th>${esc(x[0])}</th><td>${esc(x[1])}</td><td class="r">${eur(x[2])}</td></tr>`);
+  if (r.gemeente) h += `<tr><th>Gemeente Hardenberg</th><td>100% van de kosten, max. € 1.800</td><td class="r">${eur(r.gemeente)}</td></tr>`;
+  h += `<tr class="tot"><th>Totaal</th><td></td><td class="r ans">${eur(r.totaal)}</td></tr></tbody>`;
+  $("uit").innerHTML = h;
+  $("meldingen").innerHTML = r.meld.map(m => `<div class="fb ${m[0]}"><div><b>${esc(m[1])}</b> ${esc(m[2])}</div></div>`).join("");
+  schrijfHash(v);
+}
+
+function schrijfHash(v){
+  const p = new URLSearchParams();
+  p.set("t", $("app").dataset.dom);
+  NUM.forEach(k => { if ($(k).value.trim()) p.set(k, $(k).value.trim()); });
+  CHK.forEach(k => { if ($(k).checked !== $(k).defaultChecked) p.set(k, $(k).checked ? 1 : 0); });
+  if (v.jaar !== 2026) p.set("jaar", v.jaar);
+  history.replaceState(null, "", "#" + p.toString());
+}
+function leesHash(){
+  const p = new URLSearchParams(location.hash.slice(1));
+  // velden die niet in de link staan gaan terug naar hun beginwaarde, anders blijven oude getallen hangen
+  NUM.forEach(k => { $(k).value = p.get(k) || ""; });
+  CHK.forEach(k => { $(k).checked = p.has(k) ? p.get(k) === "1" : $(k).defaultChecked; });
+  $("jaar").value = p.get("jaar") === "2027" ? "2027" : "2026";
+  return p.get("t");
+}
+
+function tab(t){
+  if (![...document.querySelectorAll("section[data-tab]")].some(s => s.dataset.tab === t)) t = "stappen";
+  $("app").dataset.dom = t;
+  document.querySelectorAll("#topics button").forEach(b => b.setAttribute("aria-selected", b.dataset.t === t));
+  document.querySelectorAll("section[data-tab]").forEach(s => s.hidden = s.dataset.tab !== t);
+}
+document.querySelectorAll("#topics button").forEach(b => b.onclick = () => { tab(b.dataset.t); toon(); });
+document.querySelectorAll("[data-go]").forEach(a => { a.tabIndex = 0; a.onclick = () => { tab(a.dataset.go); toon(); scrollTo(0, 0); }; a.onkeydown = e => { if (e.key === "Enter") a.onclick(); }; });
+$("form").addEventListener("input", toon);
+$("wis").onclick = () => { NUM.forEach(k => $(k).value = ""); CHK.forEach(k => $(k).checked = $(k).defaultChecked); $("jaar").value = "2026"; toon(); };
+
+(function aftel(){
+  const d = Math.ceil((GEMEENTE_EIND - new Date()) / 864e5);
+  $("aftel").textContent = d > 1 ? "nog " + d + " dagen (t/m 31 december 2026)" : d === 1 ? "nog 1 dag (t/m 31 december 2026)" : "gestopt per 31 december 2026; vraag naar een vervolg";
+})();
+
+tab(leesHash() || "stappen");
+toon();
+addEventListener("hashchange", () => { tab(leesHash() || "stappen"); toon(); });
+</script>
+</html>

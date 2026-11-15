@@ -1,0 +1,128 @@
+/* Gedeelde stijl voor alle sites in deze repo: smalle vaste kolom in de stijl van een forum uit 2008 —
+   topbalk, logo + tabs, gekleurd vak, grijze kopbalken en tabellen met afwisselende rijen. Bewust één (lichte) look.
+   Elke site laadt dit bestand met <link rel="stylesheet" href="../shared/site.css"> en zet daarna in een eigen
+   <style> alleen wat alleen die site nodig heeft (kleur per tab, eigen onderdelen).
+   De accentkleur heet om historische redenen --green; per tab wordt hij overschreven via [data-dom]. */
+:root{
+  color-scheme:light;
+  --page:#ffffff; --ink:#222222; --muted:#666666;
+  --link:#1f5fa8; --hover:#d26a00;
+  --green:#5b9bd5; --green-dark:#2f6ea8; --green-bg:#ddeefd; --green-line:#a9cdef; --green-top:#eef6fe;
+  --grey-bg:#f4f4f4; --grey-line:#c9c9c9;
+  --bad:#d9606f; --bad-bg:#fde3e6; --bad-line:#eba7b0; --bad-ink:#a3303f;
+  --ok:#4fae80; --ok-bg:#d8f2e5; --ok-line:#8fd0ae; --ok-ink:#24684a;
+  --warn:#d4ad2a; --warn-bg:#fff2c2; --warn-line:#ead68a; --warn-ink:#7d630f;
+  --font:Verdana, Tahoma, "DejaVu Sans", Arial, sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--page);color:var(--ink);font:13px/1.55 var(--font);
+  padding-left:max(12px, env(safe-area-inset-left, 0px));padding-right:max(12px, env(safe-area-inset-right, 0px));padding-block:10px 40px}
+.page{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+a,.lnk{color:var(--link);text-decoration:underline;cursor:pointer}
+a:hover,.lnk:hover{color:var(--hover)}
+
+/* topbalk */
+.topbar{background:linear-gradient(#fafafa,#dedede);border:1px solid var(--grey-line);text-align:center;font-size:11px;padding:3px 8px;color:var(--muted)}
+.topbar span{color:var(--link)}
+.topbar a{text-decoration:none}
+
+/* kop: logo, woordmerk en rechts een klein statusblok (.peil) */
+.head{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:flex-start;justify-content:space-between;border-bottom:1px solid #e3e3e3;padding-bottom:6px}
+.logo{display:flex;gap:10px;align-items:center}
+.blocks{display:grid;grid-template-columns:repeat(2,26px);gap:3px;transform:rotate(-8deg)}
+.blocks span{display:grid;place-items:center;height:26px;font:bold 13px var(--font);color:#fff;border:1px solid rgba(0,0,0,.25);border-radius:3px;
+  background:linear-gradient(#c6e1fa,#7fb3e3);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),1px 2px 0 #bbb;text-shadow:0 1px 0 rgba(0,0,0,.3)}
+.wordmark{margin:0;font:bold 21px/1 var(--font);letter-spacing:-.5px;color:#333}
+.wordmark sup{font-size:11px;color:var(--green-dark);letter-spacing:0;margin-left:2px}
+.count{font-size:11px;color:var(--muted);margin-top:4px}
+.peil{font-size:11px;color:#333;text-align:right;max-width:260px}
+
+/* tabs (aria-pressed voor keuzeknoppen, aria-selected voor echte tabs) */
+.topics{display:flex;flex-wrap:wrap;gap:4px 22px;padding:4px 2px 0;width:100%}
+.topics button{position:relative;background:none;border:0;padding:2px 0 10px;font:bold 13px var(--font);color:var(--link);text-decoration:underline;cursor:pointer}
+.topics button:hover{color:var(--hover)}
+.topics button[aria-pressed="true"],.topics button[aria-selected="true"]{color:var(--green-dark);text-decoration:none}
+.topics button[aria-pressed="true"]::after,.topics button[aria-selected="true"]::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);border:7px solid transparent;border-top-color:var(--green);border-bottom:0}
+button:focus-visible,.lnk:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:2px dotted var(--link);outline-offset:2px}
+
+/* gekleurd vak */
+.sheet{background:linear-gradient(var(--green-top),var(--green-bg));border:1px solid var(--green-line);padding:12px 14px;display:grid;grid-template-columns:58px 1fr;gap:10px 14px;align-items:start}
+.badge-ic{width:54px;height:54px;border-radius:50%;border:2px solid var(--green);background:radial-gradient(circle at 40% 35%,#ffffff,var(--green-bg));display:grid;place-items:center;font:bold 18px var(--font);color:var(--green-dark)}
+.sheet > *:not(.badge-ic){grid-column:2;min-width:0}
+.tag{justify-self:start;display:inline-flex;align-items:stretch;font:bold 9px/1 var(--font);text-transform:uppercase;letter-spacing:.8px;border:1px solid #222}
+.tag::before{content:"★★";background:#3a3a3a;color:#ffd84a;padding:3px 5px}
+.tag span{background:linear-gradient(90deg,#4a4a4a,var(--green));color:#fff;padding:3px 8px}
+.q{margin:0;font-size:14px;line-height:1.6;color:#111}
+
+/* invulvelden */
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px}
+.form .wide{grid-column:1/-1}
+.fld{display:flex;flex-direction:column;gap:3px;min-width:0}
+.lbl{font-size:12px;font-weight:bold;color:#333}
+.field{display:flex;align-items:center;gap:6px;background:#fff;border:2px solid #3b7bd1;padding:0 6px;min-width:0}
+.field input{font:bold 14px var(--font);border:0;outline:0;background:transparent;color:#000;padding:3px 0;width:100%;min-width:0}
+.field span{color:var(--muted);font-size:12px;white-space:nowrap}
+select{font:12px var(--font);color:#222;border:1px solid #7f9db9;background:linear-gradient(#ffffff,#ececec);padding:3px 4px;max-width:100%;cursor:pointer}
+.chk{font-size:12px;display:flex;gap:6px;align-items:flex-start}
+.chk input{margin-top:2px;flex:none}
+.hint{font-size:11px;color:var(--muted)}
+
+/* infobalk met acties */
+.info{background:var(--grey-bg);border:1px solid #dedede;padding:8px 12px;display:flex;flex-direction:column;gap:8px;font-size:12px}
+.actions{display:flex;flex-wrap:wrap;gap:4px 18px}
+.actions .lnk{background:none;border:0;padding:0;font:12px var(--font)}
+.actions .lnk::before{content:"» ";color:var(--green);font-weight:bold;text-decoration:none;display:inline-block;margin-right:3px}
+
+/* melding: <div class="fb ok|no|warn">Kop <span>toelichting</span></div>
+   of met de kop op een eigen regel: <div class="fb ok"><div><b>Kop</b> toelichting</div></div> */
+.fb{border:1px solid;padding:6px 10px;font-weight:bold;color:var(--fb-ink,inherit);display:flex;gap:8px;align-items:baseline}
+.fb::before{flex:none;display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;color:#fff;font-size:10px;line-height:1}
+.fb.ok{--fb-ink:var(--ok-ink);background:var(--ok-bg);border-color:var(--ok-line)}
+.fb.ok::before{content:"✔";background:var(--ok)}
+.fb.no{--fb-ink:var(--bad-ink);background:var(--bad-bg);border-color:var(--bad-line)}
+.fb.no::before{content:"✘";background:var(--bad)}
+.fb.warn{--fb-ink:var(--warn-ink);background:var(--warn-bg);border-color:var(--warn-line)}
+.fb.warn::before{content:"!";background:var(--warn)}
+.fb span,.fb > div{font-weight:normal;color:var(--ink)}
+.fb > div{min-width:0}
+.fb > div > b:first-child{display:block;color:var(--fb-ink,inherit)}
+
+/* kopbalk-vakken en genummerde/gestreepte lijsten */
+.box{border:1px solid var(--grey-line)}
+.box h3{margin:0;background:linear-gradient(#ececec,#cfcfcf);border-bottom:1px solid #bdbdbd;font:bold 11px var(--font);text-align:center;padding:5px;color:#333}
+.box .in{padding:10px}
+.uitleg ol,.uitleg ul{list-style:none;margin:0;padding:0;counter-reset:s}
+.uitleg li{counter-increment:s;display:grid;grid-template-columns:42px 1fr;border-bottom:1px solid #fff;padding-block:6px;padding-right:10px;align-items:center}
+.uitleg li > *{min-width:0}
+.uitleg ol li::before{content:counter(s);display:grid;place-items:center;color:var(--link);font-weight:bold;border-right:1px solid #fff;align-self:stretch}
+.uitleg ul li::before{content:"»";display:grid;place-items:center;color:var(--green);font-weight:bold;border-right:1px solid #fff;align-self:stretch}
+.uitleg li:nth-child(odd){background:var(--green-bg)}
+.uitleg li:nth-child(even){background:#f3f3f3}
+.uitleg li p{margin:0}
+
+/* tabellen: de basis; uitlijning en kopregels verschillen per site */
+.scroll{overflow-x:auto}
+table.vt{border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;background:#fff}
+table.vt th,table.vt td{border:1px solid var(--grey-line)}
+table.vt td.ans{background:var(--green)!important;color:#fff;font-weight:bold}
+tr.tot th,tr.tot td{font-weight:bold;border-top:2px solid #888}
+
+/* kerncijfers */
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.kpi{background:#fff;border:1px solid var(--green-line);padding:6px 8px;min-width:0}
+.kpi b{display:block;font-size:16px;color:#111;font-variant-numeric:tabular-nums}
+.kpi small{font-size:10px;color:var(--muted)}
+
+code{font:bold 12px var(--font);background:#fffbe0;border:1px solid #e6d77a;padding:0 4px}
+footer{font-size:11px;color:var(--muted);text-align:center;border-top:1px solid #e3e3e3;padding-top:8px}
+
+@media (max-width:560px){
+  .sheet{grid-template-columns:1fr}
+  .badge-ic{display:none}
+  .sheet > *:not(.badge-ic){grid-column:1}
+  .form{grid-template-columns:1fr}
+  .peil{text-align:left}
+  .field input,select{font-size:16px} /* voorkomt inzoomen op iOS */
+}

@@ -157,10 +157,13 @@
     // Meer uren dan de maatman: UWV toetst art. 56 lid 3 waarschijnlijk op maandinkomen [O, doc 14 §3.3].
     // Voorzichtig: toets op het hoogste van beide.
     const toetsPct = (effectief * urenRatio) / maatmanPerUur; // = weekloon / weekloon maatman
-    const ondergrens = pct <= WIA.praktischOndergrens; // art. 9a lid 4: dan theoretische schatting
+    const EPS = 1e-9; // precies op de grens telt als op de grens, ook na afronding in floating point
+    const ondergrens = pct <= WIA.praktischOndergrens + EPS; // art. 9a lid 4: dan theoretische schatting
+    // Naar beneden afgerond en de klasse uit hetzelfde getal: 34,995% wordt 34,99% (<35%), niet 35,00%.
+    const ao = Math.floor((Math.max(0, (1 - pct) * 100) + 1e-7) * 100) / 100;
 
     let status = 'veilig';
-    if (toetsPct > WIA.vijfenzestig) status = 'boven65';
+    if (toetsPct > WIA.vijfenzestig + EPS) status = 'boven65';
     else if (rvcPerUur != null && effectief * red > rvcPerUur) status = 'bovenRvc';
 
     return {
@@ -172,12 +175,13 @@
       kaalPctVanMaatman: pct2(effectief / maatmanPerUur),
       // meer uren dan de maatman: toetst UWV mogelijk op maandinkomen [O]
       maandPctVanMaatman: urenRatio > 1 ? pct2(toetsPct) : null,
-      ao: ondergrens ? null : rond(Math.max(0, (1 - pct) * 100)),
-      klasse: ondergrens ? null : klasse(Math.max(0, (1 - pct) * 100)).label,
+      ao: ondergrens ? null : ao,
+      klasse: ondergrens ? null : klasse(ao).label,
       // bruto uurloon excl. vakantiegeld waarboven je over de grens gaat, bij je huidige uren
-      grensUurloon: rond((WIA.vijfenzestig * maatmanPerUur) / (opslag * urenRatio)),
+      // naar beneden afgerond: het getoonde grensbedrag zit zelf nog net onder de grens
+      grensUurloon: Math.floor(((WIA.vijfenzestig * maatmanPerUur) / (opslag * urenRatio)) * 100 + EPS) / 100,
       // uren per week waarboven je over de grens gaat, bij je huidige uurloon
-      grensUren: Math.round(((WIA.vijfenzestig * maatmanPerUur * maatmanUren) / effectief) * 10) / 10,
+      grensUren: Math.floor(((WIA.vijfenzestig * maatmanPerUur * maatmanUren) / effectief) * 10 + EPS) / 10,
       ondergrens,
       status,
     };

@@ -1,76 +1,23 @@
 <!doctype html>
+<html lang="nl">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>UWV-rekenhulp WIA</title>
+<link rel="stylesheet" href="../shared/site.css">
 <style>
-/* Zelfde look als rekentrainer/: smalle kolom in de stijl van een forum uit 2008. Eén lichte look. */
-:root{
-  color-scheme:light;
-  --page:#ffffff; --ink:#222222; --muted:#666666;
-  --link:#1f5fa8; --hover:#d26a00;
-  --green:#5b9bd5; --green-dark:#2f6ea8; --green-bg:#ddeefd; --green-line:#a9cdef; --green-top:#eef6fe;
-  --grey-bg:#f4f4f4; --grey-line:#c9c9c9;
-  --bad:#d9606f; --bad-bg:#fde3e6; --bad-line:#eba7b0; --bad-ink:#a3303f;
-  --ok:#4fae80; --ok-bg:#d8f2e5; --ok-line:#8fd0ae; --ok-ink:#24684a;
-  --warn:#d4ad2a; --warn-bg:#fff2c2; --warn-line:#ead68a; --warn-ink:#7d630f;
-  --font:Verdana, Tahoma, "DejaVu Sans", Arial, sans-serif;
-}
+/* Basis: ../shared/site.css. Hier alleen wat de UWV-rekenhulp zelf nodig heeft. */
 [data-dom="grens"]{--green:#e8916b;--green-dark:#a9532f;--green-bg:#ffe5d8;--green-line:#f2bfa6;--green-top:#fff3ed}
 [data-dom="zw"]{--green:#5fb98c;--green-dark:#2a7550;--green-bg:#d8f2e5;--green-line:#a6dcc0;--green-top:#eefaf3}
 [data-dom="begrippen"]{--green:#9a80dd;--green-dark:#5f46a6;--green-bg:#ebe4fc;--green-line:#c9b9f2;--green-top:#f6f2fe}
-*{box-sizing:border-box}
-[hidden]{display:none!important}
-html,body{margin:0}
-body{background:var(--page);color:var(--ink);font:13px/1.55 var(--font);
-  padding-left:max(12px, env(safe-area-inset-left, 0px));padding-right:max(12px, env(safe-area-inset-right, 0px));padding-block:10px 40px}
-.page{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
-a,.lnk{color:var(--link);text-decoration:underline;cursor:pointer}
-a:hover,.lnk:hover{color:var(--hover)}
 
-.topbar{background:linear-gradient(#fafafa,#dedede);border:1px solid var(--grey-line);text-align:center;font-size:11px;padding:3px 8px;color:var(--muted)}
-.topbar span{color:var(--link)}
-
-.head{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:flex-start;justify-content:space-between;border-bottom:1px solid #e3e3e3;padding-bottom:6px}
-.logo{display:flex;gap:10px;align-items:center}
-.blocks{display:grid;grid-template-columns:repeat(2,26px);gap:3px;transform:rotate(-8deg)}
-.blocks span{display:grid;place-items:center;height:26px;font:bold 13px var(--font);color:#fff;border:1px solid rgba(0,0,0,.25);border-radius:3px;
-  background:linear-gradient(#c6e1fa,#7fb3e3);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),1px 2px 0 #bbb;text-shadow:0 1px 0 rgba(0,0,0,.3)}
 .blocks span:nth-child(1){background:linear-gradient(#ffd6c2,#eb9a76)}
 .blocks span:nth-child(3){background:linear-gradient(#c3ecd6,#6cc095)}
 .blocks span:nth-child(4){background:linear-gradient(#dcd1fa,#a58ce2)}
-.wordmark{font:bold 21px/1 var(--font);letter-spacing:-.5px;color:#333}
-.wordmark sup{font-size:11px;color:var(--green-dark);letter-spacing:0;margin-left:2px}
-.count{font-size:11px;color:var(--muted);margin-top:4px}
-.peil{font-size:11px;color:#333;text-align:right;max-width:260px}
 .peil input{font:12px var(--font);border:1px solid #7f9db9;padding:1px 3px}
 .peil .bad{color:var(--bad-ink);font-weight:bold}
 
-.topics{display:flex;flex-wrap:wrap;gap:4px 22px;padding:4px 2px 0;width:100%}
-.topics button{position:relative;background:none;border:0;padding:2px 0 10px;font:bold 13px var(--font);color:var(--link);text-decoration:underline;cursor:pointer}
-.topics button:hover{color:var(--hover)}
-.topics button[aria-selected="true"]{color:var(--green-dark);text-decoration:none}
-.topics button[aria-selected="true"]::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);border:7px solid transparent;border-top-color:var(--green);border-bottom:0}
-button:focus-visible,.lnk:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:2px dotted var(--link);outline-offset:2px}
-
-/* gekleurd invulvak */
-.sheet{background:linear-gradient(var(--green-top),var(--green-bg));border:1px solid var(--green-line);padding:12px 14px;display:grid;grid-template-columns:58px 1fr;gap:10px 14px;align-items:start}
-.badge-ic{width:54px;height:54px;border-radius:50%;border:2px solid var(--green);background:radial-gradient(circle at 40% 35%,#ffffff,var(--green-bg));display:grid;place-items:center;font:bold 18px var(--font);color:var(--green-dark)}
-.sheet > *:not(.badge-ic){grid-column:2;min-width:0}
-.tag{justify-self:start;display:inline-flex;align-items:stretch;font:bold 9px/1 var(--font);text-transform:uppercase;letter-spacing:.8px;border:1px solid #222}
-.tag::before{content:"★★";background:#3a3a3a;color:#ffd84a;padding:3px 5px}
-.tag span{background:linear-gradient(90deg,#4a4a4a,var(--green));color:#fff;padding:3px 8px}
-.q{margin:0;font-size:14px;line-height:1.6;color:#111}
-
-.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px}
-.form .wide{grid-column:1/-1}
-.fld{display:flex;flex-direction:column;gap:3px;min-width:0}
-.lbl{font-size:12px;font-weight:bold;color:#333;display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
-.field{display:flex;align-items:center;gap:6px;background:#fff;border:2px solid #3b7bd1;padding:0 6px;min-width:0}
-.field input{font:bold 14px var(--font);border:0;outline:0;background:transparent;color:#000;padding:3px 0;width:100%;min-width:0}
-.field span{color:var(--muted);font-size:12px;white-space:nowrap}
-select{font:12px var(--font);color:#222;border:1px solid #7f9db9;background:linear-gradient(#ffffff,#ececec);padding:3px 4px;max-width:100%;cursor:pointer}
-.chk{font-size:12px;display:flex;gap:6px;align-items:flex-start}
-.chk input{margin-top:2px}
+.lbl{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap}
+.hint{font-weight:normal}
 
 /* uitleg-bolletje: buiten het label, zodat het niet in de naam van het veld komt */
 details.tip{display:contents}
@@ -78,44 +25,14 @@ details.tip summary{list-style:none;display:inline-grid;place-items:center;width
 details.tip summary::-webkit-details-marker{display:none}
 details.tip[open] summary{background:var(--green-dark)}
 .tiptext{font-weight:normal;font-size:11px;color:#333;background:#fffbe0;border:1px solid #e6d77a;padding:5px 7px;line-height:1.5;width:100%}
-.hint{font-size:11px;color:var(--muted);font-weight:normal}
 
-/* infobalk */
-.info{background:var(--grey-bg);border:1px solid #dedede;padding:8px 12px;display:flex;flex-direction:column;gap:8px;font-size:12px}
-.actions{display:flex;flex-wrap:wrap;gap:4px 18px}
-.actions .lnk{background:none;border:0;padding:0;font:12px var(--font)}
-.actions .lnk::before{content:"» ";color:var(--green);font-weight:bold;display:inline-block;margin-right:3px}
-.fb{border:1px solid;padding:6px 10px;font-weight:bold;display:flex;gap:8px;align-items:baseline}
-.fb::before{flex:none;display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;color:#fff;font-size:10px;line-height:1}
-.fb.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok-ink)}
-.fb.ok::before{content:"✔";background:var(--ok)}
-.fb.no{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad-ink)}
-.fb.no::before{content:"✘";background:var(--bad)}
-.fb.warn{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
-.fb.warn::before{content:"!";background:var(--warn)}
-.fb span{font-weight:normal;color:var(--ink)}
-@media (max-width:560px){.fb{flex-wrap:wrap}}
+.uitleg ol li::before{text-decoration:underline}
 
-/* kopbalk-tabellen */
-.box{border:1px solid var(--grey-line)}
-.box h3{margin:0;background:linear-gradient(#ececec,#cfcfcf);border-bottom:1px solid #bdbdbd;font:bold 11px var(--font);text-align:center;padding:5px;color:#333}
-.box .in{padding:10px}
-.uitleg ol,.uitleg ul{list-style:none;margin:0;padding:0;counter-reset:s}
-.uitleg li{counter-increment:s;display:grid;grid-template-columns:42px 1fr;border-bottom:1px solid #fff;padding-block:6px;padding-right:10px;align-items:center}
-.uitleg li > *{min-width:0}
-.uitleg ol li::before{content:counter(s);display:grid;place-items:center;color:var(--link);font-weight:bold;text-decoration:underline;border-right:1px solid #fff;align-self:stretch}
-.uitleg ul li::before{content:"»";display:grid;place-items:center;color:var(--green);font-weight:bold;border-right:1px solid #fff;align-self:stretch}
-.uitleg li:nth-child(odd){background:var(--green-bg)}
-.uitleg li:nth-child(even){background:#f3f3f3}
-.uitleg li p{margin:0}
-
-.scroll{overflow-x:auto}
-table.vt{border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;background:#fff;width:100%}
-table.vt th,table.vt td{border:1px solid var(--grey-line);padding:4px 10px;text-align:right}
+table.vt{width:100%}
+table.vt th,table.vt td{padding:4px 10px;text-align:right}
 table.vt thead th{background:linear-gradient(#f2f2f2,#dadada);font-weight:bold;text-align:center}
 table.vt tbody th{text-align:left;color:#333;background:#f4f4f4;font-weight:normal}
 table.vt tbody tr:nth-child(even) td{background:#fafafa}
-table.vt td.ans{background:var(--green)!important;color:#fff;font-weight:bold}
 table.vt td.bad{background:var(--bad-bg)!important;color:var(--bad-ink);font-weight:bold}
 table.vt td.good{background:var(--ok-bg)!important;color:var(--ok-ink);font-weight:bold}
 
@@ -133,33 +50,22 @@ table.vt td.good{background:var(--ok-bg)!important;color:var(--ok-ink);font-weig
 details.huis{grid-column:1/-1;background:#fff;border:1px solid var(--green-line);padding:6px 10px}
 details.huis > summary{font-weight:bold;cursor:pointer;color:var(--green-dark)}
 details.huis .form{margin-top:8px}
-tr.tot th,tr.tot td{font-weight:bold;border-top:2px solid #888}
 .chart svg{width:100%;height:auto;display:block;background:#fff;border:1px solid #e3e3e3}
 .gl{stroke:#e6e6e6;stroke-width:1}
 .tl{fill:#555;font:10px var(--font)}
-.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.kpi{background:#fff;border:1px solid var(--green-line);padding:6px 8px;min-width:0}
-.kpi b{display:block;font-size:16px;color:#111;font-variant-numeric:tabular-nums}
-.kpi small{font-size:10px;color:var(--muted)}
-code{font:bold 12px var(--font);background:#fffbe0;border:1px solid #e6d77a;padding:0 4px}
 dl.glos{margin:0}
 dl.glos dt{font-weight:bold;color:var(--green-dark);padding:6px 10px 0}
 dl.glos dd{margin:0;padding:2px 10px 6px;border-bottom:1px solid #eee}
 
-footer{font-size:11px;color:var(--muted);text-align:center;border-top:1px solid #e3e3e3;padding-top:8px}
 @media (max-width:560px){
-  .sheet{grid-template-columns:1fr}
-  .badge-ic{display:none}
-  .sheet > *:not(.badge-ic){grid-column:1}
-  .form{grid-template-columns:1fr}
+  .fb{flex-wrap:wrap}
   .kpis{grid-template-columns:1fr 1fr}
-  .peil{text-align:left}
-  .field input,.peil input,select{font-size:16px} /* voorkomt inzoomen op iOS */
+  .peil input{font-size:16px} /* voorkomt inzoomen op iOS */
 }
 </style>
 
 <div class="page" id="app" data-dom="grens">
-  <div class="topbar"><span>UWV-rekenhulp</span> | <span>WIA · WGA · IVA · Ziektewet</span> | <span>Rekent alleen in je browser</span></div>
+  <div class="topbar"><a href="../">« alle sites</a> | <span>UWV-rekenhulp</span> | <span>WIA · WGA · IVA · Ziektewet</span> | <span>Rekent alleen in je browser</span></div>
 
   <div class="head">
     <div class="logo">
@@ -427,7 +333,7 @@ const vandaag = lokaal(new Date());
 function num(id) {
   let v = $(id).value.trim().replace(/[€\s%]/g, '').replace(/,-$/, '');
   const procent = $(id).closest('.field')?.textContent.includes('%');
-  if (!procent && /^\d{1,3}(\.\d{3})+(,\d*)?$/.test(v)) v = v.replace(/\./g, '');
+  if (!procent && /^[1-9]\d{0,2}(\.\d{3})+(,\d*)?$/.test(v)) v = v.replace(/\./g, '');
   v = v.replace(',', '.');
   return /^\d+(\.\d+)?$/.test(v) ? Number(v) : null;
 }
@@ -498,7 +404,7 @@ function peildatum() {
 function renderGrens() {
   const maatman = num('g_maatman'), mUren = num('g_maatmanuren'), uurloon = num('g_uurloon'), uren = num('g_uren');
   const fb = $('g_fb');
-  if (!maatman || !mUren || uurloon == null || !uren) {
+  if (!maatman || !mUren || !uurloon || !uren) {
     fb.className = 'fb warn'; fb.innerHTML = 'Vul je maatmaninkomen per uur, de uren van je maatman, je uurloon en je uren in.';
     $('g_res').hidden = true; return;
   }
@@ -514,12 +420,15 @@ function renderGrens() {
   $('g_res').hidden = false;
   const p = c.pctVanMaatman, kaal = c.kaalPctVanMaatman, meerUren = c.maandPctVanMaatman != null;
   const toets = meerUren ? c.maandPctVanMaatman : p; // het getal waarmee de grens wordt getoetst
+  const over = c.status === 'boven65';
+  // 65,004% is over de grens, maar zou afgerond als "65%" op het scherm komen
+  const pctGrens = (x) => (over && Math.round(x * 10) / 10 <= 65 ? 'net boven 65%' : pct(x));
 
   if (c.status === 'boven65') {
     fb.className = 'fb no';
     fb.innerHTML = meerUren
-      ? `Per uur zit je op ${pct(p)}, maar je werkt meer uren dan je maatman: per maand verdien je ${pct(c.maandPctVanMaatman)} van zijn inkomen. <span>Hoe UWV dit toetst is niet gepubliceerd; de rekenhulp gaat uit van het hoogste getal, en dat zit boven de 65%-grens.</span>`
-      : `Je zit op ${pct(p)} van je maatmaninkomen: <u>boven</u> de 65%-grens. <span>Neemt UWV dit werk als maatstaf, dan kom je onder de 35% arbeidsongeschiktheid. Zie "Als je over de grens gaat".</span>`;
+      ? `Per uur zit je op ${pct(p)}, maar je werkt meer uren dan je maatman: per maand verdien je ${pctGrens(c.maandPctVanMaatman)} van zijn inkomen. <span>Hoe UWV dit toetst is niet gepubliceerd; de rekenhulp gaat uit van het hoogste getal, en dat zit boven de 65%-grens.</span>`
+      : `Je zit op ${pctGrens(p)} van je maatmaninkomen: boven de 65%-grens. <span>Neemt UWV dit werk als maatstaf, dan kom je onder de 35% arbeidsongeschiktheid. Zie "Als je over de grens gaat".</span>`;
   } else if (c.status === 'bovenRvc') {
     fb.className = 'fb warn';
     fb.innerHTML = `Je zit op ${pct(p)}: onder de 65%-grens, maar boven je resterende verdiencapaciteit. <span>Je WGA blijft, maar UWV kan bij een herbeoordeling je percentage verlagen.</span>`;
@@ -542,7 +451,7 @@ function renderGrens() {
   const urenKpi = [`Grens in uren bij ${eur(uurloon)}/u`, c.grensUren.toLocaleString('nl-NL') + ' u/wk',
     c.grensUren < uren ? 'je zit er nu al boven' : 'meer uren = over de grens'];
   $('g_kpis').innerHTML = `
-    <div class="kpi"><small>Jouw percentage</small><b>${pct(toets)}</b><small>${meerUren ? 'per maand' : 'van je maatmaninkomen'}</small></div>
+    <div class="kpi"><small>Jouw percentage</small><b>${pctGrens(toets)}</b><small>${meerUren ? 'per maand' : 'van je maatmaninkomen'}</small></div>
     <div class="kpi"><small>Grens-uurloon bij ${uren.toLocaleString('nl-NL')} u/wk</small><b>${eur(c.grensUurloon)}</b><small>bruto per uur, excl. vakantiegeld</small></div>
     <div class="kpi"><small>${urenKpi[0]}</small><b>${urenKpi[1]}</b><small>${urenKpi[2]}</small></div>`;
 
@@ -553,11 +462,11 @@ function renderGrens() {
     [`× reductiefactor ${uren.toLocaleString('nl-NL')} / ${mUren.toLocaleString('nl-NL')} uur`, c.reductiefactor.toLocaleString('nl-NL')],
     ['= vergelijkbaar uurloon', eur(c.vergelijkbaarUurloon)],
     ['÷ maatmaninkomen per uur', eur(maatman)],
-    [meerUren ? '= per uur' : '= jouw percentage', pct(p), meerUren ? '' : p > 65 ? 'bad' : 'good'],
+    [meerUren ? '= per uur' : '= jouw percentage', meerUren ? pct(p) : pctGrens(p), meerUren ? '' : over ? 'bad' : 'good'],
     ['Arbeidsongeschiktheid als UWV dit werk als maatstaf neemt',
-      c.ondergrens ? 'n.v.t.: onder 20% doet UWV een gewone schatting' : `${pct(c.ao)} (${c.klasse})`, c.ao != null && c.ao < 35 ? 'bad' : ''],
+      c.ondergrens ? 'n.v.t.: onder 20% doet UWV een gewone schatting' : `${pct(c.ao, 2)} (${c.klasse})`, c.ao != null && c.ao < 35 ? 'bad' : ''],
   ];
-  if (meerUren) rows.push(['Per maand: jouw inkomen ÷ dat van je maatman', pct(c.maandPctVanMaatman), c.maandPctVanMaatman > 65 ? 'bad' : 'good']);
+  if (meerUren) rows.push(['Per maand: jouw inkomen ÷ dat van je maatman', pctGrens(c.maandPctVanMaatman), over ? 'bad' : 'good']);
   tabel('g_table', 'Stap', 'Bedrag / %', rows);
 
   $('g_steps').innerHTML = [
@@ -616,7 +525,7 @@ function renderUitkering(datum) {
   fouten = [];
   const perUur = $('u_periode').value === 'uur';
   const ink = E.wiaInkomen({
-    bedrag: opt('u_salaris'), periode: $('u_periode').value, urenPerWeek: opt('u_uren', 0, 80),
+    bedrag: opt('u_salaris'), periode: $('u_periode').value, urenPerWeek: perUur ? opt('u_uren', 0, 80) : 0, // verborgen veld telt niet mee
     vakantiegeldPct: opt('u_vg', 8, 50) / 100, allIn: $('u_allin').checked,
     eindejaarsOpbouwPct: opt('u_ejo', 0, 50) / 100, bonusDezeMaand: opt('u_bonus'),
   });
