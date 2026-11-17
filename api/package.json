@@ -1,0 +1,16 @@
+{
+  "name": "kleinewebsites-api",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Accounts en versleutelde opslag voor de kleine websites",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=24.7" },
+  "dependencies": {
+    "better-sqlite3-multiple-ciphers": "^12.0.0",
+    "qrcode": "^1.5.4"
+  }
+}

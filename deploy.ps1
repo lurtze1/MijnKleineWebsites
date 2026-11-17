@@ -9,6 +9,10 @@ Set-Location $PSScriptRoot
 
 node --test uwv-rekenhulp/engine.test.js | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'Rekentests falen (node --test uwv-rekenhulp/engine.test.js); niets gepusht.' }
+if (Test-Path api/node_modules) {
+  node --test api/app.test.js | Out-Null
+  if ($LASTEXITCODE -ne 0) { throw 'API-tests falen (node --test api/app.test.js); niets gepusht.' }
+}
 
 git push origin main
 if ($LASTEXITCODE -ne 0) { throw 'git push mislukt' }

@@ -16,6 +16,32 @@ services:
       - .:/usr/share/nginx/html:ro
       # de map, niet het losse bestand: een los gemount bestand blijft na een pull naar de oude versie wijzen
       - ./deploy/nginx:/etc/nginx/conf.d:ro
+
+  # Accounts en versleutelde opslag (zie api/app.js). Alleen bereikbaar via nginx op /api/, geen eigen poort naar buiten.
+  api:
+    build: ./api
+    container_name: kleinewebsites-api
+    restart: unless-stopped
+    # DB_KEY en SERVER_SECRET; deploy/pull.sh maakt dit bestand de eerste keer aan. Staat niet in git en
+    # bewust buiten deze map (/opt/stacks/.kleinewebsites/env): deze map is de webmap van nginx.
+    env_file: ../.kleinewebsites/env
+    volumes:
+      - data:/data
+    # Dichtgetimmerd: geen root, geen schrijfbaar bestandssysteem behalve /data, geen extra rechten.
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    pids_limit: 100
+
+volumes:
+  # De versleutelde database en de dagelijkse kopieën. Blijft staan bij een nieuwe uitrol.
+  data:
+
 x-dockge:
   urls:
     - https://rekenen.blankandblank.party

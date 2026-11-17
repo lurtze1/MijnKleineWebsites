@@ -15,6 +15,19 @@ main() {
 
   # De server is geen werkplek: lokale wijzigingen (bijv. via de Dockge-editor) vervallen.
   git reset --quiet --hard "$new"
+
+  # Sleutels voor de API: één keer aanmaken, daarna nooit meer aanraken. Niet in git (.gitignore).
+  # DB_KEY ontsleutelt het databasebestand; raak je hem kwijt, dan is de database onleesbaar.
+  # Ze staan bewust buiten deze map: deze map is de webmap van nginx. De map ernaast ziet nginx niet,
+  # en Dockge (dat /opt/stacks kent) kan er wel bij als je de stack vanuit Dockge herstart.
+  local geheim=../.kleinewebsites
+  if ! grep -qs '^DB_KEY=' "$geheim/env"; then
+    ( umask 077; mkdir -p "$geheim"
+      printf 'DB_KEY=%s\nSERVER_SECRET=%s\n' "$(openssl rand -hex 32)" "$(openssl rand -hex 32)" > "$geheim/env" )
+    chmod 700 "$geheim"; chmod 600 "$geheim/env"
+    echo "nieuwe sleutels gemaakt in $(readlink -f "$geheim/env"): bewaar een kopie op een veilige plek"
+  fi
+
   docker compose up -d --build --remove-orphans
   docker compose exec -T sites nginx -t
   docker compose exec -T sites nginx -s reload

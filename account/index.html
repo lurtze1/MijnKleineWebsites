@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Account – Mijn kleine websites</title>
+<link rel="stylesheet" href="../shared/site.css">
+<style>
+/* Basis: ../shared/site.css. Hier alleen wat de accountpagina zelf nodig heeft. */
+[data-dom="nieuw"]{--green:#5fb98c;--green-dark:#2a7550;--green-bg:#d8f2e5;--green-line:#a6dcc0;--green-top:#eefaf3}
+[data-dom="kwijt"]{--green:#e8916b;--green-dark:#a9532f;--green-bg:#ffe5d8;--green-line:#f2bfa6;--green-top:#fff3ed}
+[data-dom="account"]{--green:#9a80dd;--green-dark:#5f46a6;--green-bg:#ebe4fc;--green-line:#c9b9f2;--green-top:#f6f2fe}
+.blocks span:nth-child(2){background:linear-gradient(#ffd6c2,#eb9a76)}
+.blocks span:nth-child(3){background:linear-gradient(#c3ecd6,#6cc095)}
+.blocks span:nth-child(4){background:linear-gradient(#dcd1fa,#a58ce2)}
+section{display:flex;flex-direction:column;gap:10px}
+p{margin:0}
+.badge-ic{grid-row:span 6}
+.form{grid-template-columns:1fr;max-width:380px}
+.rij{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.code{font:bold 17px/1.6 "Courier New",Courier,monospace;letter-spacing:.06em;background:#fff;border:2px dashed var(--green-dark);padding:8px 12px;word-break:break-all;user-select:all}
+.codes{display:grid;grid-template-columns:repeat(2,max-content);gap:2px 24px;font:bold 14px/1.6 "Courier New",Courier,monospace;background:#fff;border:2px dashed var(--green-dark);padding:8px 12px;width:max-content;max-width:100%}
+.qr{width:180px;max-width:100%;background:#fff;border:1px solid var(--grey-line);padding:6px}
+.qr svg{display:block;width:100%;height:auto}
+.box .in{display:flex;flex-direction:column;gap:8px}
+table.vt{width:100%}
+table.vt th,table.vt td{padding:4px 8px;text-align:left}
+table.vt thead th{background:linear-gradient(#f2f2f2,#dadada);font-weight:bold}
+table.vt td.r{text-align:right;white-space:nowrap}
+.gevaar{color:var(--bad-ink)}
+details.vak{border:1px solid var(--grey-line)}
+details.vak > summary{cursor:pointer;background:linear-gradient(#ececec,#cfcfcf);border-bottom:1px solid #bdbdbd;font:bold 11px var(--font);padding:5px 10px;color:#333}
+details.vak > .in{padding:10px;display:flex;flex-direction:column;gap:8px}
+</style>
+
+<div class="page" id="app" data-dom="in">
+  <div class="topbar"><a href="../">« alle sites</a> | <span>Account</span> | <span>Versleuteld in je browser</span> | <span>Alleen jij kunt het lezen</span></div>
+
+  <div class="head">
+    <div class="logo">
+      <div class="blocks" aria-hidden="true"><span>🔒</span><span>2F</span><span>✔</span><span>?</span></div>
+      <div>
+        <h1 class="wordmark">account<sup>privé</sup></h1>
+        <div class="count">bewaar je berekeningen · versleuteld · met twee-factor</div>
+      </div>
+    </div>
+    <div class="peil" id="wie"></div>
+    <nav class="topics" id="topics" role="tablist" aria-label="Onderdeel" hidden>
+      <button role="tab" data-t="in">Inloggen</button>
+      <button role="tab" data-t="nieuw">Account maken</button>
+      <button role="tab" data-t="kwijt">Wachtwoord kwijt</button>
+    </nav>
+  </div>
+
+  <div class="fb warn" id="geen" hidden><div><b>De opslag is nu niet bereikbaar</b>De rekenhulpen werken gewoon; alleen bewaren en terughalen kan even niet. Open je deze pagina als los bestand, dan werkt het ook niet: accounts hebben de server nodig.</div></div>
+
+  <!-- ===================== INLOGGEN ===================== -->
+  <section data-tab="in" hidden>
+    <form class="sheet" id="f_in">
+      <div class="badge-ic" aria-hidden="true">in</div>
+      <span class="tag"><span>Inloggen</span></span>
+      <p class="q">Log in om je bewaarde berekeningen terug te halen.</p>
+      <div class="form">
+        <div class="fld"><label class="lbl" for="in_naam">Gebruikersnaam</label><div class="field"><input id="in_naam" autocomplete="username" autocapitalize="none" spellcheck="false" required></div></div>
+        <div class="fld"><label class="lbl" for="in_ww">Wachtwoord</label><div class="field"><input id="in_ww" type="password" autocomplete="current-password" required></div></div>
+        <div class="fld" id="in_codevak" hidden><label class="lbl" for="in_code">Code uit je authenticator-app <span class="hint">(of een reservecode)</span></label><div class="field"><input id="in_code" inputmode="numeric" autocomplete="one-time-code" spellcheck="false"></div></div>
+      </div>
+      <div class="rij"><button class="knop" type="submit">Inloggen</button></div>
+      <div class="fb" id="in_fb" hidden aria-live="polite"></div>
+    </form>
+  </section>
+
+  <!-- ===================== ACCOUNT MAKEN ===================== -->
+  <section data-tab="nieuw" hidden>
+    <form class="sheet" id="f_nieuw">
+      <div class="badge-ic" aria-hidden="true">+</div>
+      <span class="tag"><span>Account maken</span></span>
+      <p class="q">Je hebt een <b>uitnodigingscode</b> nodig. Een e-mailadres vragen we niet: er is dus ook geen "wachtwoord vergeten"-mail. Je krijgt in plaats daarvan één herstelcode.</p>
+      <div class="form">
+        <div class="fld"><label class="lbl" for="n_naam">Gebruikersnaam <span class="hint">(verzin er een; hoeft niet je echte naam te zijn)</span></label><div class="field"><input id="n_naam" autocomplete="username" autocapitalize="none" spellcheck="false" minlength="3" maxlength="40" required></div></div>
+        <div class="fld"><label class="lbl" for="n_ww">Wachtwoord <span class="hint">(minstens 10 tekens)</span></label><div class="field"><input id="n_ww" type="password" autocomplete="new-password" minlength="10" required></div></div>
+        <div class="fld"><label class="lbl" for="n_ww2">Wachtwoord nog een keer</label><div class="field"><input id="n_ww2" type="password" autocomplete="new-password" required></div></div>
+        <div class="fld"><label class="lbl" for="n_code">Uitnodigingscode</label><div class="field"><input id="n_code" autocomplete="off" autocapitalize="characters" spellcheck="false" required></div></div>
+      </div>
+      <div class="rij"><button class="knop" type="submit">Account maken</button></div>
+      <div class="fb" id="n_fb" hidden aria-live="polite"></div>
+    </form>
+    <div class="box uitleg"><h3>Wat er met je gegevens gebeurt</h3><ul>
+      <li><p>Je berekeningen worden <b>in je browser versleuteld</b> met een sleutel uit je wachtwoord. De server bewaart alleen onleesbare blokken, en weet niet eens bij welke rekenhulp ze horen.</p></li>
+      <li><p>Je wachtwoord wordt nooit verstuurd. Je gebruikersnaam staat alleen als onherkenbare code in de database. Er worden geen IP-adressen bewaard.</p></li>
+      <li><p>De keerzijde: <b>niemand kan je wachtwoord herstellen</b>, ook de beheerder niet. Zonder wachtwoord én zonder herstelcode zijn je berekeningen weg.</p></li>
+      <li><p>Je kunt je account en alles wat erbij hoort op elk moment zelf verwijderen.</p></li>
+    </ul></div>
+  </section>
+
+  <!-- ===================== WACHTWOORD KWIJT ===================== -->
+  <section data-tab="kwijt" hidden>
+    <form class="sheet" id="f_kwijt">
+      <div class="badge-ic" aria-hidden="true">?</div>
+      <span class="tag"><span>Wachtwoord kwijt</span></span>
+      <p class="q">Met je <b>herstelcode</b> stel je een nieuw wachtwoord in. Je berekeningen blijven bewaard. Twee-factor gaat uit en je krijgt een nieuwe herstelcode.</p>
+      <div class="form">
+        <div class="fld"><label class="lbl" for="k_naam">Gebruikersnaam</label><div class="field"><input id="k_naam" autocomplete="username" autocapitalize="none" spellcheck="false" required></div></div>
+        <div class="fld"><label class="lbl" for="k_code">Herstelcode</label><div class="field"><input id="k_code" autocomplete="off" autocapitalize="characters" spellcheck="false" required></div></div>
+        <div class="fld"><label class="lbl" for="k_ww">Nieuw wachtwoord <span class="hint">(minstens 10 tekens)</span></label><div class="field"><input id="k_ww" type="password" autocomplete="new-password" minlength="10" required></div></div>
+        <div class="fld"><label class="lbl" for="k_ww2">Nieuw wachtwoord nog een keer</label><div class="field"><input id="k_ww2" type="password" autocomplete="new-password" required></div></div>
+      </div>
+      <div class="rij"><button class="knop" type="submit">Nieuw wachtwoord instellen</button></div>
+      <div class="fb" id="k_fb" hidden aria-live="polite"></div>
+    </form>
+  </section>
+
+  <!-- ===================== HERSTELCODE TONEN ===================== -->
+  <section id="herstelvak" hidden>
+    <div class="sheet">
+      <div class="badge-ic" aria-hidden="true">!</div>
+      <span class="tag"><span>Bewaar je herstelcode</span></span>
+      <p class="q">Dit is je <b>herstelcode</b>. Je ziet hem <b>maar één keer</b>. Schrijf hem op of zet hem in je wachtwoordmanager.</p>
+      <div class="code" id="herstelcode"></div>
+      <p>Vergeet je je wachtwoord, dan is deze code de enige manier om bij je berekeningen te komen. Wie de code heeft, kan je account overnemen: bewaar hem dus niet naast je wachtwoord.</p>
+      <label class="chk"><input type="checkbox" id="herstel_ok"> Ik heb de code bewaard</label>
+      <div class="rij"><button class="knop" id="herstel_verder" disabled>Verder</button><button class="knop" id="herstel_kopie" type="button">Kopieer</button></div>
+    </div>
+  </section>
+
+  <!-- ===================== INGELOGD ===================== -->
+  <section data-tab="account" hidden>
+    <div class="fb" id="a_fb" hidden aria-live="polite"></div>
+
+    <div class="box"><h3>Mijn berekeningen</h3>
+      <div class="scroll"><table class="vt" id="a_items"></table></div>
+      <div class="in"><div class="rij"><button class="knop" id="a_export" type="button">Download alles (leesbaar bestand)</button><a href="../uwv-rekenhulp/">Naar de UWV-rekenhulp</a> · <a href="../verduurzamen-hardenberg/">Naar verduurzamen</a></div>
+      <p class="hint">Bewaren doe je in de rekenhulp zelf, met de balk "Bewaar als…" onder de kop.</p></div>
+    </div>
+
+    <div class="box"><h3>Twee-factor (authenticator-app)</h3><div class="in" id="tf"></div></div>
+
+    <details class="vak"><summary>Wachtwoord wijzigen</summary><form class="in" id="f_ww">
+      <div class="form">
+        <div class="fld"><label class="lbl" for="w_oud">Huidig wachtwoord</label><div class="field"><input id="w_oud" type="password" autocomplete="current-password" required></div></div>
+        <div class="fld"><label class="lbl" for="w_nieuw">Nieuw wachtwoord <span class="hint">(minstens 10 tekens)</span></label><div class="field"><input id="w_nieuw" type="password" autocomplete="new-password" minlength="10" required></div></div>
+        <div class="fld"><label class="lbl" for="w_nieuw2">Nieuw wachtwoord nog een keer</label><div class="field"><input id="w_nieuw2" type="password" autocomplete="new-password" required></div></div>
+      </div>
+      <p class="hint">Andere apparaten worden uitgelogd. Je herstelcode blijft dezelfde.</p>
+      <div class="rij"><button class="knop" type="submit">Wijzig wachtwoord</button></div>
+      <div class="fb" id="w_fb" hidden aria-live="polite"></div>
+    </form></details>
+
+    <details class="vak"><summary class="gevaar">Account verwijderen</summary><form class="in" id="f_weg">
+      <p>Dit verwijdert je account en <b>al je bewaarde berekeningen</b>, direct en definitief. Download ze eerst als je ze wilt houden.</p>
+      <div class="form"><div class="fld"><label class="lbl" for="x_ww">Wachtwoord ter bevestiging</label><div class="field"><input id="x_ww" type="password" autocomplete="current-password" required></div></div></div>
+      <div class="rij"><button class="knop" type="submit">Verwijder mijn account</button></div>
+      <div class="fb" id="x_fb" hidden aria-live="polite"></div>
+    </form></details>
+
+    <div class="rij"><button class="knop" id="uitloggen" type="button">Uitloggen</button></div>
+  </section>
+
+  <footer>Geen e-mailadres, geen IP-adressen, geen cookies behalve je inlogsessie · versleuteling: PBKDF2 + AES-256-GCM in je browser</footer>
+</div>
+
+<script src="../shared/account.js"></script>
+<script src="pagina.js"></script>
+</html>
