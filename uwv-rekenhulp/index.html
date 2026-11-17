@@ -329,11 +329,12 @@ const lokaal = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,
 const vandaag = lokaal(new Date());
 
 /** Nederlandse invoer: "3.500", "3.500,50", "1.200,-", "3500,5" en "3500.5" mogen allemaal.
- *  In %-velden is een punt altijd een decimaalteken ("8.33"). Negatief of onzin → null. */
+ *  In %-, uurloon- en urenvelden is een punt altijd een decimaalteken ("8.33", "31.954"): duizendtallen komen daar niet voor.
+ *  Negatief of onzin → null. */
 function num(id) {
   let v = $(id).value.trim().replace(/[€\s%]/g, '').replace(/,-$/, '');
-  const procent = $(id).closest('.field')?.textContent.includes('%');
-  if (!procent && /^[1-9]\d{0,2}(\.\d{3})+(,\d*)?$/.test(v)) v = v.replace(/\./g, '');
+  const klein = /%|uur/.test($(id).closest('.field')?.textContent || '');
+  if (!klein && /^[1-9]\d{0,2}(\.\d{3})+(,\d*)?$/.test(v)) v = v.replace(/\./g, '');
   v = v.replace(',', '.');
   return /^\d+(\.\d+)?$/.test(v) ? Number(v) : null;
 }
