@@ -4,60 +4,252 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mijn kleine websites</title>
 <meta name="description" content="Kleine rekenhulpen en uitlegsites: UWV-rekenhulp (WIA), huis verduurzamen in Hardenberg en de rekentrainer 3F.">
-<link rel="stylesheet" href="shared/site.css">
 <style>
-/* Basis: shared/site.css. Hier alleen de startpagina: één gekleurd vak per site. */
-.oranje{--green:#e8916b;--green-dark:#a9532f;--green-bg:#ffe5d8;--green-line:#f2bfa6;--green-top:#fff3ed}
-.groen{--green:#5fb98c;--green-dark:#2a7550;--green-bg:#d8f2e5;--green-line:#a6dcc0;--green-top:#eefaf3}
-.blocks span:nth-child(1){background:linear-gradient(#ffd6c2,#eb9a76)}
-.blocks span:nth-child(2){background:linear-gradient(#c3ecd6,#6cc095)}
-.blocks span:nth-child(4){background:linear-gradient(#dcd1fa,#a58ce2)}
-a.sheet{color:inherit;text-decoration:none}
-a.sheet:hover{color:inherit;border-color:var(--green-dark)}
-a.sheet:focus-visible{outline:2px dotted var(--link);outline-offset:2px}
-a.sheet .badge-ic{grid-row:span 4}
-a.sheet .q b{color:var(--link);text-decoration:underline;font-size:15px}
-a.sheet:hover .q b{color:var(--hover)}
-a.sheet p{margin:0}
+/* De startpagina is expres een donkere game-site van rond 1998: zwart, gotisch logo, stalen kaders,
+   links een menukolom en in het midden de inhoud. Alles vierkant, links gewoon onderstreept.
+   Staat los van shared/site.css; de sites zelf houden hun nette look. Alleen CSS en inline SVG, geen plaatjes. */
+*{box-sizing:border-box}
+html,body{margin:0}
+body{color:#e8e0c8;font:12px/1.5 Verdana,Geneva,Tahoma,sans-serif;padding:6px max(8px, env(safe-area-inset-left, 0px)) 30px;
+  background-color:#000;
+  background-image:radial-gradient(1px 1px at 7px 9px,#2a2a2a 50%,transparent 51%),radial-gradient(1px 1px at 23px 31px,#222 50%,transparent 51%),radial-gradient(1px 1px at 37px 17px,#1c1c1c 50%,transparent 51%);
+  background-size:44px 44px}
+.page{max-width:800px;margin:0 auto}
+
+/* links: onderstreept, geel; bezocht donkerder; rood als je eroverheen gaat */
+a{color:#ffd21a;text-decoration:underline}
+a:visited{color:#c9a030}
+a:hover,a:active{color:#ff2a10}
+a:focus-visible,button:focus-visible,select:focus-visible{outline:1px dotted #ffd21a;outline-offset:2px}
+
+/* logo */
+.logo{display:block;width:min(100%,520px);height:auto;margin:0 auto}
+h1{margin:0;line-height:0}
+.motto{margin:2px 0 12px;text-align:center;font:11px/1.4 Verdana,Geneva,sans-serif;letter-spacing:.5em;color:#e01808;text-transform:uppercase}
+
+/* stalen kader: vierkant, met klinknagels in de hoeken */
+.staal{position:relative;border:3px ridge #8d8d8d;background:#000;box-shadow:inset 0 0 0 1px #2c2c2c,0 0 0 1px #000}
+.staal::before,.staal::after{content:"";position:absolute;left:3px;right:3px;height:5px;pointer-events:none;
+  background:radial-gradient(circle at 2.5px 2.5px,#cfcfcf 0 1.2px,#555 1.3px 2.4px,transparent 2.5px) left/5px 5px no-repeat,
+             radial-gradient(circle at 2.5px 2.5px,#cfcfcf 0 1.2px,#555 1.3px 2.4px,transparent 2.5px) right/5px 5px no-repeat}
+.staal::before{top:3px}
+.staal::after{bottom:3px}
+/* kopbalk van geborsteld staal */
+.balk{margin:0;padding:3px 10px;font:bold 13px/1.3 "Arial Black",Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#f4f4f4;text-shadow:1px 1px 0 #000;
+  background:linear-gradient(#9a9a9a,#4a4a4a 45%,#2a2a2a 55%,#5c5c5c);border:1px solid #000;border-top-color:#c8c8c8;border-bottom-color:#111}
+
+.cols{display:grid;grid-template-columns:172px minmax(0,1fr);gap:14px;align-items:start}
+
+/* linker kolom */
+.menu{padding:10px 8px;margin-bottom:10px}
+.menu h2{margin:0 0 6px;padding:2px 0;font:bold 12px/1.2 "Arial Black",Arial,Helvetica,sans-serif;letter-spacing:.3em;text-align:center;color:#bdbdbd;
+  background:linear-gradient(#3c3c3c,#161616);border:1px solid #5a5a5a;text-transform:uppercase}
+.menu ul{margin:0 0 10px;padding:6px 4px;list-style:none;text-align:center;background:#050a05;border:1px inset #4a4a4a}
+.menu ul:last-child{margin-bottom:0}
+.menu li{font:bold 10px/1.75 Verdana,Geneva,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.menu a{color:#ff2a10;text-decoration:none}
+.menu a:visited{color:#c02010}
+.menu a:hover{color:#ffd21a;text-decoration:underline}
+.portret{padding:8px;text-align:center}
+.portret .skel{background:radial-gradient(circle at 50% 35%,#3a0606,#0a0000 70%);border:1px inset #4a4a4a;padding:10px 0 4px}
+.portret svg{display:block;width:62%;height:auto;margin:0 auto;overflow:visible}
+.portret p{margin:6px 0 0;font:10px/1.3 Verdana,Geneva,sans-serif;letter-spacing:.3em;color:#e01808;text-transform:uppercase}
+
+/* midden */
+.inhoud{padding:14px 14px 16px}
+.inhoud .balk{margin:0 0 12px;max-width:340px}
+.inhoud .balk:not(:first-child){margin-top:18px}
+.site{display:grid;grid-template-columns:104px minmax(0,1fr);gap:14px;margin-bottom:16px}
+.site h3{margin:0 0 6px;font:bold 13px/1.3 Verdana,Geneva,sans-serif}
+.site p{margin:0}
+.thumb{display:flex;flex-direction:column;width:104px;height:112px;border:3px ridge #8d8d8d;background:#000;text-decoration:none}
+.thumb i{flex:1;display:grid;place-items:center;font:normal bold 30px/1 Georgia,"Times New Roman",serif;color:var(--k);background:radial-gradient(circle at 50% 40%,var(--d),#000 78%);text-shadow:0 0 8px var(--k)}
+.thumb b{display:block;padding:1px 6px;font:bold 10px/1.5 Arial,Helvetica,sans-serif;color:#28e028;background:#061206;border-top:1px solid #3a3a3a;letter-spacing:.05em}
+.thumb:hover b{color:#000;background:#28e028}
+.nieuws{margin:0;padding:0 0 0 18px}
+.nieuws li{margin-bottom:5px}
+.nieuws span{color:#9a9480}
+
+/* kieslijst met GO-knop */
+.kies{display:flex;flex-direction:column;align-items:center;gap:8px;max-width:340px;padding:12px 10px;margin-top:6px}
+.kies label{font:bold 15px/1 Arial,Helvetica,sans-serif;letter-spacing:.04em;color:#fff;text-transform:uppercase}
+.kies select{width:100%;max-width:240px;font:13px Arial,Helvetica,sans-serif;background:#fff;color:#000;border:2px inset #999;border-radius:0}
+.kies button{font:bold 13px/1 "Arial Black",Arial,Helvetica,sans-serif;letter-spacing:.1em;color:#f4f4f4;text-shadow:1px 1px 0 #000;padding:4px 16px;cursor:pointer;border-radius:0;
+  background:linear-gradient(#9a9a9a,#4a4a4a 45%,#2a2a2a 55%,#5c5c5c);border:2px outset #9a9a9a}
+.kies button:hover{color:#28e028}
+.kies button:active{border-style:inset}
+
+/* voet: witte lijn en een rij tekstlinks */
+hr{border:0;border-top:2px solid #e8e8e8;margin:22px 0 14px}
+.voet{text-align:center;font:16px/2 "Times New Roman",Times,serif;color:#fff}
+.voet a{color:#ff2a10}
+.voet a:visited{color:#c02010}
+.voet a:hover{color:#ffd21a}
+.voet i{font-style:normal;color:#6cf;margin:0 6px}
+.klein{margin:6px 0 0;text-align:center;font:13px/1.5 "Times New Roman",Times,serif;color:#fff}
+
+/* dansend skelet: steps() maakt het schokkerig, zoals een gifje met een paar plaatjes */
+.b{stroke:#f3ead2;stroke-width:6;stroke-linecap:round;fill:none}
+.bot{fill:#f3ead2}
+.lijf{animation:wip .5s steps(2) infinite alternate;transform-origin:50px 150px}
+.hoofd{animation:knik 1s steps(2) infinite alternate;transform-origin:50px 38px}
+.kaak{animation:klap .25s steps(1) infinite alternate}
+.arm-l{animation:zwaai-l 1s steps(3) infinite alternate;transform-origin:30px 48px}
+.arm-r{animation:zwaai-r 1s steps(3) infinite alternate;transform-origin:70px 48px}
+.onder-l{animation:buig-l .5s steps(2) infinite alternate;transform-origin:16px 68px}
+.onder-r{animation:buig-r .5s steps(2) infinite alternate;transform-origin:84px 68px}
+.been-l{animation:stap-l 1s steps(2) infinite alternate;transform-origin:42px 96px}
+.been-r{animation:stap-r 1s steps(2) infinite alternate;transform-origin:58px 96px}
+.heup{animation:heup 1s steps(4) infinite alternate;transform-origin:50px 96px}
+@keyframes wip{to{transform:translateY(7px)}}
+@keyframes knik{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+@keyframes klap{to{transform:translateY(3px)}}
+@keyframes zwaai-l{from{transform:rotate(35deg)}to{transform:rotate(-70deg)}}
+@keyframes zwaai-r{from{transform:rotate(70deg)}to{transform:rotate(-35deg)}}
+@keyframes buig-l{from{transform:rotate(-20deg)}to{transform:rotate(60deg)}}
+@keyframes buig-r{from{transform:rotate(-60deg)}to{transform:rotate(20deg)}}
+@keyframes stap-l{from{transform:rotate(28deg)}to{transform:rotate(-8deg)}}
+@keyframes stap-r{from{transform:rotate(8deg)}to{transform:rotate(-28deg)}}
+@keyframes heup{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+
+@media (max-width:620px){
+  .cols{grid-template-columns:1fr}
+  .menu{display:grid;grid-template-columns:repeat(3,1fr);gap:0 6px;align-items:start}
+  .menu h2{letter-spacing:.1em}
+  .menu ul{margin-bottom:0}
+  .portret{display:none}
+  .site{grid-template-columns:84px minmax(0,1fr);gap:10px}
+  .thumb{width:84px;height:92px}
+  .thumb i{font-size:24px}
+  .motto{letter-spacing:.25em}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important}}
 </style>
 
 <div class="page">
-  <div class="topbar"><span>Mijn kleine websites</span> | <span>Geen account, geen cookies</span> | <span>Alles rekent in je browser</span></div>
+  <h1>
+    <svg class="logo" viewBox="0 0 520 96" role="img" aria-label="Mijn kleine websites">
+      <defs>
+        <linearGradient id="rood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6a4a"/><stop offset=".4" stop-color="#c81408"/><stop offset=".75" stop-color="#6a0000"/><stop offset="1" stop-color="#b02010"/></linearGradient>
+        <linearGradient id="goud" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff0b0"/><stop offset=".5" stop-color="#b88a30"/><stop offset="1" stop-color="#5a3c08"/></linearGradient>
+        <filter id="schaduw" x="-5%" y="-20%" width="110%" height="150%"><feDropShadow dx="2" dy="3" stdDeviation="1.5" flood-color="#000"/><feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#7a0000" flood-opacity=".8"/></filter>
+      </defs>
+      <text x="260" y="68" text-anchor="middle" textLength="500" lengthAdjust="spacingAndGlyphs" filter="url(#schaduw)" fill="url(#rood)" stroke="url(#goud)" stroke-width="1.3" paint-order="stroke"
+        font-family="'Old English Text MT','UnifrakturCook','UnifrakturMaguntia','Luminari','Blackadder ITC','Lucida Blackletter',Georgia,'Times New Roman',serif" font-size="66">Mijn kleine websites</text>
+    </svg>
+  </h1>
+  <p class="motto">Reken of word berekend</p>
 
-  <div class="head">
-    <div class="logo">
-      <div class="blocks" aria-hidden="true"><span>%</span><span>☀</span><span>+</span><span>÷</span></div>
-      <div>
-        <h1 class="wordmark">mijn kleine websites</h1>
-        <div class="count">kleine rekenhulpen · kies er één</div>
+  <div class="cols">
+    <div>
+      <nav class="staal menu" aria-label="Menu">
+        <div><h2>UWV</h2><ul>
+          <li><a href="uwv-rekenhulp/#tab=grens">De 65%-grens</a></li>
+          <li><a href="uwv-rekenhulp/#tab=uitkering">Uitkering</a></li>
+          <li><a href="uwv-rekenhulp/#tab=zw">Ziektewet</a></li>
+          <li><a href="uwv-rekenhulp/#tab=begrippen">Begrippen</a></li>
+        </ul></div>
+        <div><h2>Huis</h2><ul>
+          <li><a href="verduurzamen-hardenberg/#t=stappen">Stappenplan</a></li>
+          <li><a href="verduurzamen-hardenberg/#t=subsidies">Subsidies</a></li>
+          <li><a href="verduurzamen-hardenberg/#t=lenen">Lenen</a></li>
+          <li><a href="verduurzamen-hardenberg/#t=reken">Rekenhulp</a></li>
+        </ul></div>
+        <div><h2>Sommen</h2><ul>
+          <li><a href="rekentrainer/">Rekentrainer 3F</a></li>
+        </ul></div>
+      </nav>
+      <div class="staal portret" aria-hidden="true">
+        <div class="skel"></div>
+        <p>De boekhouder</p>
       </div>
     </div>
+
+    <main class="staal inhoud">
+      <h2 class="balk">De sites</h2>
+
+      <div class="site">
+        <a class="thumb" href="uwv-rekenhulp/" style="--k:#ff8a4a;--d:#5a1a00" tabindex="-1" aria-hidden="true"><i>65%</i><b>GO! ▶▶▶</b></a>
+        <div>
+          <h3><a href="uwv-rekenhulp/">Hoe werkt het UWV: rekenhulp voor de WIA</a></h3>
+          <p>Hoe dicht zit je bij de 65%-grens, en wat krijg je per maand als je werkt naast je WGA- of IVA-uitkering? Bruto, netto en met toeslagen. Ook de Ziektewet, de no-riskpolis en het doelgroepregister, met uitleg bij elk veld.</p>
+        </div>
+      </div>
+
+      <div class="site">
+        <a class="thumb" href="verduurzamen-hardenberg/" style="--k:#7fe07f;--d:#0a3a0a" tabindex="-1" aria-hidden="true"><i>0→5</i><b>GO! ▶▶▶</b></a>
+        <div>
+          <h3><a href="verduurzamen-hardenberg/">Huis verduurzamen in Hardenberg</a></h3>
+          <p>Welke stap eerst: isoleren, zonnepanelen, je eigen stroom zelf gebruiken, hybride warmtepomp, batterij. Met de subsidies van gemeente en ISDE, leningen bij het Warmtefonds en een rekenhulp voor de bedragen.</p>
+        </div>
+      </div>
+
+      <div class="site">
+        <a class="thumb" href="rekentrainer/" style="--k:#7ab8ff;--d:#0a1a5a" tabindex="-1" aria-hidden="true"><i>÷</i><b>GO! ▶▶▶</b></a>
+        <div>
+          <h3><a href="rekentrainer/">Rekentrainer 3F: oefenen voor het rekenexamen</a></h3>
+          <p>Steeds nieuwe sommen in de vier examendomeinen van het mbo: getallen, verhoudingen, meten &amp; meetkunde en verbanden. Met uitleg per stap en een spiekbriefje per domein.</p>
+        </div>
+      </div>
+
+      <h2 class="balk">Nieuw</h2>
+      <ul class="nieuws">
+        <li><span>15 november 2026 ·</span> <a href="verduurzamen-hardenberg/">Verduurzamen in Hardenberg staat online</a></li>
+        <li><span>15 november 2026 ·</span> <a href="uwv-rekenhulp/#tab=uitkering">UWV-rekenhulp rekent nu ook netto en toeslagen</a></li>
+        <li><span>15 november 2026 ·</span> <a href="rekentrainer/">Rekentrainer: uitleg bij elke som</a></li>
+      </ul>
+
+      <form class="staal kies" id="kies">
+        <label for="waar">Kies een onderdeel</label>
+        <select id="waar" size="6">
+          <option value="uwv-rekenhulp/#tab=grens" selected>UWV: de 65%-grens</option>
+          <option value="uwv-rekenhulp/#tab=uitkering">UWV: uitkering per maand</option>
+          <option value="uwv-rekenhulp/#tab=zw">UWV: Ziektewet en no-risk</option>
+          <option value="uwv-rekenhulp/#tab=begrippen">UWV: begrippen</option>
+          <option value="verduurzamen-hardenberg/#t=stappen">Huis: stappenplan</option>
+          <option value="verduurzamen-hardenberg/#t=subsidies">Huis: subsidies</option>
+          <option value="verduurzamen-hardenberg/#t=lenen">Huis: lenen</option>
+          <option value="verduurzamen-hardenberg/#t=reken">Huis: subsidie-rekenhulp</option>
+          <option value="verduurzamen-hardenberg/#t=ardo">Huis: zonnestroom zelf gebruiken</option>
+          <option value="verduurzamen-hardenberg/#t=regels">Huis: regels die eraan komen</option>
+          <option value="rekentrainer/">Sommen: rekentrainer 3F</option>
+        </select>
+        <button type="submit">GO</button>
+      </form>
+    </main>
   </div>
 
-  <a class="sheet oranje" href="uwv-rekenhulp/">
-    <div class="badge-ic" aria-hidden="true">65%</div>
-    <span class="tag"><span>WIA · WGA · IVA · Ziektewet</span></span>
-    <p class="q"><b>Hoe werkt het UWV</b></p>
-    <p>Rekenhulp voor de WIA. Hoe dicht zit je bij de 65%-grens, wat krijg je per maand als je werkt naast je uitkering (bruto, netto en toeslagen), en hoe zitten de no-riskpolis en het doelgroepregister in elkaar.</p>
-    <p class="hint">Vul je brief in · deel de link met je getallen</p>
-  </a>
-
-  <a class="sheet groen" href="verduurzamen-hardenberg/">
-    <div class="badge-ic" aria-hidden="true">0→5</div>
-    <span class="tag"><span>Gemeente Hardenberg · 2026</span></span>
-    <p class="q"><b>Huis verduurzamen in Hardenberg</b></p>
-    <p>Welke stap eerst: isoleren, zonnepanelen, je eigen stroom zelf gebruiken, hybride warmtepomp, batterij. Met de subsidies van gemeente en ISDE, leningen bij het Warmtefonds en een rekenhulp voor de bedragen.</p>
-    <p class="hint">Stappenplan · subsidies · lenen · regels die eraan komen</p>
-  </a>
-
-  <a class="sheet" href="rekentrainer/">
-    <div class="badge-ic" aria-hidden="true">÷</div>
-    <span class="tag"><span>Rekenexamen mbo</span></span>
-    <p class="q"><b>Rekentrainer 3F</b></p>
-    <p>Oefenen voor het rekenexamen 3F. Steeds nieuwe sommen in de vier examendomeinen: getallen, verhoudingen, meten &amp; meetkunde en verbanden. Met uitleg per stap en een spiekbriefje.</p>
-    <p class="hint">Onbeperkt oefenen · uitleg bij elke som</p>
-  </a>
-
-  <footer>Geen officieel advies · controleer bedragen altijd bij de bron · niets wordt verstuurd</footer>
+  <hr>
+  <div class="voet">
+    De startpagina <i>|</i> <a href="uwv-rekenhulp/">UWV-rekenhulp</a> <i>|</i> <a href="verduurzamen-hardenberg/">Verduurzamen in Hardenberg</a> <i>|</i> <a href="rekentrainer/">Rekentrainer 3F</a>
+  </div>
+  <p class="klein">Geen officieel advies · controleer bedragen altijd bij de bron · geen account, geen cookies, alles rekent in je browser</p>
 </div>
+
+<script>
+// Het dansende skelet (SVG); de dans zelf is CSS.
+document.querySelector('.skel').innerHTML = `<svg viewBox="-12 -6 124 172" role="presentation"><g class="lijf">
+  <g class="heup">
+    <g class="been-l"><path class="b" d="M42 96L36 124L38 150L27 152"/></g>
+    <g class="been-r"><path class="b" d="M58 96L64 124L62 150L73 152"/></g>
+  </g>
+  <path class="b" d="M50 40V92M36 94Q50 106 64 94M36 94H64"/>
+  <path class="b" d="M33 54Q50 47 67 54M35 62Q50 56 65 62M37 70Q50 65 63 70M40 78Q50 74 60 78" stroke-width="4"/>
+  <path class="b" d="M30 48H70"/>
+  <g class="arm-l"><path class="b" d="M30 48L16 68"/><g class="onder-l"><path class="b" d="M16 68L6 48"/><circle class="bot" cx="5" cy="44" r="4"/></g></g>
+  <g class="arm-r"><path class="b" d="M70 48L84 68"/><g class="onder-r"><path class="b" d="M84 68L94 48"/><circle class="bot" cx="95" cy="44" r="4"/></g></g>
+  <g class="hoofd">
+    <g class="kaak"><rect class="bot" x="41" y="30" width="18" height="9" rx="2"/><path d="M45 31v7M50 31v7M55 31v7" stroke="#000" stroke-width="1.5"/></g>
+    <circle class="bot" cx="50" cy="20" r="15"/>
+    <ellipse cx="44" cy="19" rx="4.5" ry="5.5"/><ellipse cx="56" cy="19" rx="4.5" ry="5.5"/>
+    <path d="M50 24l-2.5 5h5z"/>
+  </g>
+</g></svg>`;
+
+// Kieslijst: GO (of dubbelklik) brengt je naar het gekozen onderdeel.
+const kies = document.getElementById('kies'), waar = document.getElementById('waar');
+const ga = (e) => { e.preventDefault(); if (waar.value) location.href = waar.value; };
+kies.addEventListener('submit', ga);
+waar.addEventListener('dblclick', ga);
+</script>
 </html>
